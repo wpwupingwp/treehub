@@ -1,5 +1,12 @@
 ```mermaid
+%%{init: {'theme': 'forest'}}%%
 gantt
+    dateFormat YYYYMMDD
+    title Progress
+
+section Design
+Design project: done, z1, 20211209, 2d
+Use gantt to manage: milestone, 20211211, 1d
 
 section Collect info
 Read paper: active, a1, 20211210, 2d
