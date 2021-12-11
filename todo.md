@@ -1,5 +1,5 @@
 ```mermaid
-%%{init: {'theme': 'forest'}}%%
+%%{init: {'theme': 'default'}}%%
 gantt
     dateFormat YYYYMMDD
     title Progress
