@@ -6,11 +6,11 @@ gantt
 
 section Design
 Design project: done, z1, 20211209, 2d
-Use gantt to manage: milestone, 20211211, 1d
+Use mermaid to manage: milestone, 20211211, 1d
 
-section Collect info
+section Learn background
 Read paper: active, a1, 20211210, 2d
-Read manual: active, a2, after a1, 1d
+Read manual: active, a2, after a1, 2d
 
 section Collect Tree
 Treebase: crit, active, b1, 20211211, 3d
@@ -19,9 +19,10 @@ From paper: active, b3, after b2, 10d
 
 section Backend
 Reuse mai_web: active, c1, 20211211, 3d
+Study PostgreSQL: active, c2, after c1, 3d
 
 section Frontend
-JS library for tree:active, d1, 3d
+Study forester.js:active, d1, 3d
 Tree analyze: active, d2, after d1
 Tree submit: active, d3, after c1, 2d
 ```
