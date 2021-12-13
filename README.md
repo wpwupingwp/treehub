@@ -31,6 +31,8 @@ Plant phylogenetic tree database
 - Programmatic access to the data using the PhyloWS API.
 
 ## Open tree of life: 
+> "Finally, TreeBASE, supplemented with data from Dryad served as the core source of data for Open Tree of Life"
+
 >"Up to summer 2015, the release cycle has been months between new versions of the synthetic tree, but this should shorten in the future. "
 
 > drawtree.js (FreeBSD license)
@@ -38,6 +40,7 @@ Plant phylogenetic tree database
 ### Features
 - 将已发表的树合成为一个大树, [Progress](https://tree.opentreeoflife.org/about/progress)显示已整合87740OTU，还有3855030未整合。
 - 数据可下载，为json，使用专有OTT的ID，
+- OTT为整合多个分类信息来源的taxonomy系统，包括NCIB, GBIF
 
 # Structure
 ```mermaid
@@ -57,6 +60,7 @@ flowchart LR
     前端 <-->|json| 后端
 ```
 ```mermaid
+%%{init: {'theme': 'base'}}%%
 flowchart LR
     subgraph 前端
         subgraph Query
@@ -66,17 +70,17 @@ flowchart LR
             q1 --- qq3[Chinese name]
             q2[Publish date]
             q3[Tree type]
-            q3 --> t1(gene tree)
-            q3 --> t2(species tree)
-            q3 --> t3(morphology tree)
-            q3 --> t4(dating tree)
+            q3 --- t1(gene tree)
+            q3 --- t2(species tree)
+            q3 --- t3(morphology tree)
+            q3 --- t4(dating tree)
             q4[Topology, resolution, confidence]
         end
         subgraph View
             v1[d3.js]
             v2[forester]
-            v3[Other js library]
-
+            v3[drawtree.js]
+            v4[Other js library]
         end
         subgraph Analyze
             Reroot --> forester
@@ -88,22 +92,24 @@ flowchart LR
         subgraph Submit
             s0[Submit data] --- sf1[Normal form]
             s0[Submit data] --- sf2[Auto-fill form]
-            s1[Submit analyze] --> sa2[Free Computing Resources]
-            s1[Submit analyze] --> sa3[Local Analyze Command] -.- PhyloSuite
+            s1[Submit analyze] --- sa2[Free Computing Resources]
+            s1[Submit analyze] --- sa3[Local Analyze Command] -.- PhyloSuite
             s1[Submit analyze] -.- sa1[先导一号]
         end
     end
 ```
 
 ```mermaid
+%%{init: {'theme': 'base'}}%%
 flowchart TB
     subgraph 后端
         u[Unique Tree ID] <-.-> t[Unique Taxonomy ID?]
         subgraph Collect
-            Import --> s1[Other database's API]
-            Import --> s2[dyrad, zenodo]
-            Import --> s3[Paper]
-            Import --> s4[Collaborate Journal] -.- JSE
+            s1[Other database's API] --> Import
+            s2[dyrad, zenodo] --> Import
+            s3[Paper] --> Import
+            s4[Collaborate Journal] --> Import
+            JSE -.- s4
         end
         subgraph Extract
             e1[Topology info]
