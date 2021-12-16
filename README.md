@@ -30,6 +30,44 @@ Plant phylogenetic tree database
 
 - Programmatic access to the data using the PhyloWS API.
 
+### Database
+```mermaid
+flowchart TB
+    subgraph Study
+        Journal
+        Book
+        Conference
+        Analysis
+    end
+    subgraph Analysis
+        software
+        algorithm
+        Matrix
+        tree
+    end
+    subgraph Matrix
+        input
+    end
+    subgraph tree
+        label
+        title
+        type --- single
+        type --- consensus
+        type --- supertree
+        kind --- barcode
+        kind --- species
+        kind --- gene
+        quality --- alternative
+        quality --- unrated
+        quality --- preferred
+        quality --- suboptimal
+        nodes --> edges
+    end
+    subgraph edges
+        parent --> child
+    end
+```
+![treebase.png](treebase.png)
 ## Open tree of life: 
 > "Finally, TreeBASE, supplemented with data from Dryad served as the core source of data for Open Tree of Life"
 
