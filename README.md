@@ -84,23 +84,23 @@ flowchart TB
 ```mermaid
 %%{init: {'theme': 'base'}}%%
 flowchart LR
-    subgraph 前端
-        Query[查询]
-        View[浏览]
-        Analyze[分析处理]
-        Submit[提交]
+    subgraph Frontend
+        Query
+        View
+        Analyze
+        Submit
     end
-    subgraph 后端
-        Storage[存储]
-        Organize[整理/收集/挖掘]
-        ID_Generator[分配记录ID]
+    subgraph Backend
+        Storage
+        Organize
+        ID_Generator
     end
-    前端 <-->|json| 后端
+    Frontend <-->|json| Backend
 ```
 ```mermaid
 %%{init: {'theme': 'base'}}%%
 flowchart LR
-    subgraph 前端
+    subgraph Frontend
         subgraph Query
             q1[Taxonomy]
             q1 --- qq1[Scientific name]
@@ -132,7 +132,7 @@ flowchart LR
             s0[Submit data] --- sf2[Auto-fill form]
             s1[Submit analyze] --- sa2[Free Computing Resources]
             s1[Submit analyze] --- sa3[Local Analyze Command] -.- PhyloSuite
-            s1[Submit analyze] -.- sa1[先导一号]
+            s1[Submit analyze] -.- sa1[XianDao 1]
         end
     end
 ```
@@ -140,7 +140,7 @@ flowchart LR
 ```mermaid
 %%{init: {'theme': 'base'}}%%
 flowchart TB
-    subgraph 后端
+    subgraph Backend
         u[Unique Tree ID] <-.-> t[Unique Taxonomy ID?]
         subgraph Collect
             s1[Other database's API] --> Import
