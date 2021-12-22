@@ -15,10 +15,13 @@ Read manual: done, a2, after a1, 2d
 section Collect Tree
 Download Treebase: done, b1, 20211211, 3d
 Import Treebase: done, b2, after b1, 2d
+Export Trees: done, b22, after b2, 6d
 Download Open tree project: done, b3, 2d
 Import Open tree project: active,b4, after b3, 2d
+Design database: active, b6, 20211218, 5d
+Design taxon table: active, b7, before b6, 3d
+Design form: active, b8, after b7, 2d
 From paper: active, b5, after b4, 10d
-Design database: active, b6, 20211218, 3d
 
 section Backend
 Reuse mai_web: active, c1, 20211211, 3d
