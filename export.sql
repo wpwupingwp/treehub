@@ -1,8 +1,8 @@
 -- psql -U root -d treebasedmp -f sql.file
 -- COPY (SELECT tree_id FROM trees) TO 'e:\\linux\plant_tree_db\\tree_id.csv' WITH (format csv, header);
 -- tree id list
-COPY (SELECT DISTINCT tree_id FROM trees ORDER BY tree_id)
-TO 'e:\\linux\plant_tree_db\\tree_id.csv'
+COPY (SELECT DISTINCT tree_id, root FROM trees ORDER BY tree_id)
+TO 'e:\\linux\plant_tree_db\\tree_node_list.csv'
 WITH (format csv, header, encoding 'UTF8', delimiter ';');
 -- trees
 COPY (SELECT DISTINCT * FROM trees ORDER BY tree_id)
