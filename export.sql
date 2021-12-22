@@ -28,7 +28,7 @@ COPY (SELECT DISTINCT * FROM nodes ORDER BY node_id)
 TO 'e:\\linux\plant_tree_db\\node.csv'
 WITH (format csv, header, encoding 'UTF8', delimiter ';');
 -- taxon
-COPY (SELECT DISTINCT * FROM taxon ORDER BY taxon_id)
+COPY (SELECT DISTINCT * FROM taxa ORDER BY taxon_id)
 TO 'e:\\linux\plant_tree_db\\taxon_id.csv'
 WITH (format csv, header, encoding 'UTF8', delimiter ';');
 --select distinct *  from study left join analysis on
