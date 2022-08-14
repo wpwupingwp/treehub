@@ -13,6 +13,7 @@ def run_perl(folder, tree_id, root_id):
     err = folder / (tree_id+'.log')
     with open(out, 'w') as o, open(err, 'w') as e:
         a = run(cmd, shell=True, stdout=o, stderr=e)
+        print(a.returncode)
     print(tree_id)
     return out
 
