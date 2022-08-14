@@ -26,13 +26,34 @@ psql -d treebasedmp -U postgres
 ```postgresql
 SELECT * FROM trees LIMIT 5;
 ```
+and make sure encoding is utf-8
+```postgresql
+-- show database info
+\l
+```
 7. Export tree node list and quit `PostgreSQL`
 ```postgresql
 \i export.sql
+-- quit
 \q
 ```
 8. Export trees
 ```powershell
 python3 export_tree.py tree_node_list.csv trees
 rm trees/*.log
+```
+9. Rename database  (start editing)
+```postgresql
+ALTER DATABASE treebasedmp RENAME TO treedb;
+```
+10. Create new table
+```postgresql
+-- switch to new database
+\c treedb
+-- show tables
+\dt
+CREATE TABLE treedb.treefile (
+    tree_id integer primary key,
+    tree_text character varying
+);
 ```
