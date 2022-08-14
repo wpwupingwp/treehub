@@ -1,12 +1,7 @@
 # Manual for plant tree database
 ## Import treebase
-0. Install `Python 3` and `Perl`
-```powershell
-# for windows
-gsudo choco install python3 --params "/InstallDir:C:\Program Files\Python310" -y
-gsudo choco install strawberryperl 
-```
-1. Download from 
+0. Install `Python 3` and `Perl`. For `Windows`, install *Strawberry Perl*.
+1. Download dump file from 
 https://figshare.com/articles/dataset/TreeBASEdmp-2019-06-10/8247494 (2019.6)
 2. Install `PostgreSQL` and `pgAdmin v6`
 3. Created database using the default template 
