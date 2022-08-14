@@ -15,7 +15,7 @@ CREATE DATABASE treebasedmp WITH TEMPLATE = template1;
 ```
 4. Login in
 ```powershell
-psql -d treebasedmp -U postgres
+psql -d treebasedmp -U root
 # enter password
 ```
 5. Execute the SQL dump `Backup.sql`,  using up about 9.5GB of disk space
