@@ -59,3 +59,10 @@ CREATE TABLE treedb.treefile (
     tree_text character varying
 );
 ```
+
+
+100. Submit tree
+    - nexus or newick tree with raw name
+    - {raw name: clean scientific name} table
+    - meta info
+    - insert into table tree file, tree info, node info
