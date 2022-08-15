@@ -54,12 +54,22 @@ ALTER DATABASE treebasedmp RENAME TO treedb;
 \c treedb
 -- show tables
 \dt
-CREATE TABLE treedb.treefile (
+CREATE TABLE treefile (
     tree_id integer primary key,
     tree_text character varying
 );
 ```
 
+99. query
+```postgresql
+select distinct node_label, designated_tax_id,  tree_id from nodes 
+where nodes.designated_tax_id 
+in (select tax_id from ncbi_names 
+where ncbi_names.name_txt like 'Oryza sativa');
+-- ambigous search
+select distinct node_label, designated_tax_id,  tree_id 
+from nodes where node_label like 'Oryza sativa%'
+```
 
 100. Submit tree
     - nexus or newick tree with raw name
