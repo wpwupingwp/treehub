@@ -1,43 +1,38 @@
 # /usr/bin/python3
 
-from psycopg2.pool import ThreadedConnectionPool
+import psycopg2
 from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 from timeit import default_timer as timer
 
 
-def insert(conn_pool, tree_id, treefile):
+def insert(tree_id, treefile):
+    # print(treefile)
     with open(treefile, 'r', encoding='utf-8') as f:
         text = f.read()
-    new_text = text.replace("'","''")
-    conn = conn_pool.getconn()
+    new_text = text.replace("'", "''")
+    conn = psycopg2.connect(host='::1', port=5432, user='root',
+                            password='password', database='treedb')
     cursor = conn.cursor()
     cmd = (f"INSERT INTO treefile (tree_id, tree_text) "
            f"VALUES ({tree_id}, '{new_text}')")
     cursor.execute(cmd)
-    cursor.commit()
     cursor.close()
+    conn.commit()
     conn.close()
+    print(treefile, 'ok')
     return treefile
 
 
 def main():
     start = timer()
-    conn_pool = ThreadedConnectionPool(maxconn=8, minconn=1, host='::1',
-                                       port=5432, user='root',
-                                       password='password',
-                                       database='treedb', keepalives=1,
-                                       keepalives_idle=30,
-                                       keepalives_interval=10,
-                                       keepalives_count=5)
     tree_files = list(Path('trees').glob('*.nex'))
-    with ThreadPoolExecutor(max_workers=8) as pool:
-        futures = [pool.submit(insert, conn_pool, treefile.stem, treefile)
+    with ThreadPoolExecutor(max_workers=50) as pool:
+        futures = [pool.submit(insert, treefile.stem, treefile)
                    for treefile in tree_files]
-        for future in as_completed(futures):
-            print(future.result())
-    pool.shutdown(wait=True)
-    conn_pool.closeall()
+        pool.shutdown(wait=True)
+        # for future in (futures):
+        #     print(future.result())
     end = timer()
     print(len(tree_files), 'trees')
     print(len(futures), 'insertion')

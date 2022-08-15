@@ -8,8 +8,8 @@ from subprocess import run
 
 
 def run_perl(folder, tree_id, root_id):
-    perl = 'perl'
-    # perl = r'C:\tools\Perl\perl\bin\perl.exe'
+    # perl = 'perl'
+    perl = r'C:\tools\Perl\perl\bin\perl.exe'
     cmd = f'{perl} write_trees.pl {root_id}'
     out = folder / (tree_id+'.nex')
     err = folder / (tree_id+'.log')

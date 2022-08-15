@@ -1,6 +1,8 @@
 #!/usr/bin/perl
 # TreeBase dump tree file
-
+use utf8;
+use open ':encoding(utf8)';
+binmode(STDOUT, ":utf8");
 use strict;
 use DBI;
 

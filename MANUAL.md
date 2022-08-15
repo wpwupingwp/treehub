@@ -41,7 +41,10 @@ and make sure encoding is utf-8
 ```
 8. Export trees
 ```powershell
+chcp 65001
 python3 export_tree.py tree_node_list.csv trees
+# find . -size 0 -exec echo {} >> empty.list \;
+# for i in `cat empty.list`;do mv $i empty/ ; done
 rm trees/*.log
 ```
 9. Rename database  (start editing)
@@ -59,6 +62,7 @@ CREATE TABLE treefile (
     tree_text character varying
 );
 ```
+
 
 99. query
 ```postgresql
