@@ -57,22 +57,30 @@ ALTER DATABASE treebasedmp RENAME TO treedb;
 \c treedb
 -- show tables
 \dt
-CREATE TABLE treefile (
-    tree_id integer primary key,
+CREATE TABLE treefile 
+(
+    tree_id integer PRIMARY KEY,
     tree_text character varying
 );
 ```
-
-
+11. Insert data into table
+```powershell
+python3 import_treefiles.py
+```
+then validate
+```postgresql
+SELECT count(*) FROM treefile;
+SELECT * FROM treefile;
+```
 99. query
 ```postgresql
-select distinct node_label, designated_tax_id,  tree_id from nodes 
-where nodes.designated_tax_id 
-in (select tax_id from ncbi_names 
-where ncbi_names.name_txt like 'Oryza sativa');
+SELECT DISTINCT node_label, designated_tax_id,  tree_id FROM nodes 
+WHERE nodes.designated_tax_id 
+IN (SELECT tax_id FROM ncbi_names 
+WHERE ncbi_names.name_txt LIKE 'Oryza sativa');
 -- ambigous search
-select distinct node_label, designated_tax_id,  tree_id 
-from nodes where node_label like 'Oryza sativa%'
+SELECT DISTINCT node_label, designated_tax_id,  tree_id 
+FROM nodes WHERE node_label LIKE 'Oryza sativa%'
 ```
 
 100. Submit tree
