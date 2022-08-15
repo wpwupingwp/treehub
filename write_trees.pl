@@ -6,9 +6,11 @@ use DBI;
 
 use Bio::Phylo::Factory;
 
-my $database = "treebasedmp";
+#my $database = "treebasedmp";
+my $database = "treedb";
 my $username = 'root';
-my $password = '123456';
+#my $password = '123456';
+my $password = 'password';
 my $host = "localhost";
 
 # Feed script with a list of node_ids

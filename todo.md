@@ -34,3 +34,7 @@ Study drawtree.js:active, d1, 3d
 Tree analyze: active, d2, after d1
 Tree submit: active, d3, after c1, 2d
 ```
+## TODO
+1. Graph database
+2. Graph show, by js library
+3. Update NCBI tables by Taxonomy database

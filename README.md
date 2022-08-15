@@ -16,8 +16,7 @@ Plant phylogenetic tree database
 ### Features
 - Richer annotation of metadata (journal DOIs, specimen georeferences, Genbank accession numbers, etc)
 
--  A mapping between taxon labels and taxonomic names in uBio and NCBI for improved normalization of names
-
+-  A mapping between taxon labels and taxonomic names in uBio and NCBI for improved normalization of names 
 - The ability to visualize and edit trees using Phylowidget
 
 - The ability to search on tree topology
