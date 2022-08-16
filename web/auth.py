@@ -10,14 +10,14 @@ from PIL import Image, ImageOps
 
 from web import app, lm, root
 from web.form import UserForm, GoodsForm, LoginForm, TransactionForm
-from web.database import Bid, Goods, Message, User, Visit, db
+from web.database import Nodes, Trees, Treefile, db
 
 auth = f.Blueprint('auth', __name__)
 # cannot use photos.url
 img_path = root / 'upload' / 'img'
 # unread msg
 
-@lm.user_loader
+# @lm.user_loader
 def load_user(user_id):
     user = User.query.get(user_id)
     return user

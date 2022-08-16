@@ -24,7 +24,6 @@ class User(db.Model, fl.UserMixin):
     failed_login = db.Column(db.Integer, default=0)
     failed_bid = db.Column(db.Integer, default=0)
 
-    goods = db.relationship('Goods', backref='user')
 
     def __init__(self, username, password, address=''):
         self.username = username
@@ -39,95 +38,9 @@ class User(db.Model, fl.UserMixin):
         return str(self.user_id)
 
 
-class Goods(db.Model):
-    __tablename__ = 'goods'
-    goods_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    # address for delivery
-    address = db.Column(db.String(100))
-    description = db.Column(db.Text, nullable=False)
-    # price
-    original_price = db.Column(db.Float)
-    highest_price = db.Column(db.Float, nullable=False)
-    lowest_price = db.Column(db.Float, nullable=False)
-    # date
-    pub_date = db.Column(db.DateTime)
-    expired_date = db.Column(db.Date)
-    # photo
-    photo1 = db.Column(db.String(100))
-    photo2 = db.Column(db.String(100))
-    photo3 = db.Column(db.String(100))
-    # others
-    deleted = db.Column(db.Boolean, default=False)
-    sold = db.Column(db.Boolean, default=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'),
-                        nullable=False)
-    bids = db.relationship('Bid', backref='goods')
-
-    def __repr__(self):
-        return f'{self.goods_id},{self.name}'
-
-    @staticmethod
-    def from_form(form, user_id):
-        goods_ = Goods()
-        if isinstance(form, FlaskForm):
-            goods_.name = form.name.data
-            goods_.description = ''.join(form.description.data)
-            goods_.address = form.address.data
-            goods_.original_price = form.original_price.data
-            goods_.highest_price = form.highest_price.data
-            goods_.lowest_price = form.lowest_price.data
-            goods_.expired_date = form.expired_date.data
-            goods_.pub_date = datetime.now()
-            goods_.user_id = user_id
-        else:
-            pass
-        return goods_
-
-
-class Bid(db.Model):
-    __tablename__ = 'bid'
-    bid_id = db.Column(db.Integer, primary_key=True)
-    bider_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
-    goods_id = db.Column(db.Integer, db.ForeignKey('goods.goods_id'))
-    date = db.Column(db.DateTime)
-    price = db.Column(db.Float)
-    is_buying = db.Column(db.Boolean, default=False)
-    is_failed = db.Column(db.Boolean, default=False)
-
-    def __init__(self, bider_id, goods_id, price):
-        self.bider_id = bider_id
-        self.goods_id = goods_id
-        self.price = price
-        self.date = datetime.utcnow()
-
-
-class Message(db.Model):
-    __tablename__ = 'message'
-    message_id = db.Column(db.Integer, primary_key=True)
-    from_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
-    to_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
-    bid_id = db.Column(db.Integer, db.ForeignKey('bid.bid_id'))
-    date = db.Column(db.DateTime)
-    content = db.Column(db.String(100))
-    is_accept = db.Column(db.Boolean, default=False)
-    is_read = db.Column(db.Boolean, default=False)
-    is_report = db.Column(db.Boolean, default=False)
-    is_deleted = db.Column(db.Boolean, default=False)
-    from_ = db.relationship('User', backref='send', foreign_keys=[from_id])
-    to_ = db.relationship('User', backref='receive', foreign_keys=[to_id])
-    # bid_msg = db.relationship('Message', backref='bid_msg', foreign_keys=[bid_id])
-
-    def __init__(self, from_id, to_id, bid_id, content):
-        self.from_id = from_id
-        self.to_id = to_id
-        self.bid_id = bid_id
-        self.content = content
-        self.date = datetime.now()
-
 
 class Visit(db.Model):
-    __tablename = 'visitor'
+    __tablename__ = 'visitor'
     visit_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
     ip = db.Column(db.String(100))
@@ -153,6 +66,7 @@ class MyModelView(ModelView):
         super().__init__(*args, **kargs)
 
     def is_accessible(self):
+        return True
         return (fl.current_user.is_authenticated and
                 fl.current_user.username=='admin')
 
@@ -160,5 +74,40 @@ class MyModelView(ModelView):
         return redirect('/')
 
 
-for m in [User, Goods, Bid, Message, Visit]:
+class Nodes(db.Model):
+    __tablename__ = 'nodes'
+    node_id = db.Column(db.Integer, primary_key=True)
+    node_label = db.Column(db.String(255))
+    left_id = db.Column(db.Integer)
+    right_id = db.Column(db.Integer)
+    tree_id = db.Column(db.Integer)
+    taxon_variant_id = db.Column(db.Integer)
+    legacy_id = db.Column(db.String(35))
+    ncbi_map = db.Column(db.Integer)
+    designated_tax_id = db.Column(db.Integer)
+    db.relationship('Trees', backref='nodes')
+
+
+class Trees(db.Model):
+    __tablename__ = 'trees'
+    tree_id = db.Column(db.Integer, primary_key=True)
+    legacy_id = db.Column(db.String(255))
+    node_label = db.Column(db.String(255))
+    root = db.Column(db.Integer, nullable=False)
+    tree_label = db.Column(db.String(255))
+    tree_title = db.Column(db.String(255))
+    tree_type = db.Column(db.String(30))
+    tree_kind = db.Column(db.String(30))
+    tree_quality = db.Column(db.String(30))
+    study_id = db.Column(db.Integer)
+
+
+class Treefile(db.Model):
+    __tablename__ = 'treefile'
+    tree_id = db.Column(db.Integer, primary_key=True)
+    tree_text = db.Column(db.String())
+
+
+# for m in [User, Goods, Bid, Message]:
+for m in [Nodes, Trees, Treefile]:
     admin.add_view(MyModelView(m, db.session))

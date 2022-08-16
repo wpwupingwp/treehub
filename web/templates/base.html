@@ -8,7 +8,7 @@
     {% if title %}
         <title>{{title}}</title>
     {% else %}
-        <title>我的杂货铺</title>
+        <title>Plant tree database</title>
     {% endif %}
     {% block style %}
         {{ bootstrap.load_css() }}
@@ -23,11 +23,11 @@
             <ul class="nav nav-pills float-right h5">
                 {% if request.path != "/index" %}
                 <li class="nav-item">
-                    <a class="nav-link active " href="/index">返回主页<span class="sr-only"></span></a>
+                    <a class="nav-link active " href="/index">Back to Home<span class="sr-only"></span></a>
                 </li>
                 {% endif %}
                 <li class="nav-item">
-                    <a class="nav-link" href="/goods_list">商品列表</a>
+                    <a class="nav-link" href="/view_trees">Tree list</a>
                 </li>
                 {% if current_user.is_authenticated %}
                     <li class="nav-item">
@@ -41,26 +41,26 @@
                         </a>
                     </li>
                 <li class="nav-item">
-                        <a class="nav-link" href="/auth/add_goods">添加商品</a>
+                        <a class="nav-link" href="/auth/submit_trees">Submit</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/auth/logout">退出({{current_user.username}})</a>
+                        <a class="nav-link" href="/auth/logout">Logout({{current_user.username}})</a>
                     </li>
                     {% if current_user.username=='admin' %}
                     <li class="nav-item">
-                        <a class="nav-link" href="/admin">后台管理</a>
+                        <a class="nav-link" href="/admin">Admin</a>
                     </li>
                 {% endif %}
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="/auth/register">注册</a>
+                        <a class="nav-link" href="/auth/register">Register</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/auth/login">登录</a>
+                        <a class="nav-link" href="/auth/login">Login</a>
                     </li>
                 {% endif %}
             </ul>
-        <h2 class="text">@_@</h2>
+        <h2 class="text">Demo</h2>
         </nav>
 </div>
 
@@ -89,7 +89,7 @@
 {% block footer %}
 <footer class="footer h5 font-weight-bolder text-muted text-center">
     <p>
-        Power by Flask 2.0.2 and Bootstrap 4 <br/>
+        Power by Flask 2.2.2 and Bootstrap 5 <br/>
         <span>Copyright 2021.10-2021.12</span>
     </p>
 </footer>
