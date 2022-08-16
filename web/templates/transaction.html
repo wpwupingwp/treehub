@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<ul class="list-group bg-light">
+    <li class="list-group-item list-group-item-primary text-center h5">物品信息</li>
+    <li class="list-group-item">名称：{{goods.name}}</li>
+    <li class="list-group-item">原价：{{"%0.2f"|format(goods.original_price)}}</li>
+    <li class="list-group-item">报价范围：{{"%0.2f"|format(goods.lowest_price)}} - {{"%0.2f"|format(goods.highest_price)}}</li>
+    <li class="list-group-item">成交价：{{"%0.2f"|format(bid.price)}}</li>
+</ul>
+<hr/>
+<div class="text-center text-white bg-primary rounded h5 py-2">交易信息</div>
+{% endblock %}

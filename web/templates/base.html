@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="flask demo">
+    <meta name="author" content="wp">
+    {% if title %}
+        <title>{{title}}</title>
+    {% else %}
+        <title>我的杂货铺</title>
+    {% endif %}
+    {% block style %}
+        {{ bootstrap.load_css() }}
+    {% endblock %}
+    <style type="text/css">
+        body {font-family: "微软雅黑", "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei" !important;}
+    </style>
+</head>
+<body class="container bg-gray">
+    <div class="header sticky-top">
+        <nav class="bg-light font-weight-bolder">
+            <ul class="nav nav-pills float-right h5">
+                {% if request.path != "/index" %}
+                <li class="nav-item">
+                    <a class="nav-link active " href="/index">返回主页<span class="sr-only"></span></a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/goods_list">商品列表</a>
+                </li>
+                {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/auth/goods/{{current_user.user_id}}">我的商品</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/auth/message/{{current_user.user_id}}">我的消息
+                            {% if g.unread != 0 %}
+                                (<span class="text-danger">{{g.unread}}</span>)
+                            {% endif %}
+                        </a>
+                    </li>
+                <li class="nav-item">
+                        <a class="nav-link" href="/auth/add_goods">添加商品</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/auth/logout">退出({{current_user.username}})</a>
+                    </li>
+                    {% if current_user.username=='admin' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">后台管理</a>
+                    </li>
+                {% endif %}
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/auth/register">注册</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/auth/login">登录</a>
+                    </li>
+                {% endif %}
+            </ul>
+        <h2 class="text">@_@</h2>
+        </nav>
+</div>
+
+<div class="container-fluid">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% from 'bootstrap/utils.html' import render_messages %}
+            {{render_messages(dismissible=True, dismiss_animate=True)}}
+        {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+    {% block script %}
+        {{ bootstrap.load_js() }}
+    {% endblock %}
+    {% block form %}
+    {% if form %}
+            {% from 'bootstrap/form.html' import render_form, render_hidden_errors %}
+            {% for error in form.errors.items() %}
+                <div class="invalid-feedback">{{error}}</div>
+            {% endfor %}
+            {{render_form(form, extra_classes="container-sm")}}
+    {% endif %}
+    {% endblock %}
+</div>
+    <hr>
+{% block footer %}
+<footer class="footer h5 font-weight-bolder text-muted text-center">
+    <p>
+        Power by Flask 2.0.2 and Bootstrap 4 <br/>
+        <span>Copyright 2021.10-2021.12</span>
+    </p>
+</footer>
+{% endblock %}
+</body>
+</html>
