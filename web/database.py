@@ -92,7 +92,7 @@ class Trees(db.Model):
     __tablename__ = 'trees'
     tree_id = db.Column(db.Integer, primary_key=True)
     legacy_id = db.Column(db.String(255))
-    node_label = db.Column(db.String(255))
+    tree_label = db.Column(db.String(255))
     root = db.Column(db.Integer, nullable=False)
     tree_label = db.Column(db.String(255))
     tree_title = db.Column(db.String(255))

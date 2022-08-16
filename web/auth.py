@@ -17,7 +17,7 @@ auth = f.Blueprint('auth', __name__)
 img_path = root / 'upload' / 'img'
 # unread msg
 
-# @lm.user_loader
+@lm.user_loader
 def load_user(user_id):
     user = User.query.get(user_id)
     return user

@@ -19,6 +19,12 @@ def uploaded_file(filename):
     return f.send_from_directory(app.config['UPLOADED_PHOTOS_DEST'], filename)
 
 
+# todo: temporary link redirect
+@app.route('/view_trees')
+def view_admin():
+    return f.redirect('/admin')
+
+
 @app.route('/')
 @app.route('/index')
 def index():
