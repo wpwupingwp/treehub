@@ -72,6 +72,16 @@ then validate
 SELECT count(*) FROM treefile;
 SELECT * FROM treefile;
 ```
+12. add columns 
+```postgresql
+-- add matrix file
+ALTER TABLE matrix
+ADD COLUMN filename character varying,
+ADD COLUMN file_bin bytea;
+-- add dating tree marker
+ALTER TABLE trees
+ADD COLUMN is_dating boolean default false;
+```
 99. query
 ```postgresql
 SELECT DISTINCT node_label, designated_tax_id,  tree_id FROM nodes 
@@ -88,3 +98,16 @@ FROM nodes WHERE node_label LIKE 'Oryza sativa%'
     - {raw name: clean scientific name} table
     - meta info
     - insert into table tree file, tree info, node info
+```postgresql
+SELECT np.child_path_id AS child_id, ce.parent_id AS parent_id, 
+COALESCE( CAST(ce.edge_length AS numeric), 0) AS child_length, ce.edge_support AS child_support, 
+cn.node_label AS child_label, COALESCE( CAST(pe.edge_length AS numeric), 0) AS parent_length, 
+pe.edge_support AS parent_support, (cn.right_id - cn.left_id) - 1 AS internal
+FROM node_path np 
+JOIN edges ce ON (np.child_path_id = ce.child_id) 
+JOIN nodes cn ON (np.child_path_id = cn.node_id) 
+JOIN nodes pn ON (ce.parent_id = pn.node_id) 
+LEFT JOIN edges pe ON (pn.node_id = pe.child_id) 
+WHERE np.parent_path_id = ?  
+STATEMENT
+```

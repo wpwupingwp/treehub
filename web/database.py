@@ -88,11 +88,26 @@ class Nodes(db.Model):
     db.relationship('Trees', backref='nodes')
 
 
+class Matrix(db.Model):
+    __tablename__ = 'matrix'
+    # is primary?
+    matrix_id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255))
+    nchar = db.Column(db.Integer)
+    ntax = db.Column(db.Integer)
+    analysisstep_id = db.Column(db.Integer)
+    legacy_id = db.Column(db.String(35))
+    description = db.Column(db.String(255))
+    input = db.Column(db.Boolean)
+    filename = db.Column(db.String())
+    # todo: pg_read_binary_file
+    file_bin = db.Column(db.BLOB())
+
+
 class Trees(db.Model):
     __tablename__ = 'trees'
     tree_id = db.Column(db.Integer, primary_key=True)
     legacy_id = db.Column(db.String(255))
-    tree_label = db.Column(db.String(255))
     root = db.Column(db.Integer, nullable=False)
     tree_label = db.Column(db.String(255))
     tree_title = db.Column(db.String(255))
@@ -100,6 +115,7 @@ class Trees(db.Model):
     tree_kind = db.Column(db.String(30))
     tree_quality = db.Column(db.String(30))
     study_id = db.Column(db.Integer)
+    is_dating = db.Column(db.Boolean, default=False)
 
 
 class Treefile(db.Model):
@@ -109,5 +125,5 @@ class Treefile(db.Model):
 
 
 # for m in [User, Goods, Bid, Message]:
-for m in [Nodes, Trees, Treefile]:
+for m in [Matrix, Nodes, Trees, Treefile]:
     admin.add_view(MyModelView(m, db.session))
