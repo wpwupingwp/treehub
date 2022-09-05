@@ -13,16 +13,14 @@ db = SQLAlchemy(app)
 
 
 class User(db.Model, fl.UserMixin):
-    __tablename__ = 'user'
+    __tablename__ = 'users'
     user_id = db.Column(db.Integer, primary_key=True)
     # email
     username = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
-    register_date = db.Column(db.DateTime)
-    address = db.Column(db.String(100))
+    register_date = db.Column(db.Date())
     # status
     failed_login = db.Column(db.Integer, default=0)
-    failed_bid = db.Column(db.Integer, default=0)
 
 
     def __init__(self, username, password, address=''):
@@ -125,5 +123,5 @@ class Treefile(db.Model):
 
 
 # for m in [User, Goods, Bid, Message]:
-for m in [Matrix, Nodes, Trees, Treefile]:
+for m in [User, Matrix, Nodes, Trees, Treefile]:
     admin.add_view(MyModelView(m, db.session))

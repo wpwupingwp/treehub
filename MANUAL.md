@@ -82,6 +82,18 @@ ADD COLUMN file_bin bytea;
 ALTER TABLE trees
 ADD COLUMN is_dating boolean default false;
 ```
+13. add user table
+```postgresql
+CREATE TABLE users
+(
+user_id integer PRIMARY KEY,
+username character(100) UNIQUE,
+password character(100),
+register_date date,
+failed_login integer DEFAULT 0
+);
+INSERT INTO users VALUES (0, 'admin', 'password', '2022-09-01', 0);
+```
 99. query
 ```postgresql
 SELECT DISTINCT node_label, designated_tax_id,  tree_id FROM nodes 
