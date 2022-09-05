@@ -59,7 +59,8 @@ ALTER DATABASE treebasedmp RENAME TO treedb;
 \dt
 CREATE TABLE treefile 
 (
-    tree_id integer PRIMARY KEY,
+    treefile_id serial PRIMARY KEY,
+    tree_id integer REFERENCES trees(tree_id),
     tree_text character varying
 );
 ```

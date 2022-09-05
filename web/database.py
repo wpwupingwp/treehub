@@ -59,19 +59,6 @@ class Visit(db.Model):
                 f'\t{self.url}\t{self.useragent}')
 
 
-class MyModelView(ModelView):
-    def __init__(self, *args, **kargs):
-        super().__init__(*args, **kargs)
-
-    def is_accessible(self):
-        return True
-        return (fl.current_user.is_authenticated and
-                fl.current_user.username=='admin')
-
-    def is_accessible_callback(self):
-        return redirect('/')
-
-
 class Nodes(db.Model):
     __tablename__ = 'nodes'
     node_id = db.Column(db.Integer, primary_key=True)
@@ -152,8 +139,22 @@ class Trees(db.Model):
 
 class Treefile(db.Model):
     __tablename__ = 'treefile'
-    tree_id = db.Column(db.Integer, primary_key=True)
+    treefile_id = db.Column(db.Integer, primary_key=True)
+    tree_id = db.Column(db.Integer, db.ForeignKey('trees.tree_id'))
     tree_text = db.Column(db.String())
+
+
+class MyModelView(ModelView):
+    def __init__(self, *args, **kargs):
+        super().__init__(*args, **kargs)
+
+    def is_accessible(self):
+        return True
+        return (fl.current_user.is_authenticated and
+                fl.current_user.username=='admin')
+
+    def is_accessible_callback(self):
+        return redirect('/')
 
 
 # for m in [User, Goods, Bid, Message]:
