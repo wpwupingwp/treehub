@@ -9,8 +9,8 @@ from pathlib import Path
 from PIL import Image, ImageOps
 
 from web import app, lm, root
-from web.form import UserForm, GoodsForm, LoginForm, TransactionForm
-from web.database import Nodes, Trees, Treefile, db
+from web.form import UserForm, GoodsForm, LoginForm
+from web.database import User, Nodes, Trees, Treefile, Visit, db
 
 auth = f.Blueprint('auth', __name__)
 # cannot use photos.url
@@ -31,21 +31,21 @@ def login():
     if lf.validate_on_submit():
         user = User.query.filter_by(username=lf.username.data).first()
         if user is None:
-            f.flash('用户不存在')
+            f.flash('User does not exist.')
         elif user.password != lf.password.data:
+            print(user.password, lf.password.data)
             user.failed_login += 1
             db.session.commit()
             try_n = app.config["MAX_LOGIN"] - user.failed_login
             if try_n > 0:
-                f.flash(f'密码错误{user.failed_login}次，还可以尝试{try_n}次')
+                f.flash(f'Error password {user.failed_login} times，'
+                        f'could try again {try_n} times.')
             else:
-                f.flash('登陆失败次数过多，账号已被锁定，如需解封请联系管理员。')
-        elif user.failed_bid >= app.config['MAX_FAILED_BID']:
-            f.flash('您的违约交易次数过多，账号已被锁定，如需解封请联系管理员。')
+                f.flash('Too much failed login. Please contact administrator.')
         else:
             user.failed_login = 0
             fl.login_user(user)
-            f.flash(f'登陆成功')
+            f.flash(f'Login success.')
             old_visit = Visit.query.get(f.session['visit_id'])
             if old_visit is not None:
                 db.session.delete(old_visit)

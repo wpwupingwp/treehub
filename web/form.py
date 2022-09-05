@@ -13,24 +13,21 @@ IMG = set('jpg jpe jpeg png gif svg bmp webp'.split())
 
 
 class UserForm(FlaskForm):
-    username = m.StringField('用户名', validators=[v.input_required(),
-                                                v.length(max=100)])
-    password = m.PasswordField('密码', validators=[
+    username = m.StringField('Email', validators=[
+        v.input_required(), v.email(), v.length(max=100)])
+    password = m.PasswordField('password', validators=[
         v.input_required(), v.length(min=4, max=100)])
-    password2 = m.PasswordField('密码确认', validators=[
+    password2 = m.PasswordField('password again', validators=[
         v.input_required(), v.equal_to('password')])
-    address = m.StringField('地址', validators=[v.length(max=100)])
-    # phone = m.StringField('手机', validators=[
-    #    v.input_required(), v.length(min=11, max=11, message='手机号为11位')])
-    submit = m.SubmitField('提交')
+    submit = m.SubmitField('Submit')
 
 
 class LoginForm(FlaskForm):
-    username = m.StringField('用户名', validators=[v.input_required(),
+    username = m.StringField('User name', validators=[v.input_required(),
                                                 v.length(max=100)])
-    password = m.PasswordField('密码', validators=[
+    password = m.PasswordField('Password', validators=[
         v.input_required(), v.length(min=4, max=100)])
-    submit = m.SubmitField('提交')
+    submit = m.SubmitField('Submit')
 
 
 class GoodsForm(FlaskForm):
@@ -49,15 +46,15 @@ class GoodsForm(FlaskForm):
     submit = m.SubmitField('提交')
 
 
-class BidForm(FlaskForm):
-    price = m.FloatField('价格', validators=[v.input_required()])
-    submit = m.SubmitField('出价')
 
 
-class TransactionForm(FlaskForm):
-    date = DateField('交易时间', validators=[v.input_required()])
-    location = m.StringField('交易地点', validators=[v.input_required()])
-    others = m.StringField('其他说明',
-                           validators=[v.length(max=20)])
-    submit1 = m.SubmitField('预览信息')
-    submit2 = m.SubmitField('发送信息')
+class StudyForm(FlaskForm):
+    pass
+
+
+class TreeForm(FlaskForm):
+    pass
+
+
+class MatrixForm(FlaskForm):
+    pass

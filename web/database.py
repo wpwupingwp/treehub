@@ -16,8 +16,8 @@ class User(db.Model, fl.UserMixin):
     __tablename__ = 'users'
     user_id = db.Column(db.Integer, primary_key=True)
     # email
-    username = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
+    username = db.Column(db.VARCHAR(100), unique=True)
+    password = db.Column(db.VARCHAR(100))
     register_date = db.Column(db.Date())
     # status
     failed_login = db.Column(db.Integer, default=0)
@@ -39,11 +39,11 @@ class User(db.Model, fl.UserMixin):
 
 class Visit(db.Model):
     __tablename__ = 'visits'
-    visit_id = db.Column(db.Integer, primary_key=True)
+    visit_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    ip = db.Column(db.String(100))
-    url = db.Column(db.String(200))
-    useragent = db.Column(db.String(200))
+    ip = db.Column(db.VARCHAR(100))
+    url = db.Column(db.VARCHAR(200))
+    useragent = db.Column(db.VARCHAR(200))
     date = db.Column(db.DateTime)
     user = db.relationship('User', backref='visit')
 

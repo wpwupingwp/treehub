@@ -86,23 +86,24 @@ ADD COLUMN is_dating boolean default false;
 ```postgresql
 CREATE TABLE users
 (
-user_id integer PRIMARY KEY,
-username character(100) UNIQUE,
-password character(100),
+user_id serial PRIMARY KEY,
+username character varying(100) UNIQUE,
+password character varying(100),
 register_date date,
 failed_login integer DEFAULT 0
 );
-INSERT INTO users VALUES (0, 'admin', 'password', '2022-09-01', 0);
+INSERT INTO users (user_id, username, password) VALUES (1, 'admin', 'password');
+INSERT INTO users (user_id, username, password) VALUES (2, 'guest', 'guest');
 ```
 14. add visit table
 ```postgresql
 CREATE TABLE visits
 (
-    visit_id integer PRIMARY KEY,
+    visit_id bigserial PRIMARY KEY,
     user_id integer REFERENCES users(user_id),
-    ip character(100),
-    url character(200),
-    useragent character(200),
+    ip character varying(100),
+    url character varying(200),
+    useragent character varying(200),
     date date
 );
 ```
