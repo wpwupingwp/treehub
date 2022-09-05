@@ -94,6 +94,20 @@ failed_login integer DEFAULT 0
 );
 INSERT INTO users VALUES (0, 'admin', 'password', '2022-09-01', 0);
 ```
+14. add visit table
+```postgresql
+CREATE TABLE visits
+(
+    visit_id integer PRIMARY KEY,
+    user_id integer REFERENCES users(user_id),
+    ip character(100),
+    url character(200),
+    useragent character(200),
+    date date
+);
+
+```
+    
 99. query
 ```postgresql
 SELECT DISTINCT node_label, designated_tax_id,  tree_id FROM nodes 

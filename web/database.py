@@ -38,11 +38,11 @@ class User(db.Model, fl.UserMixin):
 
 
 class Visit(db.Model):
-    __tablename__ = 'visitor'
+    __tablename__ = 'visits'
     visit_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     ip = db.Column(db.String(100))
-    url = db.Column(db.String(100))
+    url = db.Column(db.String(200))
     useragent = db.Column(db.String(200))
     date = db.Column(db.DateTime)
     user = db.relationship('User', backref='visit')
