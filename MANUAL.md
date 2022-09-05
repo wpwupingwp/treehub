@@ -105,7 +105,6 @@ CREATE TABLE visits
     useragent character(200),
     date date
 );
-
 ```
     
 99. query

@@ -102,6 +102,40 @@ class Matrix(db.Model):
     file_bin = db.Column(db.BLOB())
 
 
+class NcbiName(db.Model):
+    __tablename__ = 'ncbi_names'
+    tax_id = db.Column(db.Integer, primary_key=True)
+    name_txt = db.Column(db.String(255))
+    unique_name = db.Column(db.String(255))
+    # scientific name or not
+    name_class = db.Column(db.String(32))
+
+
+class Study(db.Model):
+    __tablename__ = 'study'
+    # is primary?
+    study_id = db.Column(db.Integer, primary_key=True)
+    pub_type = db.Column(db.String(30))
+    author = db.Column(db.String())
+    year = db.Column(db.Integer)
+    title = db.Column(db.String())
+    journal = db.Column(db.String(255))
+    s_author = db.Column(db.String())
+    s_title = db.Column(db.String())
+    place_pub = db.Column(db.String(255))
+    publisher = db.Column(db.String(255))
+    volume = db.Column(db.String(50))
+    number = db.Column(db.String(150))
+    pages = db.Column(db.String(100))
+    isbn = db.Column(db.String(35))
+    keywords = db.Column(db.String(255))
+    abstract = db.Column(db.String())
+    legacy_id = db.Column(db.String(30))
+    url = db.Column(db.String(255))
+    doi = db.Column(db.String(100))
+    lastmodifieddate = db.Column(db.Date)
+
+
 class Trees(db.Model):
     __tablename__ = 'trees'
     tree_id = db.Column(db.Integer, primary_key=True)
@@ -123,5 +157,5 @@ class Treefile(db.Model):
 
 
 # for m in [User, Goods, Bid, Message]:
-for m in [User, Matrix, Nodes, Trees, Treefile]:
+for m in [User, Matrix, NcbiName, Nodes, Study, Trees, Treefile, Visit]:
     admin.add_view(MyModelView(m, db.session))
