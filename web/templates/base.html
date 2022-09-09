@@ -27,7 +27,7 @@
                 </li>
                 {% endif %}
                 <li class="nav-item">
-                    <a class="nav-link" href="/treelist">Tree list</a>
+                    <a class="nav-link" href="/tree/list">Tree list</a>
                 </li>
                 {% if current_user.is_authenticated %}
                     <li class="nav-item">
@@ -68,22 +68,14 @@
     {% block script %}
         {{ bootstrap.load_js() }}
     {% endblock %}
-    {% block form %}
-    {% if form %}
-            {% from 'bootstrap/form.html' import render_form, render_hidden_errors %}
-            {% for error in form.errors.items() %}
-                <div class="invalid-feedback">{{error}}</div>
-            {% endfor %}
-            {{render_form(form, extra_classes="container-sm")}}
-    {% endif %}
-    {% endblock %}
+
 </div>
     <hr>
 {% block footer %}
 <footer class="footer h5 font-weight-bolder text-muted text-center">
     <p>
         Power by Flask 2.2.2 and Bootstrap 5 <br/>
-        <span>Copyright 2021.10-2021.12</span>
+        <span>Copyright 2022</span>
     </p>
 </footer>
 {% endblock %}

@@ -30,7 +30,12 @@ class LoginForm(FlaskForm):
     submit = m.SubmitField('Submit')
 
 
-class GoodsForm(FlaskForm):
+class SimpleQueryForm(FlaskForm):
+    root = m.StringField('Root', validators=[v.input_required()])
+    submit = m.SubmitField('Submit')
+
+
+class FullQueryForm(FlaskForm):
     name = m.StringField('名称', validators=[v.input_required(),
                                            v.length(max=100)])
     description = m.TextAreaField('描述', validators=[v.input_required()])
@@ -45,6 +50,17 @@ class GoodsForm(FlaskForm):
     photo3 = FileField('照片3', validators=[FileAllowed(IMG, '不支持的格式')])
     submit = m.SubmitField('提交')
 
+tmp = '''
+ {% block form %}
+    {% if form %}
+            {% from 'bootstrap/form.html' import render_form, render_hidden_errors %}
+            {% for error in form.errors.items() %}
+                <div class="invalid-feedback">{{error}}</div>
+            {% endfor %}
+            {{render_form(form, extra_classes="container-sm")}}
+    {% endif %}
+    {% endblock %}
+'''
 
 
 

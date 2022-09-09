@@ -10,7 +10,8 @@ from sqlalchemy import not_, and_
 from web import app, lm, root
 from web.database import Nodes, Trees, Treefile, Study, Visit, db
 from web.auth import auth
-from web.form import LoginForm, UserForm
+from web.form import LoginForm, UserForm, FullQueryForm, SimpleQueryForm
+
 
 @app.before_request
 def track():
@@ -32,22 +33,36 @@ def track():
         db.session.commit()
         session['visit_id'] = visit.visit_id
 
+
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return f.send_from_directory(app.config['UPLOADED_FILE_DEST'], filename)
 
 
 # todo: temporary link redirect
-@app.route('/treelist')
-@app.route('/treelist/<int:page>')
+@app.route('/tree/list')
+@app.route('/tree/list/<int:page>')
 def tree_list(page=1):
     per_page = 10
     pagination = Trees.query.paginate(page=page, per_page=per_page)
     return f.render_template('tree_list.html', pagination=pagination)
 
+@app.route('/tree/query', methods=('POST', 'GET'))
+@app.route('/tree/query/<int:page>')
+def tree_query(page=0):
+    per_page = 10
+    sf = SimpleQueryForm()
+    if sf.validate_on_submit():
+        node = Nodes.query.filter_by(Nodes.node_label.like(f'{sf.root.data}%')).paginate(page=page, per_page=per_page)
+        if node is not None:
+            f.flash('Not found.')
+            return f.redirect('/index')
+        return f.render_template('tree_list.html', pagination=node)
+    return f.render_template('tree_query.html', form=sf)
+
 
 @app.route('/tree/<int:tree_id>', methods=('POST', 'GET'))
-def view_goods(tree_id):
+def view_tree(tree_id):
     tree = Trees.query.get(tree_id)
     node = db.session.query(Trees, Nodes).join(
         Trees, Trees.tree_id==Nodes.node_id).filter_by(

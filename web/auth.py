@@ -9,7 +9,7 @@ from pathlib import Path
 from PIL import Image, ImageOps
 
 from web import app, lm, root
-from web.form import UserForm, GoodsForm, LoginForm
+from web.form import UserForm, FullQueryForm, LoginForm
 from web.database import User, Nodes, Trees, Treefile, Visit, db
 
 auth = f.Blueprint('auth', __name__)
@@ -70,13 +70,13 @@ def register():
         username = User.query.filter_by(username=uf.username.data).first()
         if username is not None:
             f.flash('用户名已注册')
-            return f.render_template('register.html', form=uf)
+            return f.render_template('tree_query.html', form=uf)
         user = User(uf.username.data, uf.password.data, uf.address.data)
         db.session.add(user)
         db.session.commit()
         f.flash('注册成功')
         return f.redirect('/index')
-    return f.render_template('register.html', form=uf)
+    return f.render_template('tree_query.html', form=uf)
 
 
 def compress_photo(old_path: Path) -> Path:
