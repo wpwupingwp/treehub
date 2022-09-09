@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-center">Tree list</h1>
+<table class="table table-hover">
+    <thead class="thead-dark">
+    <tr>
+        <th>#</th>
+        <th>Title</th>
+        <th>Kind</th>
+        <th>Study</th>
+        <th>Is Dating tree</th>
+        <th>Manage</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for tree in pagination.items %}
+    <tr>
+        <td>{{tree.tree_id}}</td>
+        <td>{{tree.tree_title}}</td>
+        <td>{{tree.tree_kind}}</td>
+        <td>{{tree.study_id}}</td>
+        <td>{{tree.is_dating}}</td>
+        <td>
+            <a href="/tree/{{tree.tree_id}}">View</a>
+            <a href="/auth/edit_tree/{{tree.tree_id}}">Edit</a>
+            <a href="/auth/delete_tree/{{tree.tree_id}}">Delete</a>
+        </td>
+        {% endfor %}
+    </tr>
+    </tbody>
+</table>
+{% from 'bootstrap/pagination.html' import render_pagination %}
+{{render_pagination(pagination, align='center', size='lg')}}
+{% endblock %}

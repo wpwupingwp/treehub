@@ -187,6 +187,24 @@ def my_goods(user_id, page=1):
     ).filter_by(user_id=user_id).paginate(page=page, per_page=per_page)
     return f.render_template('my_goods.html', pagination=pagination)
 
+@app.route('/trees/<int:trees_id>', methods=('POST', 'GET'))
+def my_trees(goods_id):
+    goods = Goods.query.get(goods_id)
+    bids = db.session.query(Bid, User).join(
+        Bid, Bid.bider_id==User.user_id).filter_by(
+        goods_id=goods_id).order_by(Bid.price.desc()).limit(10)
+    bidform = BidForm()
+    if bidform.validate_on_submit():
+        if not goods.lowest_price <= bidform.price.data <= goods.highest_price:
+            f.flash('无效价格，请注意价格范围', category='error')
+            return f.redirect(f.request.url)
+        bid = Bid(fl.current_user.user_id, goods_id, bidform.price.data)
+        db.session.add(bid)
+        db.session.commit()
+        f.flash('出价成功')
+    return f.render_template('tree.html', goods=goods, bids=bids,
+                             inline_form=bidform)
+
 
 @fl.login_required
 @auth.route('/transaction/<int:goods_id>/<int:bid_id>', methods=('POST', 'GET'))

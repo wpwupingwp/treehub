@@ -149,7 +149,6 @@ class MyModelView(ModelView):
         super().__init__(*args, **kargs)
 
     def is_accessible(self):
-        return True
         return (fl.current_user.is_authenticated and
                 fl.current_user.username=='admin')
 

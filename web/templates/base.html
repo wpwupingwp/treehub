@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="flask demo">
+    <meta name="description" content="web demo">
     <meta name="author" content="wp">
     {% if title %}
         <title>{{title}}</title>
@@ -13,7 +13,7 @@
     {% block style %}
         {{ bootstrap.load_css() }}
     {% endblock %}
-    <style type="text/css">
+    <style >
         body {font-family: "微软雅黑", "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei" !important;}
     </style>
 </head>
@@ -27,18 +27,11 @@
                 </li>
                 {% endif %}
                 <li class="nav-item">
-                    <a class="nav-link" href="/view_trees">Tree list</a>
+                    <a class="nav-link" href="/treelist">Tree list</a>
                 </li>
                 {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="/auth/goods/{{current_user.user_id}}">我的商品</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/auth/message/{{current_user.user_id}}">我的消息
-                            {% if g.unread != 0 %}
-                                (<span class="text-danger">{{g.unread}}</span>)
-                            {% endif %}
-                        </a>
+                        <a class="nav-link" href="/auth/trees/{{current_user.user_id}}">My trees</a>
                     </li>
                 <li class="nav-item">
                         <a class="nav-link" href="/auth/submit_trees">Submit</a>

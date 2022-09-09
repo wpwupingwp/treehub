@@ -8,7 +8,7 @@ from sqlalchemy import not_, and_
 # import flask_mail
 
 from web import app, lm, root
-from web.database import Nodes, Trees, Treefile, Visit, db
+from web.database import Nodes, Trees, Treefile, Study, Visit, db
 from web.auth import auth
 from web.form import LoginForm, UserForm
 
@@ -38,9 +38,21 @@ def uploaded_file(filename):
 
 
 # todo: temporary link redirect
-@app.route('/view_trees')
-def view_admin():
-    return f.redirect('/admin')
+@app.route('/treelist')
+@app.route('/treelist/<int:page>')
+def tree_list(page=1):
+    per_page = 6
+    pagination = Trees.query.paginate(page=page, per_page=per_page)
+    return f.render_template('tree_list.html', pagination=pagination)
+
+
+@app.route('/tree/<int:tree_id>', methods=('POST', 'GET'))
+def view_goods(tree_id):
+    tree = Trees.query.get(tree_id)
+    node = db.session.query(Trees, Nodes).join(
+        Trees, Trees.tree_id==Nodes.node_id).filter_by(
+        tree_id=tree_id).limit(10)
+    return f.render_template('tree.html', tree=tree, node=node)
 
 
 @app.route('/')
