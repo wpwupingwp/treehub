@@ -56,6 +56,15 @@ def tree_result_list(query='', page=1):
         Trees.tree_id.desc()).paginate(page=page, per_page=10)
     return f.render_template('tree_list.html', pagination=pagination)
 
+@app.route('/tree/query_result/<int:page>')
+def tree_result_list2(results: db.session.query, page=1):
+    print('call')
+    print(str(results))
+    per_page = 10
+    pagination = results.paginate(page=page, per_page=10)
+    return f.render_template('tree_list.html', pagination=pagination)
+
+
 def tree_result(query: QueryForm):
     study_filters = []
     filters = []
@@ -75,15 +84,17 @@ def tree_result(query: QueryForm):
         study_filters.append(Study.keywords.like(f'%{query.title.data}%'))
     if query.doi.data:
         study_filters.append(Study.doi == query.doi.data)
-    print(filters)
     if study_filters:
         studies = db.session.query(Study.study_id).filter(*study_filters).subquery()
         filters.append(Trees.study_id.in_(studies))
     trees = db.session.query(Trees.tree_id).filter(*filters).subquery()
+    results = Trees.query.filter(Trees.tree_id.in_(trees)).order_by(Trees.tree_title.asc())
+    pagination = results.paginate(page=1, per_page=10)
     print(str(trees))
     if 1 < 0:
         f.flash('Not found')
         return f.redirect('/tree/query')
+    return tree_result_list2(results)
     pagination = Trees.query.filter(Trees.tree_id.in_(trees)).order_by(
         Trees.tree_id.desc()).paginate(page=1, per_page=10)
     # todo: test
