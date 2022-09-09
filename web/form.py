@@ -30,8 +30,17 @@ class LoginForm(FlaskForm):
     submit = m.SubmitField('Submit')
 
 
-class SimpleQueryForm(FlaskForm):
-    root = m.StringField('Root', validators=[v.input_required()])
+class QueryForm(FlaskForm):
+    # tree
+    taxon = m.StringField('Taxonomy', validators=[v.input_required()])
+    is_dating = m.BooleanField('Dating tree')
+    # study
+    year = m.IntegerField('Publish year', validators=[v.number_range(1000, 2100)])
+    author = m.StringField('Author', validators=[v.length(min=1, max=100)])
+    title = m.StringField('Title', validators=[v.length(min=1, max=200)])
+    keywords = m.StringField('Keywords', validators=[v.length(max=50)])
+    doi = m.StringField('DOI', validators=[v.length(min=10, max=100)])
+
     submit = m.SubmitField('Submit')
 
 
@@ -60,6 +69,20 @@ tmp = '''
             {{render_form(form, extra_classes="container-sm")}}
     {% endif %}
     {% endblock %}
+'''
+tmp2 = '''
+<form method="post">
+    {{ form.csrf_token() }}
+    <div class="row ">
+        <div class="col">
+            {{ render_field(form.root, form_type='horizontal') }}
+        </div>
+        <div class="col">
+            {{ render_field(form.submit, form_type='horizontal') }}
+        </div>
+    </div>
+</form>
+
 '''
 
 

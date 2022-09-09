@@ -10,7 +10,7 @@ from sqlalchemy import not_, and_
 from web import app, lm, root
 from web.database import Nodes, Trees, Treefile, Study, Visit, db
 from web.auth import auth
-from web.form import LoginForm, UserForm, FullQueryForm, SimpleQueryForm
+from web.form import LoginForm, UserForm, QueryForm
 
 
 @app.before_request
@@ -59,27 +59,27 @@ def tree_result_list(query='', page=1):
 
 @app.route('/tree/query', methods=('POST', 'GET'))
 def tree_query():
-    sf = SimpleQueryForm()
-    if sf.validate_on_submit():
-        test = Nodes.query.filter(Nodes.node_label.like(f'{sf.root.data}%')).first()
+    qf = QueryForm()
+    if qf.validate_on_submit():
+        taxonomy = qf.taxonomy.data
+        test = Nodes.query.filter(
+            Nodes.node_label.like(f'{taxonomy}%')).first()
         if test is None:
             f.flash('Not found.')
             return f.redirect('/tree/query')
         node = db.session.query(Nodes.tree_id).filter(
-            Nodes.node_label.like(f'{sf.root.data}%')).subquery()
+            Nodes.node_label.like(f'{taxonomy}%')).subquery()
         pagination = Trees.query.filter(Trees.tree_id.in_(node)).order_by(
             Trees.tree_id.desc()).paginate(page=1, per_page=10)
-        return f.redirect(f'/tree/query/{sf.root.data}/1')
-    return f.render_template('tree_query.html', form=sf)
+        return f.redirect(f'/tree/query/{taxonomy}/1')
+    return f.render_template('tree_query.html', form=qf)
 
 
 @app.route('/tree/<int:tree_id>', methods=('POST', 'GET'))
 def view_tree(tree_id):
     tree = Trees.query.get(tree_id)
-    node = db.session.query(Trees, Nodes).join(
-        Trees, Trees.tree_id==Nodes.node_id).filter_by(
-        tree_id=tree_id).limit(10)
-    return f.render_template('tree.html', tree=tree, node=node)
+    # todo: use auspice or other js
+    return f.render_template('tree.html', tree=tree)
 
 
 @app.route('/')
