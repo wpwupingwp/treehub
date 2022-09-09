@@ -47,13 +47,13 @@ def tree_list(page=1):
     pagination = Trees.query.paginate(page=page, per_page=per_page)
     return f.render_template('tree_list.html', pagination=pagination)
 
+
 @app.route('/tree/query', methods=('POST', 'GET'))
-@app.route('/tree/query/<int:page>')
-def tree_query(page=0):
-    per_page = 10
+def tree_query():
     sf = SimpleQueryForm()
     if sf.validate_on_submit():
-        node = Nodes.query.filter_by(Nodes.node_label.like(f'{sf.root.data}%')).paginate(page=page, per_page=per_page)
+        print(sf.data)
+        node = Nodes.query.filter(Nodes.node_label.like(f'{sf.root.data}%')).paginate(page=1, per_page=10)
         if node is not None:
             f.flash('Not found.')
             return f.redirect('/index')

@@ -1,17 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Query</h1>
- {% from 'bootstrap/form.html' import render_form, render_field, render_hidden_errors %}
+{% from 'bootstrap4/form.html' import render_form, render_field, render_hidden_errors %}
 {% for error in form.errors.items() %}
     <div class="invalid-feedback">{{error}}</div>
 {% endfor %}
-{{ render_form(form, form_type='horizontal') }}
-<div class="row no-gutters">
-    <div class="col">
-        {{ render_field(form.root, form_type='horizontal') }}
+<form method="post">
+    {{ form.csrf_token() }}
+    <div class="row ">
+        <div class="col">
+            {{ render_field(form.root, form_type='horizontal') }}
+        </div>
+        <div class="col">
+            {{ render_field(form.submit, form_type='horizontal') }}
+        </div>
     </div>
-    <div class="col">
-        {{ render_field(form.submit, form_type='horizontal') }}
-    </div>
-</div>
+</form>
 {% endblock %}
