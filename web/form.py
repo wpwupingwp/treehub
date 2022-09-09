@@ -32,15 +32,16 @@ class LoginForm(FlaskForm):
 
 class QueryForm(FlaskForm):
     # tree
-    taxon = m.StringField('Taxonomy', validators=[v.input_required()])
+    # validators=[v.input_required()])
+    taxonomy = m.StringField('Taxonomy')
     is_dating = m.BooleanField('Dating tree')
     # study
-    year = m.IntegerField('Publish year', validators=[v.number_range(1000, 2100)])
-    author = m.StringField('Author', validators=[v.length(min=1, max=100)])
-    title = m.StringField('Title', validators=[v.length(min=1, max=200)])
+    # validators=[v.number_range(1000, 2100)])
+    year = m.StringField('Publish year')
+    author = m.StringField('Author', validators=[v.length(max=100)])
+    title = m.StringField('Title', validators=[v.length(max=200)])
     keywords = m.StringField('Keywords', validators=[v.length(max=50)])
-    doi = m.StringField('DOI', validators=[v.length(min=10, max=100)])
-
+    doi = m.StringField('DOI', validators=[v.length(max=100)])
     submit = m.SubmitField('Submit')
 
 

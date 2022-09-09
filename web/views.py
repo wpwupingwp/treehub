@@ -56,11 +56,47 @@ def tree_result_list(query='', page=1):
         Trees.tree_id.desc()).paginate(page=page, per_page=10)
     return f.render_template('tree_list.html', pagination=pagination)
 
+def tree_result(query: QueryForm):
+    study_filters = []
+    filters = []
+    if query.taxonomy.data:
+        node = db.session.query(Nodes.tree_id).filter(
+            Nodes.node_label.like(f'{query.taxonomy.data}%')).subquery()
+        filters.append(Trees.tree_id.in_(node))
+    if query.is_dating.data:
+        filters.append(Trees.is_dating == True)
+    if query.year.data:
+        study_filters.append(Study.year == int(query.year.data))
+    if query.author.data:
+        study_filters.append(Study.author.like(f'%{query.author.data}%'))
+    if query.title.data:
+        study_filters.append(Study.title.like(f'%{query.title.data}%'))
+    if query.keywords.data:
+        study_filters.append(Study.keywords.like(f'%{query.title.data}%'))
+    if query.doi.data:
+        study_filters.append(Study.doi == query.doi.data)
+    print(filters)
+    if study_filters:
+        studies = db.session.query(Study.study_id).filter(*study_filters).subquery()
+        filters.append(Trees.study_id.in_(studies))
+    trees = db.session.query(Trees.tree_id).filter(*filters).subquery()
+    print(str(trees))
+    if 1 < 0:
+        f.flash('Not found')
+        return f.redirect('/tree/query')
+    pagination = Trees.query.filter(Trees.tree_id.in_(trees)).order_by(
+        Trees.tree_id.desc()).paginate(page=1, per_page=10)
+    # todo: test
+    return f.render_template('tree_list.html', pagination=pagination)
 
+
+    pass
 @app.route('/tree/query', methods=('POST', 'GET'))
 def tree_query():
     qf = QueryForm()
     if qf.validate_on_submit():
+        print(qf.data)
+        return tree_result(qf)
         taxonomy = qf.taxonomy.data
         test = Nodes.query.filter(
             Nodes.node_label.like(f'{taxonomy}%')).first()
@@ -69,7 +105,10 @@ def tree_query():
             return f.redirect('/tree/query')
         node = db.session.query(Nodes.tree_id).filter(
             Nodes.node_label.like(f'{taxonomy}%')).subquery()
-        pagination = Trees.query.filter(Trees.tree_id.in_(node)).order_by(
+        have_treefile = db.session.query(Treefile.tree_id).filter(
+            Trees.tree_id.in_(node)).subquery()
+        pagination = Trees.query.filter(
+            Trees.tree_id.in_(have_treefile)).order_by(
             Trees.tree_id.desc()).paginate(page=1, per_page=10)
         return f.redirect(f'/tree/query/{taxonomy}/1')
     return f.render_template('tree_query.html', form=qf)
