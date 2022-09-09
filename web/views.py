@@ -48,16 +48,28 @@ def tree_list(page=1):
     return f.render_template('tree_list.html', pagination=pagination)
 
 
+@app.route('/tree/query/<string:query>/<int:page>')
+def tree_result_list(query='', page=1):
+    node = db.session.query(Nodes.tree_id).filter(
+        Nodes.node_label.like(f'{query}%')).subquery()
+    pagination = Trees.query.filter(Trees.tree_id.in_(node)).order_by(
+        Trees.tree_id.desc()).paginate(page=page, per_page=10)
+    return f.render_template('tree_list.html', pagination=pagination)
+
+
 @app.route('/tree/query', methods=('POST', 'GET'))
 def tree_query():
     sf = SimpleQueryForm()
     if sf.validate_on_submit():
-        print(sf.data)
-        node = Nodes.query.filter(Nodes.node_label.like(f'{sf.root.data}%')).paginate(page=1, per_page=10)
-        if node is not None:
+        test = Nodes.query.filter(Nodes.node_label.like(f'{sf.root.data}%')).first()
+        if test is None:
             f.flash('Not found.')
-            return f.redirect('/index')
-        return f.render_template('tree_list.html', pagination=node)
+            return f.redirect('/tree/query')
+        node = db.session.query(Nodes.tree_id).filter(
+            Nodes.node_label.like(f'{sf.root.data}%')).subquery()
+        pagination = Trees.query.filter(Trees.tree_id.in_(node)).order_by(
+            Trees.tree_id.desc()).paginate(page=1, per_page=10)
+        return f.redirect(f'/tree/query/{sf.root.data}/1')
     return f.render_template('tree_query.html', form=sf)
 
 
