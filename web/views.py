@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
-import flask as f
 from flask import g, request, session
+from sqlalchemy import select
+import flask as f
 import flask_login as fl
 
 # import flask_mail
@@ -11,7 +12,6 @@ from web.database import Nodes, Trees, Treefile, Study, Visit, db
 from web.auth import auth
 from web.form import LoginForm, UserForm, QueryForm
 
-from sqlalchemy import select
 
 @app.before_request
 def track():
@@ -39,17 +39,26 @@ def uploaded_file(filename):
     return f.send_from_directory(app.config['UPLOADED_FILE_DEST'], filename)
 
 
-# todo: temporary link redirect
+@app.route('/tree/list_all')
+def tree_list():
+    session['dict'] = {'is_dating': False}
+    return f.redirect('/tree/list')
+
+
+@app.route('/tree/query', methods=('POST', 'GET'))
+def tree_query():
+    qf = QueryForm()
+    if qf.validate_on_submit():
+        data = dict(qf.data)
+        data.pop('submit')
+        data.pop('csrf_token')
+        session['dict'] = data
+        return f.redirect('/tree/result')
+    return f.render_template('tree_query.html', form=qf)
+
+
 @app.route('/tree/list')
 @app.route('/tree/list/<int:page>')
-def tree_list(page=1):
-    per_page = 10
-    pagination = Trees.query.paginate(page=page, per_page=per_page)
-    return f.render_template('tree_list.html', pagination=pagination)
-
-
-@app.route('/tree/result')
-@app.route('/tree/result/<int:page>')
 def tree_result(page=1):
     query = session['dict']
     study_filters = []
@@ -83,24 +92,9 @@ def tree_result(page=1):
         Trees.tree_id, Trees.tree_title, Trees.tree_kind, Trees.is_dating).join(
         Study, Study.study_id == Trees.study_id).filter(
         trees).order_by(Trees.tree_title.asc())
-    # Trees.tree_id.in_(trees)).order_by(Trees.tree_title.asc())
-    print(str(results))
-    # results = Trees.query.filter(Trees.tree_id.in_(trees)).order_by(Trees.tree_title.asc())
+    app.logger.debug(str(results))
     pagination = results.paginate(page=page, per_page=10)
     return f.render_template('tree_list.html', pagination=pagination)
-
-
-@app.route('/tree/query', methods=('POST', 'GET'))
-def tree_query():
-    qf = QueryForm()
-    if qf.validate_on_submit():
-        data = dict(qf.data)
-        data.pop('submit')
-        data.pop('csrf_token')
-        session['dict'] = data
-        return f.redirect('/tree/result')
-    return f.render_template('tree_query.html', form=qf)
-
 
 @app.route('/tree/<int:tree_id>', methods=('POST', 'GET'))
 def view_tree(tree_id):
