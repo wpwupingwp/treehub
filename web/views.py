@@ -73,7 +73,13 @@ def tree_result(page=1):
         studies = db.session.query(Study.study_id).filter(*study_filters).subquery()
         filters.append(Trees.study_id.in_(studies))
     trees = db.session.query(Trees.tree_id).filter(*filters).subquery()
-    results = Trees.query.filter(Trees.tree_id.in_(trees)).order_by(Trees.tree_title.asc())
+    results = db.session.query(Study, Trees).with_entities(
+        Study.s_author, Study.year, Study.journal, Study.doi,
+        Trees.tree_id, Trees.tree_title, Trees.tree_kind, Trees.is_dating).join(
+        Study, Study.study_id == Trees.study_id).filter(
+        Trees.tree_id.in_(trees)).order_by(Trees.tree_title.asc())
+    print(str(results))
+    # results = Trees.query.filter(Trees.tree_id.in_(trees)).order_by(Trees.tree_title.asc())
     pagination = results.paginate(page=page, per_page=10)
     return f.render_template('tree_list.html', pagination=pagination)
 

@@ -7,8 +7,10 @@
         <th>#</th>
         <th>Title</th>
         <th>Kind</th>
-        <th>Study</th>
-        <th>Is dating tree</th>
+        <th>Year</th>
+        <th>Author</th>
+        <th>Journal</th>
+        <th>doi</th>
         <th>Manage</th>
     </tr>
     </thead>
@@ -18,12 +20,12 @@
         <td>{{tree.tree_id}}</td>
         <td>{{tree.tree_title}}</td>
         <td>{{tree.tree_kind}}</td>
-        <td>{{tree.study_id}}</td>
-        <td>{{tree.is_dating}}</td>
+        <td>{{tree.year}}</td>
+        <td>{{tree.s_author}}</td>
+        <td>{{tree.journal}}</td>
+        <td>{{tree.doi}}</td>
         <td>
             <a href="/tree/{{tree.tree_id}}">View</a>
-            <a href="/auth/edit_tree/{{tree.tree_id}}">Edit</a>
-            <a href="/auth/delete_tree/{{tree.tree_id}}">Delete</a>
         </td>
         {% endfor %}
     </tr>
