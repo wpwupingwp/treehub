@@ -56,48 +56,35 @@ def tree_result_list(query='', page=1):
         Trees.tree_id.desc()).paginate(page=page, per_page=10)
     return f.render_template('tree_list.html', pagination=pagination)
 
-@app.route('/tree/query_result/<int:page>')
-def tree_result_list2(results: db.session.query, page=1):
-    print('call')
-    print(str(results))
-    per_page = 10
-    pagination = results.paginate(page=page, per_page=10)
-    return f.render_template('tree_list.html', pagination=pagination)
 
-
-def tree_result(query: QueryForm):
+@app.route('/tree/result')
+@app.route('/tree/result/<int:page>')
+def tree_result(page=1):
+    query = session['dict']
     study_filters = []
     filters = []
-    if query.taxonomy.data:
+    if query.get("taxonomy"):
         node = db.session.query(Nodes.tree_id).filter(
-            Nodes.node_label.like(f'{query.taxonomy.data}%')).subquery()
+            Nodes.node_label.like(f'{query.get("taxonomy")}%')).subquery()
         filters.append(Trees.tree_id.in_(node))
-    if query.is_dating.data:
+    if query.get("is_dating"):
         filters.append(Trees.is_dating == True)
-    if query.year.data:
-        study_filters.append(Study.year == int(query.year.data))
-    if query.author.data:
-        study_filters.append(Study.author.like(f'%{query.author.data}%'))
-    if query.title.data:
-        study_filters.append(Study.title.like(f'%{query.title.data}%'))
-    if query.keywords.data:
-        study_filters.append(Study.keywords.like(f'%{query.title.data}%'))
-    if query.doi.data:
+    if query.get("year"):
+        study_filters.append(Study.year == int(query.get("year")))
+    if query.get("author"):
+        study_filters.append(Study.author.like(f'%{query.get("author")}%'))
+    if query.get("title"):
+        study_filters.append(Study.title.like(f'%{query.get("title")}%'))
+    if query.get("keywords"):
+        study_filters.append(Study.keywords.like(f'%{query.get("title")}%'))
+    if query.get("doi"):
         study_filters.append(Study.doi == query.doi.data)
     if study_filters:
         studies = db.session.query(Study.study_id).filter(*study_filters).subquery()
         filters.append(Trees.study_id.in_(studies))
     trees = db.session.query(Trees.tree_id).filter(*filters).subquery()
     results = Trees.query.filter(Trees.tree_id.in_(trees)).order_by(Trees.tree_title.asc())
-    pagination = results.paginate(page=1, per_page=10)
-    print(str(trees))
-    if 1 < 0:
-        f.flash('Not found')
-        return f.redirect('/tree/query')
-    return tree_result_list2(results)
-    pagination = Trees.query.filter(Trees.tree_id.in_(trees)).order_by(
-        Trees.tree_id.desc()).paginate(page=1, per_page=10)
-    # todo: test
+    pagination = results.paginate(page=page, per_page=10)
     return f.render_template('tree_list.html', pagination=pagination)
 
 
@@ -106,22 +93,11 @@ def tree_result(query: QueryForm):
 def tree_query():
     qf = QueryForm()
     if qf.validate_on_submit():
-        print(qf.data)
-        return tree_result(qf)
-        taxonomy = qf.taxonomy.data
-        test = Nodes.query.filter(
-            Nodes.node_label.like(f'{taxonomy}%')).first()
-        if test is None:
-            f.flash('Not found.')
-            return f.redirect('/tree/query')
-        node = db.session.query(Nodes.tree_id).filter(
-            Nodes.node_label.like(f'{taxonomy}%')).subquery()
-        have_treefile = db.session.query(Treefile.tree_id).filter(
-            Trees.tree_id.in_(node)).subquery()
-        pagination = Trees.query.filter(
-            Trees.tree_id.in_(have_treefile)).order_by(
-            Trees.tree_id.desc()).paginate(page=1, per_page=10)
-        return f.redirect(f'/tree/query/{taxonomy}/1')
+        data = dict(qf.data)
+        data.pop('submit')
+        data.pop('csrf_token')
+        session['dict'] = data
+        return f.redirect('/tree/result')
     return f.render_template('tree_query.html', form=qf)
 
 
