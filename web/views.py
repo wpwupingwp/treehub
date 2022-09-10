@@ -3,7 +3,6 @@
 import flask as f
 from flask import g, request, session
 import flask_login as fl
-from sqlalchemy import not_, and_
 
 # import flask_mail
 
@@ -48,15 +47,6 @@ def tree_list(page=1):
     return f.render_template('tree_list.html', pagination=pagination)
 
 
-@app.route('/tree/query/<string:query>/<int:page>')
-def tree_result_list(query='', page=1):
-    node = db.session.query(Nodes.tree_id).filter(
-        Nodes.node_label.like(f'{query}%')).subquery()
-    pagination = Trees.query.filter(Trees.tree_id.in_(node)).order_by(
-        Trees.tree_id.desc()).paginate(page=page, per_page=10)
-    return f.render_template('tree_list.html', pagination=pagination)
-
-
 @app.route('/tree/result')
 @app.route('/tree/result/<int:page>')
 def tree_result(page=1):
@@ -88,7 +78,6 @@ def tree_result(page=1):
     return f.render_template('tree_list.html', pagination=pagination)
 
 
-    pass
 @app.route('/tree/query', methods=('POST', 'GET'))
 def tree_query():
     qf = QueryForm()
