@@ -24,7 +24,10 @@
         <td>{{tree.title}}</td>
         <td>{{tree.journal}}</td>
         <td>
-            <a href="https://doi.org/{{tree.doi}}">{{tree.doi}}</a></td>
+            {% if tree.doi is not none %}
+                <a href="https://doi.org/{{tree.doi}}">{{tree.doi}}</a>
+            {% endif %}
+        </td>
         <td>
             <a href="/tree/{{tree.tree_id}}">View</a>
         </td>
