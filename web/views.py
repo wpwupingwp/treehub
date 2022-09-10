@@ -11,6 +11,7 @@ from web.database import Nodes, Trees, Treefile, Study, Visit, db
 from web.auth import auth
 from web.form import LoginForm, UserForm, QueryForm
 
+from sqlalchemy import select
 
 @app.before_request
 def track():
@@ -54,9 +55,9 @@ def tree_result(page=1):
     study_filters = []
     filters = []
     if query.get("taxonomy"):
-        node = db.session.query(Nodes.tree_id).filter(
-            Nodes.node_label.like(f'{query.get("taxonomy")}%')).subquery()
-        filters.append(Trees.tree_id.in_(node))
+        node_condition = Trees.tree_id.in_(select(Nodes.tree_id).where(
+            Nodes.node_label.like(f'{query.get("taxonomy")}%')))
+        filters.append(node_condition)
     if query.get("is_dating"):
         filters.append(Trees.is_dating == True)
     if query.get("year"):
@@ -70,14 +71,19 @@ def tree_result(page=1):
     if query.get("doi"):
         study_filters.append(Study.doi == query.doi.data)
     if study_filters:
-        studies = db.session.query(Study.study_id).filter(*study_filters).subquery()
-        filters.append(Trees.study_id.in_(studies))
-    trees = db.session.query(Trees.tree_id).filter(*filters).subquery()
+        study_condition = Trees.study_id.in_(
+            select(Study.study_id).where(*study_filters))
+        filters.append(study_condition)
+        # studies = db.session.query(Study.study_id).filter(*study_filters).subquery()
+        # filters.append(Trees.study_id.in_(studies))
+    # trees = db.session.query(Trees.tree_id).filter(*filters).subquery()
+    trees = Trees.tree_id.in_(select(Trees.tree_id).where(*filters))
     results = db.session.query(Study, Trees).with_entities(
-        Study.s_author, Study.year, Study.journal, Study.doi,
+        Study.title, Study.year, Study.journal, Study.doi,
         Trees.tree_id, Trees.tree_title, Trees.tree_kind, Trees.is_dating).join(
         Study, Study.study_id == Trees.study_id).filter(
-        Trees.tree_id.in_(trees)).order_by(Trees.tree_title.asc())
+        trees).order_by(Trees.tree_title.asc())
+    # Trees.tree_id.in_(trees)).order_by(Trees.tree_title.asc())
     print(str(results))
     # results = Trees.query.filter(Trees.tree_id.in_(trees)).order_by(Trees.tree_title.asc())
     pagination = results.paginate(page=page, per_page=10)

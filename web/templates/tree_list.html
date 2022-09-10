@@ -5,10 +5,10 @@
     <thead class="thead-dark">
     <tr>
         <th>#</th>
-        <th>Title</th>
+        <th>Tree title</th>
         <th>Kind</th>
         <th>Year</th>
-        <th>Author</th>
+        <th>Title</th>
         <th>Journal</th>
         <th>doi</th>
         <th>Manage</th>
@@ -21,9 +21,10 @@
         <td>{{tree.tree_title}}</td>
         <td>{{tree.tree_kind}}</td>
         <td>{{tree.year}}</td>
-        <td>{{tree.s_author}}</td>
+        <td>{{tree.title}}</td>
         <td>{{tree.journal}}</td>
-        <td>{{tree.doi}}</td>
+        <td>
+            <a href="https://doi.org/{{tree.doi}}">{{tree.doi}}</a></td>
         <td>
             <a href="/tree/{{tree.tree_id}}">View</a>
         </td>
