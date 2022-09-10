@@ -53,7 +53,7 @@ def tree_query():
         data.pop('submit')
         data.pop('csrf_token')
         session['dict'] = data
-        return f.redirect('/tree/result')
+        return f.redirect('/tree/list')
     return f.render_template('tree_query.html', form=qf)
 
 
