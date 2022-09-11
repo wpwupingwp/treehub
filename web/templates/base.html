@@ -6,67 +6,64 @@
     <meta name="description" content="web demo">
     <meta name="author" content="wp">
     {% if title %}
-        <title>{{title}}</title>
+    <title>{{title}}</title>
     {% else %}
-        <title>Plant tree database</title>
+    <title>Plant tree database</title>
     {% endif %}
     {% block style %}
-        {{ bootstrap.load_css() }}
+    {{ bootstrap.load_css() }}
     {% endblock %}
-    <style >
-        body {font-family: "微软雅黑", "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei" !important;}
+    {% from 'bootstrap4/nav.html' import render_breadcrumb_item %}
+    <style>
+        body {
+            font-family: "微软雅黑", "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei" !important;
+        }
     </style>
 </head>
-<body class="container col-md-10 bg-gray">
-    <div class="header sticky-top">
-        <nav class="bg-light font-weight-bolder">
-            <ul class="nav nav-pills float-right h5">
-                {% if request.path != "/index" %}
-                <li class="nav-item">
-                    <a class="nav-link active " href="/index">Back to Home<span class="sr-only"></span></a>
-                </li>
-                {% endif %}
-                <li class="nav-item">
-                    <a class="nav-link" href="/tree/list_all">Tree list</a>
-                </li>
-                {% if current_user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/auth/trees/{{current_user.user_id}}">My trees</a>
-                    </li>
-                <li class="nav-item">
-                        <a class="nav-link" href="/auth/submit_trees">Submit</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/auth/logout">Logout({{current_user.username}})</a>
-                    </li>
-                    {% if current_user.username=='admin' %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin">Admin</a>
-                    </li>
-                {% endif %}
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/auth/register">Register</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/auth/login">Login</a>
-                    </li>
-                {% endif %}
-            </ul>
-        <h2 class="text">Demo</h2>
-        </nav>
+<body class="container-fluid col-md-10 bg-gray">
+<div class="header sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #009a3b">
+        <a class="navbar-brand h5" href="#">Demo</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#navbarText" aria-controls="navbarText" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <ol class="breadcrumb mr-auto mt-2 mt-lg-0 h5">
+            {{ render_breadcrumb_item('index', 'Home') }}
+            {{ render_breadcrumb_item('tree_list', 'Tree list') }}
+            {{ render_breadcrumb_item('tree_query', 'Query') }}
+            {{ render_breadcrumb_item('auth.submit', 'Submit') }}
+            {% if current_user.is_authenticated %}
+            {{ render_breadcrumb_item('/auth/tree/{{current_user.user_id}}}', 'My trees') }}
+            {{ render_breadcrumb_item('/auth/logout', 'Logout') }}
+            {% if current_user.username=='admin' %}
+            {{ render_breadcrumb_item('/admin', 'Admin') }}
+            {% endif %}
+            {% else %}
+            {{ render_breadcrumb_item('auth.register', 'Register') }}
+            {{ render_breadcrumb_item('auth.login', 'Login') }}
+            {% endif %}
+        </ol>
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search">
+            <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
+        </form>
+    </nav>
 </div>
 
 <div class="container col-md-10">
     {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% from 'bootstrap/utils.html' import render_messages %}
-            {{render_messages(dismissible=True, dismiss_animate=True)}}
-        {% endif %}
+    {% if messages %}
+    {% from 'bootstrap/utils.html' import render_messages %}
+    {{render_messages(dismissible=True, dismiss_animate=True)}}
+    {% endif %}
     {% endwith %}
     {% block content %}{% endblock %}
     {% block script %}
-        {{ bootstrap.load_js() }}
+    {{ bootstrap.load_js() }}
+    {% from 'bootstrap4/nav.html' import render_breadcrumb_item %}
     {% endblock %}
 
 </div>

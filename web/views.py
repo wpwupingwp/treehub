@@ -1,16 +1,18 @@
 #!/usr/bin/python3
 
+from uuid import uuid4
 from flask import g, request, session
 from sqlalchemy import select
+from werkzeug.utils import secure_filename
 import flask as f
 import flask_login as fl
 
-# import flask_mail
 
 from web import app, lm, root
-from web.database import Nodes, Trees, Treefile, Study, Visit, db
+from web.database import Nodes, Trees, Treefile, Study, Matrix, Visit, db
 from web.auth import auth
 from web.form import LoginForm, UserForm, QueryForm
+
 
 
 @app.before_request
@@ -37,6 +39,26 @@ def track():
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return f.send_from_directory(app.config['UPLOADED_FILE_DEST'], filename)
+
+
+def upload(data) -> str:
+    """
+    Upload uncompressed text file.
+    Da
+    Return '' if not exists.
+    """
+    length = 8
+    upload_path = app.config('UPLOADED_FILE_DEST')
+    if data is None or isinstance(data, str):
+        return ''
+    # relative path
+    filename = secure_filename(data.filename)
+    unique_filename = str(uuid4())[:length] + data.filename
+    # absolute path
+    data.save(upload_path/unique_filename)
+    # relative path
+    url = f.url_for('uploaded_file', filename=unique_filename)
+    return url
 
 
 @app.route('/tree/list_all')
@@ -96,12 +118,35 @@ def tree_result(page=1):
     pagination = results.paginate(page=page, per_page=10)
     return f.render_template('tree_list.html', pagination=pagination)
 
+
 @app.route('/tree/<int:tree_id>', methods=('POST', 'GET'))
 def view_tree(tree_id):
     tree = Trees.query.get(tree_id)
     # todo: use auspice or other js
     return f.render_template('tree.html', tree=tree)
 
+
+@auth.route('/submit', methods=('POST', 'GET'))
+def submit():
+    sf = SubmitForm()
+    if sf.validate_on_submit():
+        tree = Trees(sf)
+        treefile = Treefile(sf)
+        study = Study(sf)
+        matrix = Matrix(sf)
+        nodes = [Nodes(i) for i in sf]
+        treefile.file = upload(sf.photo1.data, upload_path)
+        matrix.file = upload(sf.photo1.data, upload_path)
+        db.session.add(tree)
+        db.session.add(treefile)
+        db.session.add(study)
+        db.session.add(matrix)
+        for n in nodes:
+            db.session.add(n)
+        db.session.commit()
+        f.flash('添加物品成功')
+        return f.redirect(f'/auth/goods/{fl.current_user.user_id}')
+    return f.render_template('add_goods.html', form=gf)
 
 @app.route('/')
 @app.route('/index')
