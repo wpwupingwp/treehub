@@ -36,7 +36,6 @@ class User(db.Model, fl.UserMixin):
         return str(self.user_id)
 
 
-
 class Visit(db.Model):
     __tablename__ = 'visits'
     visit_id = db.Column(db.Integer, primary_key=True, autoincrement=True)

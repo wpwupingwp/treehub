@@ -11,7 +11,7 @@ import flask_login as fl
 from web import app, lm, root
 from web.database import Nodes, Trees, Treefile, Study, Matrix, Visit, db
 from web.auth import auth
-from web.form import LoginForm, UserForm, QueryForm
+from web.form import LoginForm, UserForm, QueryForm, SubmitForm
 
 
 
@@ -126,7 +126,7 @@ def view_tree(tree_id):
     return f.render_template('tree.html', tree=tree)
 
 
-@auth.route('/submit', methods=('POST', 'GET'))
+@app.route('/submit', methods=('POST', 'GET'))
 def submit():
     sf = SubmitForm()
     if sf.validate_on_submit():
@@ -135,8 +135,8 @@ def submit():
         study = Study(sf)
         matrix = Matrix(sf)
         nodes = [Nodes(i) for i in sf]
-        treefile.file = upload(sf.photo1.data, upload_path)
-        matrix.file = upload(sf.photo1.data, upload_path)
+        # treefile.file = upload(sf.photo1.data, upload_path)
+        # matrix.file = upload(sf.photo1.data, upload_path)
         db.session.add(tree)
         db.session.add(treefile)
         db.session.add(study)
@@ -144,9 +144,10 @@ def submit():
         for n in nodes:
             db.session.add(n)
         db.session.commit()
-        f.flash('添加物品成功')
-        return f.redirect(f'/auth/goods/{fl.current_user.user_id}')
-    return f.render_template('add_goods.html', form=gf)
+        f.flash('Submit ok.')
+        return f.redirect(f'/tree/list')
+    return f.render_template('submit.html', form=sf)
+
 
 @app.route('/')
 @app.route('/index')

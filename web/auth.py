@@ -9,7 +9,7 @@ from pathlib import Path
 from PIL import Image, ImageOps
 
 from web import app, lm, root
-from web.form import UserForm, FullQueryForm, LoginForm
+from web.form import UserForm, LoginForm
 from web.database import User, Study, Nodes, Trees, Treefile, Visit, db
 
 auth = f.Blueprint('auth', __name__)
@@ -93,10 +93,6 @@ def compress_photo(old_path: Path) -> Path:
     rotate.thumbnail((1024, 1024))
     rotate.save(old_path, 'JPEG')
     return old_path
-
-
-
-
 
 
 
