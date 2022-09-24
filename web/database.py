@@ -134,6 +134,7 @@ class Trees(db.Model):
     tree_quality = db.Column(db.String(30))
     study_id = db.Column(db.Integer)
     is_dating = db.Column(db.Boolean, default=False)
+    file = db.relationship('Treefile', backref='Trees')
 
 
 
@@ -142,6 +143,7 @@ class Treefile(db.Model):
     treefile_id = db.Column(db.Integer, primary_key=True)
     tree_id = db.Column(db.Integer, db.ForeignKey('trees.tree_id'))
     tree_text = db.Column(db.String())
+    tree = db.relationship('Trees', backref='Treefile')
 
 
 class MyModelView(ModelView):

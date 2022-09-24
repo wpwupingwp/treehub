@@ -146,6 +146,9 @@ def submit():
         matrix.upload_date = upload_date
         treefile.upload_date = upload_date
         print(tree.taxonomy, matrix.title, treefile.upload_date)
+        # handle root id
+
+        # handle tree_text
         treefile_tmp = upload(sf.tree_file.data)
         try:
             with open(treefile_tmp, 'rt', encoding='utf-8') as _:
@@ -154,12 +157,13 @@ def submit():
             f.flash('Bad tree file. The file should use UTF-8 encoding.')
             return f.redirect('/submit')
         treefile.tree_text = tree_text
+
         db.session.add(treefile)
+        db.session.add(tree)
         db.session.commit()
         # treefile.file = upload(sf.photo1.data, upload_path)
         # matrix.file = upload(sf.photo1.data, upload_path)
         raise ValueError('abort')
-        db.session.add(tree)
         db.session.add(study)
         db.session.add(matrix)
         for n in nodes:
