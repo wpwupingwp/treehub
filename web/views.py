@@ -142,8 +142,8 @@ def view_tree(tree_id):
     return f.render_template('tree.html', tree=tree)
 
 
-def get_nodes(raw_nodes: list) -> list:
-    # raw nodes: dendropy node
+def get_nodes(raw_nodes: list) -> dict:
+    # raw nodes: taxon_namespace
     label_taxon = {}
     name_list = [i.label for i in raw_nodes]
     node_exist = Nodes.query.filter(Nodes.node_label.in_(name_list)).all()
@@ -162,8 +162,7 @@ def get_nodes(raw_nodes: list) -> list:
                 f.flash(f'{i} is not a valid accepted scientific name.')
                 print('not found', i)
             else:
-                label_taxon[i] = retry[0].name_text
-    raise Exception
+                label_taxon[i] = retry[0].tax_id
     return label_taxon
 
 
@@ -208,10 +207,9 @@ def submit():
                 treefile.tree_text = tree_text
                 # handle nodes
                 raw_nodes = tree_content.taxon_namespace
-                nodes = get_nodes(raw_nodes)
+                label_taxon = get_nodes(raw_nodes)
             # dendropy error class is too long
         except Exception:
-            raise
             f.flash('Bad tree file.')
             f.flash('The file should be UTF-8 encoding nexus or newick format.')
             return f.render_template('submit.html', form=sf)
@@ -220,8 +218,10 @@ def submit():
         # get tree_id
         db.session.commit()
         treefile.tree_id = tree.tree_id
+        for i in label_taxon:
+            new_node = Nodes(i, label_taxon[i], tree.tree_id)
+            db.session.add(new_node)
         db.session.add(treefile)
-        db.session.commit()
         db.session.add(study)
         # dirty work
         matrix.analysisstep_id = '20222022'
@@ -254,7 +254,7 @@ def remove_submit(submit_id):
     treefile = Treefile.query.get(submit.treefile_id)
     study = Study.query.get(submit.study_id)
     matrix = Matrix.query.get(submit.matrix_id)
-
+    nodes = Nodes.query.filter(Nodes.tree_id==submit.tree_id).delete()
     for i in (matrix, study, treefile, tree, submit):
         db.session.delete(i)
     db.session.commit()

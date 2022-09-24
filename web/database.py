@@ -71,6 +71,11 @@ class Nodes(db.Model):
     designated_tax_id = db.Column(db.Integer)
     db.relationship('Trees', backref='nodes')
 
+    def __init__(self, node_label, designated_tax_id, tree_id):
+        self.node_label = node_label
+        self.designated_tax_id = designated_tax_id
+        self.tree_id = tree_id
+
 
 class Matrix(db.Model):
     __tablename__ = 'matrix'
