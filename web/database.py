@@ -86,6 +86,7 @@ class Matrix(db.Model):
     filename = db.Column(db.String())
     # todo: pg_read_binary_file
     file_bin = db.Column(db.BLOB())
+    upload_date = db.Column(db.Date)
 
 
 class NcbiName(db.Model):
@@ -134,7 +135,8 @@ class Trees(db.Model):
     tree_quality = db.Column(db.String(30))
     study_id = db.Column(db.Integer)
     is_dating = db.Column(db.Boolean, default=False)
-    file = db.relationship('Treefile', backref='Trees')
+    upload_date = db.Column(db.Date)
+    file = db.relationship('Treefile', back_populates='tree')
 
     def __str__(self):
         return f'{self.tree_id} {self.root} {self.tree_title}'
@@ -146,7 +148,8 @@ class Treefile(db.Model):
     treefile_id = db.Column(db.Integer, primary_key=True)
     tree_id = db.Column(db.Integer, db.ForeignKey('trees.tree_id'))
     tree_text = db.Column(db.String())
-    tree = db.relationship('Trees', backref='Treefile')
+    upload_date = db.Column(db.Date)
+    tree = db.relationship('Trees', back_populates='file')
 
     def __str__(self):
         return f'{self.treefile_id} {self.tree_id}'

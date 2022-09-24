@@ -87,6 +87,8 @@ ALTER TABLE treefile
     ADD COLUMN upload_date date;
 ALTER TABLE matrix
     ADD COLUMN upload_date date;
+ALTER TABLE trees
+    ADD COLUMN upload_date date;
 -- add submit user
 ALTER TABLE trees
     ADD COLUMN email character varying(255);

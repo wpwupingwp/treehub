@@ -119,7 +119,7 @@ def tree_result(page=1):
         Study.title, Study.year, Study.journal, Study.doi,
         Trees.tree_id, Trees.tree_title, Trees.tree_kind, Trees.is_dating).join(
         Study, Study.study_id == Trees.study_id).filter(
-        trees).order_by(Trees.tree_title.asc())
+        trees).order_by(Trees.upload_date.desc())
     app.logger.debug(str(results))
     pagination = results.paginate(page=page, per_page=10)
     return f.render_template('tree_list.html', pagination=pagination)
@@ -143,8 +143,8 @@ def submit():
         matrix = Matrix()
         for i in [tree, treefile, study, matrix]:
             sf.populate_obj(i)
-        matrix.upload_date = upload_date
-        treefile.upload_date = upload_date
+        for j in [matrix, treefile, tree]:
+            j.upload_date = upload_date
         # handle root id
         taxon = NcbiName.query.filter_by(name_txt=tree.root).all()
         # first or none
