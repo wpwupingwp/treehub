@@ -156,20 +156,16 @@ def get_nodes(raw_nodes: list) -> dict:
                 short_name = ' '.join(i.split(' ')[:2])
             else:
                 short_name = ' '.join(i.split(' ')[:3])
-            retry = NcbiName.query.filter(NcbiName.name_class=='scientific name').filter(
+            retry = NcbiName.query.filter(
+                NcbiName.name_class=='scientific name').filter(
                 NcbiName.name_txt.like(f'{short_name}%')).all()
-            if len(retry) == 0:
-                f.flash(f'{i} is not a valid accepted scientific name.')
-                print('not found', i)
-            else:
+            if len(retry) != 0:
                 label_taxon[i] = retry[0].tax_id
     return label_taxon
 
 
 @app.route('/submit', methods=('POST', 'GET'))
 def submit():
-    f.flash('Node name in tree file should be "scientific name with other id" format')
-    f.flash('eg. Oryza sativa id9999')
     # todo: convert id format
     sf = SubmitForm()
     if sf.validate_on_submit():
@@ -211,6 +207,13 @@ def submit():
                 # handle nodes
                 raw_nodes = tree_content.taxon_namespace
                 label_taxon = get_nodes(raw_nodes)
+                not_found = len(raw_nodes) - len(label_taxon)
+                if not_found > 0:
+                    f.flash(f'{not_found} of {len(raw_nodes)} '
+                            'nodes have invalid name.')
+                    f.flash('Node name in tree file should be '
+                            '"scientific name with other id" format')
+                    f.flash('eg. Oryza sativa id9999')
             # dendropy error class is too long
         except Exception:
             f.flash('Bad tree file.')
@@ -242,13 +245,6 @@ def submit():
         f.flash('Submit ok.')
         return f.redirect(f'/submit/list')
     return f.render_template('submit.html', form=sf)
-
-# todo
-'''
-        for n in nodes:
-            db.session.add(n)
-        db.session.commit()
-'''
 
 
 @app.route('/submit/remove/<int:submit_id>')
