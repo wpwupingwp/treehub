@@ -10,8 +10,8 @@ import flask as f
 import flask_login as fl
 
 
-from web import app, lm, root
-from web.database import Nodes, Trees, Treefile, Study, Matrix, Visit, db
+from web import app, lm
+from web.database import Nodes, Trees, Treefile, Study, Matrix, NcbiName,Visit, db
 from web.auth import auth
 from web.form import LoginForm, UserForm, QueryForm, SubmitForm
 
@@ -145,8 +145,19 @@ def submit():
             sf.populate_obj(i)
         matrix.upload_date = upload_date
         treefile.upload_date = upload_date
-        print(tree.taxonomy, matrix.title, treefile.upload_date)
+        print(tree.root, matrix.title, treefile.upload_date)
         # handle root id
+        taxon = NcbiName.query.filter_by(name_txt=tree.root).all()
+        print(taxon)
+        # first or none
+        if len(taxon) == 0:
+            f.flash('Taxonomy name not found. '
+                    'Currently only support accepted name.')
+            return f.render_template('submit.html', form=sf)
+            # return f.redirect('/submit')
+        else:
+            tree.root = taxon[0].tax_id
+            print(tree)
 
         # handle tree_text
         treefile_tmp = upload(sf.tree_file.data)
@@ -155,7 +166,8 @@ def submit():
                 tree_text = _.read()
         except UnicodeError:
             f.flash('Bad tree file. The file should use UTF-8 encoding.')
-            return f.redirect('/submit')
+            return f.render_template('submit.html', form=sf)
+            # return f.redirect('/submit')
         treefile.tree_text = tree_text
 
         db.session.add(treefile)

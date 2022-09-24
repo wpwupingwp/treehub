@@ -136,6 +136,9 @@ class Trees(db.Model):
     is_dating = db.Column(db.Boolean, default=False)
     file = db.relationship('Treefile', backref='Trees')
 
+    def __str__(self):
+        return f'{self.tree_id} {self.root} {self.tree_title}'
+
 
 
 class Treefile(db.Model):
