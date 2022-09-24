@@ -1,19 +1,21 @@
 #!/usr/bin/python3
 
 from uuid import uuid4
-from pathlib import Path
 from datetime import date
+
+from Bio import Phylo
 from flask import g, request, session
 from sqlalchemy import select
 from werkzeug.utils import secure_filename
 import flask as f
 import flask_login as fl
 
-
 from web import app, lm
-from web.database import Nodes, Trees, Treefile, Study, Submit, Matrix, NcbiName,Visit, db
+from web.database import Trees, Treefile, Study, Submit, Matrix, NcbiName
+from web.database import Nodes, Visit, db
 from web.auth import auth
-from web.form import LoginForm, UserForm, QueryForm, SubmitForm
+from web.form import LoginForm, UserForm
+from web.form import QueryForm, SubmitForm
 
 
 
@@ -37,6 +39,14 @@ def track():
         db.session.add(visit)
         db.session.commit()
         session['visit_id'] = visit.visit_id
+
+
+def login():
+    '''
+    {{ render_breadcrumb_item('auth.register', 'Register') }}
+    {{ render_breadcrumb_item('auth.login', 'Login') }}
+    '''
+
 
 
 @app.route('/uploads/<filename>')
@@ -121,7 +131,7 @@ def tree_result(page=1):
         Study, Study.study_id == Trees.study_id).filter(
         trees).order_by(Trees.upload_date.desc())
     app.logger.debug(str(results))
-    pagination = results.paginate(page=page, per_page=10)
+    pagination = results.paginate(page=page, per_page=20)
     return f.render_template('tree_list.html', pagination=pagination)
 
 
