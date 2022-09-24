@@ -176,7 +176,8 @@ def submit():
                 else:
                     schema = 'newick'
                     f.flash('Tree file is newick format, converted to nexus.')
-                tree_content = dendropy.Tree.get(path=treefile_tmp, schema=schema)
+                tree_content = dendropy.Tree.get(path=treefile_tmp,
+                                                 schema=schema)
                 # different from original nexus
                 tree_text = tree_content.as_string(schema='nexus')
             # dendropy error class is too long

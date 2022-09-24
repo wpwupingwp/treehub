@@ -31,22 +31,29 @@ class LoginForm(FlaskForm):
 
 class QueryForm(FlaskForm):
     # tree
-    taxonomy = m.StringField('Taxonomy')
-    tree_title = m.StringField('Tree title', validators=[v.length(max=255)])
+    taxonomy = m.StringField('Taxonomy',
+                             render_kw={'placeholder': 'Oryza sativa'})
+    tree_title = m.StringField('Tree title', validators=[v.length(max=255)],
+                               render_kw={'placeholder': 'Poaceae'})
     is_dating = m.BooleanField('Is dating tree')
     # study
-    year = m.StringField('Publish year')
-    author = m.StringField('Author', validators=[v.length(max=100)])
-    title = m.StringField('Title', validators=[v.length(max=200)])
+    year = m.StringField('Publish year',  render_kw={'placeholder': 2022})
+    author = m.StringField('Author', validators=[v.length(max=100)],
+                           render_kw={'placeholder': 'eg. Charles Darwin'})
+    title = m.StringField('Title', validators=[v.length(max=200)],
+                          render_kw={'placeholder': 'Article title'})
     keywords = m.StringField('Keywords', validators=[v.length(max=50)])
-    doi = m.StringField('DOI', validators=[v.length(max=100)])
+    doi = m.StringField('DOI', validators=[v.length(max=100)],
+                        render_kw={'placeholder': 'eg. 10.9999/123456789'})
     submit = m.SubmitField('Submit')
 
 
 class TreeForm(FlaskForm):
     # outdated
-    taxonomy = m.StringField('Taxonomy', validators=[v.input_required()])
-    tree_title = m.StringField('Tree title', validators=[v.length(max=255)])
+    taxonomy = m.StringField('Taxonomy', validators=[v.input_required()],
+                             render_kw={'placeholder': 'Asteraceae'})
+    tree_title = m.StringField('Tree title', validators=[v.length(max=255)],
+                               render_kw={'placeholder': 'XXX tree of YYY'})
     is_dating = m.BooleanField('Dating tree')
     tree_type = m.SelectField('Tree type', default='Consensus',
                               choices=[('Consensus', 'Consensus'),
@@ -95,10 +102,12 @@ class OutdatedSubmitForm(FlaskForm):
 class SubmitForm(FlaskForm):
     # todo: currently support one file per submit
     # tree
-    email = m.StringField('Email', validators=[v.email(), v.input_required()])
-    root = m.StringField('Taxonomy (root node name or lineage name)',
-                         validators=[v.input_required()])
-    tree_title = m.StringField('Tree title', validators=[v.length(max=255)])
+    email = m.StringField('Email', validators=[v.email(), v.input_required()],
+                          render_kw={'placeholder': 'eg. alex@example.org'})
+    root = m.StringField('Taxonomy', validators=[v.input_required()],
+                         render_kw={'placeholder': 'root node or lineage name'})
+    tree_title = m.StringField('Tree title', validators=[v.length(max=255)],
+                               render_kw={'placeholder': 'eg. XXX tree of YYY'})
     is_dating = m.BooleanField('Dating tree')
     tree_type = m.SelectField('Tree type', default='Consensus',
                               choices=[('Consensus', 'Consensus'),
@@ -109,10 +118,12 @@ class SubmitForm(FlaskForm):
                                       ('Gene Tree', 'Gene Tree'),
                                       ('Other', 'Other')])
     # tree_file = m.MultipleFileField('Tree file (NEXUS or newick format)')
-    tree_file = m.FileField('Tree files (NEXUS format)',
+    tree_file = m.FileField('Tree files (NEXUS or newick format)',
                             validators=[v.data_required()])
     # matrix
-    matrix_title = m.StringField('Matrix title', validators=[v.length(max=255)])
+    matrix_title = m.StringField(
+        'Matrix title', validators=[v.length(max=255)],
+        render_kw={'placeholder': 'eg. XXX matrix of tree YYY'})
     description = m.SelectField('Matrix type', default='Nucleic Acid',
                                 choices=[('Nucleic Acid', 'Nucleic Acid'),
                                          ('Amino Acid', 'Amino Acid'),
@@ -121,11 +132,16 @@ class SubmitForm(FlaskForm):
                                          ('Other', 'Other')])
     matrix_file = m.FileField('Matrix file (fasta format)')
     # study
-    year = m.IntegerField('Publish year')
-    author = m.StringField('Author', validators=[v.length(max=100)])
-    title = m.StringField('Title', validators=[v.length(max=200)])
-    keywords = m.StringField('Keywords', validators=[v.length(max=50)])
-    doi = m.StringField('DOI', validators=[v.length(max=100)])
+    year = m.IntegerField('Publish year', default=2022)
+    author = m.StringField(
+        'Author', validators=[v.length(max=100)],
+        render_kw={'placeholder': 'eg. Carl Linnaeus, Charles Robert Darwin'})
+    title = m.StringField('Title', validators=[v.length(max=200)],
+                          render_kw={'placeholder': 'Article title'})
+    keywords = m.StringField('Keywords', validators=[v.length(max=50)],
+                             render_kw={'placeholder': 'Article keywords'})
+    doi = m.StringField('DOI', validators=[v.length(max=100)],
+                        render_kw={'placeholder': 'eg. 10.9999/1234567890'})
     submit = m.SubmitField('Submit')
 
 
