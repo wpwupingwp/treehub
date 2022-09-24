@@ -148,7 +148,7 @@ def get_nodes(raw_nodes: list) -> dict:
     name_list = [i.label for i in raw_nodes]
     node_exist = Nodes.query.filter(Nodes.node_label.in_(name_list)).all()
     for i in node_exist:
-        label_taxon[i] = i
+        label_taxon[i.node_label] = i.designated_tax_id
     new_nodes_name = [i for i in name_list if i not in label_taxon]
     for i in new_nodes_name:
         if i.count(' ') >= 1:
@@ -221,6 +221,7 @@ def submit():
         for i in label_taxon:
             new_node = Nodes(i, label_taxon[i], tree.tree_id)
             db.session.add(new_node)
+            db.session.commit()
         db.session.add(treefile)
         db.session.add(study)
         # dirty work

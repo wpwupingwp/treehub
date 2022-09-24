@@ -75,6 +75,7 @@ class Nodes(db.Model):
         self.node_label = node_label
         self.designated_tax_id = designated_tax_id
         self.tree_id = tree_id
+        self.left_id = self.right_id = self.taxon_variant_id = self.ncbi_map = 0
 
 
 class Matrix(db.Model):
