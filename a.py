@@ -1,8 +1,13 @@
-from subprocess import run
+from io import StringIO
+from dendropy import Tree
 
-tree_id = '10862615'
-cmd = f'perl .\\write_trees.pl {tree_id}'
-out = tree_id + '.nex'
-err = tree_id + '.log'
-with open(out, 'w') as o, open(err, 'w') as e:
-    a = run(cmd, shell=True, stdout=o, stderr=e)
+# tree = './10862615.nex'
+tree = './47158.nex'
+x = Tree.get(path=tree, schema='nexus')
+with open(tree, 'r', encoding='utf-8') as _:
+    a = StringIO()
+    a.write(_.read())
+    a.seek(0)
+
+with open('47158.nex.2', 'w') as out:
+    out.write(x.as_string(schema='nexus'))

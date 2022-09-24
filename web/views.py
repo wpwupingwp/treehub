@@ -3,10 +3,10 @@
 from uuid import uuid4
 from datetime import date
 
-from Bio import Phylo
 from flask import g, request, session
 from sqlalchemy import select
 from werkzeug.utils import secure_filename
+import dendropy
 import flask as f
 import flask_login as fl
 
@@ -169,15 +169,23 @@ def submit():
         # handle tree_text
         treefile_tmp = upload(sf.tree_file.data)
         try:
-            with open(treefile_tmp, 'rt', encoding='utf-8') as _:
-                tree_text = _.read()
-        except UnicodeError:
-            f.flash('Bad tree file. The file should use UTF-8 encoding.')
+            with open(treefile_tmp, 'r') as _:
+                line = _.readline()
+                if line.startswith('#NEXUS'):
+                    schema = 'nexus'
+                else:
+                    schema = 'newick'
+                    f.flash('Tree file is newick format, converted to nexus.')
+                tree_content = dendropy.Tree.get(path=treefile_tmp, schema=schema)
+                # different from original nexus
+                tree_text = tree_content.as_string(schema='nexus')
+            # dendropy error class is too long
+        except Exception:
+            f.flash('Bad tree file.')
+            f.flash('The file should be UTF-8 encoding nexus or newick format.')
             return f.render_template('submit.html', form=sf)
-            # return f.redirect('/submit')
         treefile.tree_text = tree_text
         # old tree id end at 118270
-
         db.session.add(tree)
         # get tree_id
         db.session.commit()
@@ -192,13 +200,10 @@ def submit():
             ip = request.headers.getlist('X-Forwarded-For')[0]
         else:
             ip = request.remote_addr
-
-        print(tree)
-        print(treefile)
-        submit = Submit(sf.email.data, ip, upload_date, session['user_id'],
-                        tree.tree_id, treefile.treefile_id, study.study_id,
-                        matrix.matrix_id)
-        db.session.add(submit)
+        submit_ = Submit(sf.email.data, ip, upload_date, session['user_id'],
+                         tree.tree_id, treefile.treefile_id, study.study_id,
+                         matrix.matrix_id)
+        db.session.add(submit_)
         db.session.commit()
         f.flash('Submit ok.')
         return f.redirect(f'/submit/list')
