@@ -136,7 +136,6 @@ def submit():
     sf = SubmitForm()
     if sf.validate_on_submit():
         upload_date = date.isoformat(date.today())
-        print(sf.data)
         tree = Trees()
         treefile = Treefile()
         study = Study()
@@ -145,10 +144,8 @@ def submit():
             sf.populate_obj(i)
         matrix.upload_date = upload_date
         treefile.upload_date = upload_date
-        print(tree.root, matrix.title, treefile.upload_date)
         # handle root id
         taxon = NcbiName.query.filter_by(name_txt=tree.root).all()
-        print(taxon)
         # first or none
         if len(taxon) == 0:
             f.flash('Taxonomy name not found. '
@@ -157,7 +154,6 @@ def submit():
             # return f.redirect('/submit')
         else:
             tree.root = taxon[0].tax_id
-            print(tree)
 
         # handle tree_text
         treefile_tmp = upload(sf.tree_file.data)
@@ -169,10 +165,16 @@ def submit():
             return f.render_template('submit.html', form=sf)
             # return f.redirect('/submit')
         treefile.tree_text = tree_text
+        # old tree id end at 118270
 
-        db.session.add(treefile)
         db.session.add(tree)
+        # get tree_id
         db.session.commit()
+        treefile.tree_id = tree.tree_id
+        db.session.add(treefile)
+        db.session.commit()
+        print(treefile)
+
         # treefile.file = upload(sf.photo1.data, upload_path)
         # matrix.file = upload(sf.photo1.data, upload_path)
         raise ValueError('abort')

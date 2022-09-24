@@ -116,7 +116,21 @@ CREATE TABLE visits
     date date
 );
 ```
-    
+15. add submit table
+```postgresql
+   CREATE TABLE submit
+(
+    submit_id bigserial PRIMARY KEY,
+    email character varying(255),
+    ip character varying(100),
+    date date,
+    user_id integer,
+    tree_id integer,
+    treefile_id integer,
+    study_id integer,
+    matrix_id integer 
+); 
+```
 99. query
 ```postgresql
 SELECT DISTINCT node_label, designated_tax_id,  tree_id FROM nodes 

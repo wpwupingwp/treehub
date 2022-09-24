@@ -148,6 +148,22 @@ class Treefile(db.Model):
     tree_text = db.Column(db.String())
     tree = db.relationship('Trees', backref='Treefile')
 
+    def __str__(self):
+        return f'{self.treefile_id} {self.tree_id}'
+
+
+class Submit(db.Model):
+    __tablename__ = 'submit'
+    email = db.Column(db.String(255))
+    ip = db.Column(db.VARCHAR(100))
+    date = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer)
+    tree_id = db.Column(db.Integer)
+    treefile_id = db.Column(db.Integer)
+    study_id = db.Column(db.Integer)
+    matrix_id = db.Column(db.Integer)
+
+
 
 class MyModelView(ModelView):
     def __init__(self, *args, **kargs):
