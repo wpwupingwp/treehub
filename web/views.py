@@ -168,6 +168,9 @@ def get_nodes(raw_nodes: list) -> dict:
 
 @app.route('/submit', methods=('POST', 'GET'))
 def submit():
+    f.flash('Node name in tree file should be "scientific name with other id" format')
+    f.flash('eg. Oryza sativa id9999')
+    # todo: convert id format
     sf = SubmitForm()
     if sf.validate_on_submit():
         upload_date = date.isoformat(date.today())
