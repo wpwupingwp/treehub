@@ -142,6 +142,31 @@ def view_tree(tree_id):
     return f.render_template('tree.html', tree=tree)
 
 
+def get_nodes(raw_nodes: list) -> list:
+    # raw nodes: dendropy node
+    label_taxon = {}
+    name_list = [i.label for i in raw_nodes]
+    node_exist = Nodes.query.filter(Nodes.node_label.in_(name_list)).all()
+    for i in node_exist:
+        label_taxon[i] = i
+    new_nodes_name = [i for i in name_list if i not in label_taxon]
+    for i in new_nodes_name:
+        if i.count(' ') >= 1:
+            if ' x ' not in i:
+                short_name = ' '.join(i.split(' ')[:2])
+            else:
+                short_name = ' '.join(i.split(' ')[:3])
+            retry = NcbiName.query.filter(NcbiName.name_class=='scientific name').filter(
+                NcbiName.name_txt.like(f'{short_name}%')).all()
+            if len(retry) == 0:
+                f.flash(f'{i} is not a valid accepted scientific name.')
+                print('not found', i)
+            else:
+                label_taxon[i] = retry[0].name_text
+    raise Exception
+    return label_taxon
+
+
 @app.route('/submit', methods=('POST', 'GET'))
 def submit():
     sf = SubmitForm()
@@ -180,12 +205,16 @@ def submit():
                                                  schema=schema)
                 # different from original nexus
                 tree_text = tree_content.as_string(schema='nexus')
+                treefile.tree_text = tree_text
+                # handle nodes
+                raw_nodes = tree_content.taxon_namespace
+                nodes = get_nodes(raw_nodes)
             # dendropy error class is too long
         except Exception:
+            raise
             f.flash('Bad tree file.')
             f.flash('The file should be UTF-8 encoding nexus or newick format.')
             return f.render_template('submit.html', form=sf)
-        treefile.tree_text = tree_text
         # old tree id end at 118270
         db.session.add(tree)
         # get tree_id
