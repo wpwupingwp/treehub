@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container col-md-10 shadow">
+    <h1 class="text-center">Submit list</h1>
+    <table class="table table-hover">
+        <thead class="thead-dark">
+        <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>date</th>
+            <th>Tree ID</th>
+            <th>Tree file ID</th>
+            <th>Study ID</th>
+            <th>Matrix ID</th>
+            {% if current_user.username=='admin' %}
+                <th>Manage</th>
+            {% endif %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for submit in pagination.items %}
+        <tr>
+            <td>{{submit.submit_id}}</td>
+            <td>{{submit.email}}</td>
+            <td>{{submit.date}}</td>
+            <td>{{submit.tree_id}}</td>
+            <td>{{submit.treefile_id}}</td>
+            <td>{{submit.study_id}}</td>
+            <td>{{submit.matrix_id}}</td>
+                {% if current_user.username=='admin' %}
+                    <td>
+                        <a href="/submit/remove/{{submit.submit_id}}">Delete</a>
+                    </td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        </tbody>
+    </table>
+    {% from 'bootstrap4/pagination.html' import render_pagination %}
+    {{render_pagination(pagination, align='center', size='lg')}}
+</div>
+{% endblock %}

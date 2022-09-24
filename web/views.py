@@ -11,7 +11,7 @@ import flask_login as fl
 
 
 from web import app, lm
-from web.database import Nodes, Trees, Treefile, Study, Matrix, NcbiName,Visit, db
+from web.database import Nodes, Trees, Treefile, Study, Submit, Matrix, NcbiName,Visit, db
 from web.auth import auth
 from web.form import LoginForm, UserForm, QueryForm, SubmitForm
 
@@ -28,6 +28,7 @@ def track():
             user_id = 2
         else:
             user_id = fl.current_user.user_id
+        session['user_id'] = user_id
         if request.headers.getlist('X-Forwarded-For'):
             ip = request.headers.getlist('X-Forwarded-For')[0]
         else:
@@ -173,19 +174,55 @@ def submit():
         treefile.tree_id = tree.tree_id
         db.session.add(treefile)
         db.session.commit()
-        print(treefile)
-
-        # treefile.file = upload(sf.photo1.data, upload_path)
-        # matrix.file = upload(sf.photo1.data, upload_path)
-        raise ValueError('abort')
         db.session.add(study)
+        # dirty work
+        matrix.analysisstep_id = '20222022'
         db.session.add(matrix)
+        if request.headers.getlist('X-Forwarded-For'):
+            ip = request.headers.getlist('X-Forwarded-For')[0]
+        else:
+            ip = request.remote_addr
+
+        print(tree)
+        print(treefile)
+        submit = Submit(sf.email.data, ip, upload_date, session['user_id'],
+                        tree.tree_id, treefile.treefile_id, study.study_id,
+                        matrix.matrix_id)
+        db.session.add(submit)
+        db.session.commit()
+        f.flash('Submit ok.')
+        return f.redirect(f'/submit/list')
+    return f.render_template('submit.html', form=sf)
+
+# todo
+'''
         for n in nodes:
             db.session.add(n)
         db.session.commit()
-        f.flash('Submit ok.')
-        return f.redirect(f'/tree/list')
-    return f.render_template('submit.html', form=sf)
+'''
+
+
+@app.route('/submit/remove/<int:submit_id>')
+def remove_submit(submit_id):
+    submit = Submit.query.get(submit_id)
+    tree = Trees.query.get(submit.tree_id)
+    treefile = Treefile.query.get(submit.treefile_id)
+    study = Study.query.get(submit.study_id)
+    matrix = Matrix.query.get(submit.matrix_id)
+
+    for i in (matrix, study, treefile, tree, submit):
+        db.session.delete(i)
+    db.session.commit()
+    f.flash('Remove ok.')
+    return f.redirect('/submit/list')
+
+
+@app.route('/submit/list')
+@app.route('/submit/list/<int:page>')
+def submit_list(page=1):
+    pagination = Submit.query.order_by(Submit.date.desc()).paginate(page=page,
+                                                                    per_page=10)
+    return f.render_template('submit_list.html', pagination=pagination)
 
 
 @app.route('/')

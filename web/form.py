@@ -93,6 +93,7 @@ class OutdatedSubmitForm(FlaskForm):
 
 
 class SubmitForm(FlaskForm):
+    # todo: currently support one file per submit
     # tree
     email = m.StringField('Email', validators=[v.email(), v.input_required()])
     root = m.StringField('Taxonomy (root node name or lineage name)',
@@ -107,7 +108,6 @@ class SubmitForm(FlaskForm):
                              choices=[('Species Tree', 'Species Tree'),
                                       ('Gene Tree', 'Gene Tree'),
                                       ('Other', 'Other')])
-    # todo
     # tree_file = m.MultipleFileField('Tree file (NEXUS or newick format)')
     tree_file = m.FileField('Tree files (NEXUS format)',
                             validators=[v.data_required()])
@@ -121,7 +121,7 @@ class SubmitForm(FlaskForm):
                                          ('Other', 'Other')])
     matrix_file = m.FileField('Matrix file (fasta format)')
     # study
-    year = m.StringField('Publish year')
+    year = m.IntegerField('Publish year')
     author = m.StringField('Author', validators=[v.length(max=100)])
     title = m.StringField('Title', validators=[v.length(max=200)])
     keywords = m.StringField('Keywords', validators=[v.length(max=50)])

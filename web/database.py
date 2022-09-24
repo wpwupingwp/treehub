@@ -154,6 +154,7 @@ class Treefile(db.Model):
 
 class Submit(db.Model):
     __tablename__ = 'submit'
+    submit_id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255))
     ip = db.Column(db.VARCHAR(100))
     date = db.Column(db.DateTime)
@@ -163,6 +164,16 @@ class Submit(db.Model):
     study_id = db.Column(db.Integer)
     matrix_id = db.Column(db.Integer)
 
+    def __init__(self, email, ip, date, user_id, tree_id, treefile_id, study_id,
+                 matrix_id):
+        self.email = email
+        self.ip = ip
+        self.date = date
+        self.user_id = user_id
+        self.tree_id = tree_id
+        self.treefile_id =  treefile_id
+        self.study_id = study_id
+        self.matrix_id = matrix_id
 
 
 class MyModelView(ModelView):
