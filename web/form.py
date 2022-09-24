@@ -94,6 +94,7 @@ class OutdatedSubmitForm(FlaskForm):
 
 class SubmitForm(FlaskForm):
     # tree
+    email = m.StringField('Email', validators=[v.email(), v.input_required()])
     taxonomy = m.StringField('Taxonomy', validators=[v.input_required()])
     tree_title = m.StringField('Tree title', validators=[v.length(max=255)])
     is_dating = m.BooleanField('Dating tree')

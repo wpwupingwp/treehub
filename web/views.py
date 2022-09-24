@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from uuid import uuid4
+from pathlib import Path
 from datetime import date
 from flask import g, request, session
 from sqlalchemy import select
@@ -45,21 +46,24 @@ def uploaded_file(filename):
 def upload(data) -> str:
     """
     Upload uncompressed text file.
-    Da
     Return '' if not exists.
+    Return native path if ok.
+    Old version return url.
     """
     length = 8
-    upload_path = app.config('UPLOADED_FILE_DEST')
+    upload_path = app.config.get('UPLOADED_FILE_DEST')
     if data is None or isinstance(data, str):
         return ''
     # relative path
     filename = secure_filename(data.filename)
     unique_filename = str(uuid4())[:length] + data.filename
+    native_path = upload_path / unique_filename
     # absolute path
-    data.save(upload_path/unique_filename)
+    data.save(native_path)
     # relative path
     url = f.url_for('uploaded_file', filename=unique_filename)
-    return url
+    # return url
+    return native_path
 
 
 @app.route('/tree/list_all')
@@ -142,13 +146,20 @@ def submit():
         matrix.upload_date = upload_date
         treefile.upload_date = upload_date
         print(tree.taxonomy, matrix.title, treefile.upload_date)
-        treefile_tmp = upload(sf.tree_file.data, upload_path)
-        with open()
+        treefile_tmp = upload(sf.tree_file.data)
+        try:
+            with open(treefile_tmp, 'rt', encoding='utf-8') as _:
+                tree_text = _.read()
+        except UnicodeError:
+            f.flash('Bad tree file. The file should use UTF-8 encoding.')
+            return f.redirect('/submit')
+        treefile.tree_text = tree_text
+        db.session.add(treefile)
+        db.session.commit()
         # treefile.file = upload(sf.photo1.data, upload_path)
         # matrix.file = upload(sf.photo1.data, upload_path)
-        raise ValueError
+        raise ValueError('abort')
         db.session.add(tree)
-        db.session.add(treefile)
         db.session.add(study)
         db.session.add(matrix)
         for n in nodes:
