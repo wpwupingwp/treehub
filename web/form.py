@@ -44,6 +44,7 @@ class QueryForm(FlaskForm):
 
 
 class TreeForm(FlaskForm):
+    # outdated
     taxonomy = m.StringField('Taxonomy', validators=[v.input_required()])
     tree_title = m.StringField('Tree title', validators=[v.length(max=255)])
     is_dating = m.BooleanField('Dating tree')
@@ -56,12 +57,13 @@ class TreeForm(FlaskForm):
                                       ('Gene Tree', 'Gene Tree'),
                                       ('Other', 'Other')])
     # todo
-    # tree_file = m.FileField('Tree file (NEXUS or newick format)')
-    tree_file = m.MultipleFileField('Tree files (NEXUS format)',
+    # tree_file = m.MultipleFileField('Tree file (NEXUS or newick format)')
+    tree_file = m.FileField('Tree files (NEXUS format)',
                                     validators=[v.data_required()])
 
 
 class MatrixForm(FlaskForm):
+    # outdated
     matrix_title = m.StringField('Matrix title', validators=[v.length(max=255)])
     description = m.SelectField('Matrix type', default='Nucleic Acid',
                                 choices=[('Nucleic Acid', 'Nucleic Acid'),
@@ -69,10 +71,11 @@ class MatrixForm(FlaskForm):
                                          ('Morphological', 'Morphological'),
                                          ('Combination', 'Combination'),
                                          ('Other', 'Other')])
-    matrix_file = m.MultipleFileField('Matrix file (fasta format)')
+    matrix_file = m.FileField('Matrix file (fasta format)')
 
 
 class StudyForm(FlaskForm):
+    # outdated
     year = m.StringField('Publish year')
     author = m.StringField('Author', validators=[v.length(max=100)])
     title = m.StringField('Title', validators=[v.length(max=200)])
@@ -80,12 +83,47 @@ class StudyForm(FlaskForm):
     doi = m.StringField('DOI', validators=[v.length(max=100)])
 
 
-class SubmitForm(FlaskForm):
+class OutdatedSubmitForm(FlaskForm):
     # todo
     email = m.StringField('Email', validators=[v.email(), v.input_required()])
     study = m.FormField(StudyForm)
     matrix = m.FormField(MatrixForm)
     tree = m.FormField(TreeForm)
+    submit = m.SubmitField('Submit')
+
+
+class SubmitForm(FlaskForm):
+    # tree
+    taxonomy = m.StringField('Taxonomy', validators=[v.input_required()])
+    tree_title = m.StringField('Tree title', validators=[v.length(max=255)])
+    is_dating = m.BooleanField('Dating tree')
+    tree_type = m.SelectField('Tree type', default='Consensus',
+                              choices=[('Consensus', 'Consensus'),
+                                       ('Single', 'Single'),
+                                       ('Other', 'Other')])
+    tree_kind = m.RadioField('Tree kind', default='Species Tree',
+                             choices=[('Species Tree', 'Species Tree'),
+                                      ('Gene Tree', 'Gene Tree'),
+                                      ('Other', 'Other')])
+    # todo
+    # tree_file = m.MultipleFileField('Tree file (NEXUS or newick format)')
+    tree_file = m.FileField('Tree files (NEXUS format)',
+                            validators=[v.data_required()])
+    # matrix
+    matrix_title = m.StringField('Matrix title', validators=[v.length(max=255)])
+    description = m.SelectField('Matrix type', default='Nucleic Acid',
+                                choices=[('Nucleic Acid', 'Nucleic Acid'),
+                                         ('Amino Acid', 'Amino Acid'),
+                                         ('Morphological', 'Morphological'),
+                                         ('Combination', 'Combination'),
+                                         ('Other', 'Other')])
+    matrix_file = m.FileField('Matrix file (fasta format)')
+    # study
+    year = m.StringField('Publish year')
+    author = m.StringField('Author', validators=[v.length(max=100)])
+    title = m.StringField('Title', validators=[v.length(max=200)])
+    keywords = m.StringField('Keywords', validators=[v.length(max=50)])
+    doi = m.StringField('DOI', validators=[v.length(max=100)])
     submit = m.SubmitField('Submit')
 
 

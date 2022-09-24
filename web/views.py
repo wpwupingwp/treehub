@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from uuid import uuid4
+from datetime import date
 from flask import g, request, session
 from sqlalchemy import select
 from werkzeug.utils import secure_filename
@@ -130,13 +131,22 @@ def view_tree(tree_id):
 def submit():
     sf = SubmitForm()
     if sf.validate_on_submit():
-        tree = Trees(sf)
-        treefile = Treefile(sf)
-        study = Study(sf)
-        matrix = Matrix(sf)
-        nodes = [Nodes(i) for i in sf]
+        upload_date = date.isoformat(date.today())
+        print(sf.data)
+        tree = Trees()
+        treefile = Treefile()
+        study = Study()
+        matrix = Matrix()
+        for i in [tree, treefile, study, matrix]:
+            sf.populate_obj(i)
+        matrix.upload_date = upload_date
+        treefile.upload_date = upload_date
+        print(tree.taxonomy, matrix.title, treefile.upload_date)
+        treefile_tmp = upload(sf.tree_file.data, upload_path)
+        with open()
         # treefile.file = upload(sf.photo1.data, upload_path)
         # matrix.file = upload(sf.photo1.data, upload_path)
+        raise ValueError
         db.session.add(tree)
         db.session.add(treefile)
         db.session.add(study)
