@@ -44,7 +44,7 @@ class QueryForm(FlaskForm):
 
 
 class TreeForm(FlaskForm):
-    taxonomy = m.StringField('Taxonomy')
+    taxonomy = m.StringField('Taxonomy', validators=[v.input_required()])
     tree_title = m.StringField('Tree title', validators=[v.length(max=255)])
     is_dating = m.BooleanField('Dating tree')
     tree_type = m.SelectField('Tree type', default='Consensus',
@@ -69,8 +69,7 @@ class MatrixForm(FlaskForm):
                                          ('Morphological', 'Morphological'),
                                          ('Combination', 'Combination'),
                                          ('Other', 'Other')])
-    matrix_file = m.MultipleFileField('Tree files (NEXUS format)',
-                                      validators=[v.data_required()])
+    matrix_file = m.MultipleFileField('Matrix file (fasta format)')
 
 
 class StudyForm(FlaskForm):
@@ -84,9 +83,9 @@ class StudyForm(FlaskForm):
 class SubmitForm(FlaskForm):
     # todo
     email = m.StringField('Email', validators=[v.email(), v.input_required()])
-    tree = m.FormField(TreeForm)
     study = m.FormField(StudyForm)
     matrix = m.FormField(MatrixForm)
+    tree = m.FormField(TreeForm)
     submit = m.SubmitField('Submit')
 
 

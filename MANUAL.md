@@ -82,6 +82,11 @@ ADD COLUMN file_bin bytea;
 -- add dating tree marker
 ALTER TABLE trees
 ADD COLUMN is_dating boolean default false;
+-- add date
+ALTER TABLE treefile
+    ADD COLUMN upload_date date;
+ALTER TABLE matrix
+    ADD COLUMN upload_date date;
 ```
 13. add user table
 ```postgresql
