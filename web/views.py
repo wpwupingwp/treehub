@@ -119,7 +119,7 @@ def tree_result(page=1):
         Study.title, Study.year, Study.journal, Study.doi,
         Trees.tree_id, Trees.tree_title, Trees.tree_kind, Trees.is_dating).join(
         Study, Study.study_id == Trees.study_id).filter(
-        trees).order_by(Study.year.desc())
+        trees).order_by(Trees.upload_date.desc())
     app.logger.debug(str(results))
     pagination = results.paginate(page=page, per_page=10)
     return f.render_template('tree_list.html', pagination=pagination)
