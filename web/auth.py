@@ -6,7 +6,6 @@ import flask_login as fl
 from werkzeug.utils import secure_filename
 from sqlalchemy import not_
 from pathlib import Path
-from PIL import Image, ImageOps
 
 from web import app, lm, root
 from web.form import UserForm, LoginForm

@@ -18,7 +18,6 @@ from web.form import LoginForm, UserForm
 from web.form import QueryForm, SubmitForm
 
 
-
 @app.before_request
 def track():
     if session.get('tracked', False):
@@ -46,7 +45,7 @@ def login():
     {{ render_breadcrumb_item('auth.register', 'Register') }}
     {{ render_breadcrumb_item('auth.login', 'Login') }}
     '''
-
+    pass
 
 
 @app.route('/uploads/<filename>')
@@ -202,6 +201,7 @@ def submit():
                 tree_content = dendropy.Tree.get(path=treefile_tmp,
                                                  schema=schema)
                 # different from original nexus
+                # database only storage nexus format
                 tree_text = tree_content.as_string(schema='nexus')
                 treefile.tree_text = tree_text
                 # handle nodes
