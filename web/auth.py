@@ -1,20 +1,14 @@
 #!/usr/bin/python3
 
-import uuid
 import flask as f
 import flask_login as fl
-from werkzeug.utils import secure_filename
-from sqlalchemy import not_
-from pathlib import Path
 
 from web import app, lm, root
 from web.form import UserForm, LoginForm
 from web.database import User, Study, Nodes, Trees, Treefile, Visit, db
 
 auth = f.Blueprint('auth', __name__)
-# cannot use photos.url
-img_path = root / 'upload' / 'img'
-# unread msg
+
 
 @lm.user_loader
 def load_user(user_id):
@@ -76,22 +70,6 @@ def register():
         f.flash('注册成功')
         return f.redirect('/index')
     return f.render_template('tree_query.html', form=uf)
-
-
-def compress_photo(old_path: Path) -> Path:
-    """
-    Compress and rotate image with PIL
-    Args:
-        old_path: Path
-    """
-    small = 1024 * 1024
-    if old_path.stat().st_size <= small:
-        return old_path
-    old = Image.open(old_path)
-    rotate = ImageOps.exif_transpose(old)
-    rotate.thumbnail((1024, 1024))
-    rotate.save(old_path, 'JPEG')
-    return old_path
 
 
 
