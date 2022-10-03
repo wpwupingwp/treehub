@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="node_modules/d3/d3.min.js"></script>
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+    <script src="node_modules/sax/lib/sax.js"></script>
+    <script src="node_modules/phyloxml/phyloxml.js"></script>
+    <script src="node_modules/forester/forester_1_8.js"></script>
+    <script src="node_modules/archaeopteryx/archaeopteryx.js"></script>
+    <script type="application/javascript">
+        function load() {
+            let options = {};
+            options.backgroundColorDefault = '#f0f0f0';
+            let settings = {};
+            let loc = 'test.xml';
+            //let loc = 'https://raw.githubusercontent.com/cmzmasek/archaeopteryx-js/master/test/data/phyloxml_trees/apaf.xml';
+            jQuery.get(loc,
+                function (data) {
+                    let tree = null;
+                    try {
+                        tree = archaeopteryx.parseTree(loc, data, true, false);
+                    } catch (e) {
+                        alert("error while parsing tree: " + e);
+                    }
+                    if (tree) {
+                        try {
+                            archaeopteryx.launch('#phylogram1', tree, options, settings);
+                        } catch (e) {
+                            alert("error while launching archaeopteryx: " + e);
+                        }
+                    }
+                },
+                "text")
+                .fail(function () {
+                        alert("error: failed to read tree(s) from \"" + loc + "\"");
+                    }
+                );
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+</head>
+<body onload="load()">
+<div>
+    <h2>Archaeopteryx.js Basic Demo</h2>
+    <div id='phylogram1'></div>
+    <div id='controls0' class='ui-widget-content'></div>
+</div>
+</body>
+</html>

@@ -162,3 +162,9 @@ LEFT JOIN edges pe ON (pn.node_id = pe.child_id)
 WHERE np.parent_path_id = ?  
 STATEMENT
 ```
+
+200. Install js packages
+```powershell
+npm init
+npm i --local archaeopteryx
+```
