@@ -6,7 +6,10 @@ from concurrent.futures import ThreadPoolExecutor
 from timeit import default_timer as timer
 
 
-def insert(tree_id, treefile):
+def insert(treefile):
+    tree_id = treefile.stem
+    type_dict = {'.nex': 'nexus', '.nwk': 'newick', '.xml': 'phyloxml'}
+    tree_type = type_dict.get(treefile.suffix)
     # print(treefile)
     with open(treefile, 'r', encoding='utf-8') as f:
         text = f.read()
@@ -14,7 +17,7 @@ def insert(tree_id, treefile):
     conn = psycopg2.connect(host='::1', port=5432, user='root',
                             password='password', database='treedb')
     cursor = conn.cursor()
-    cmd = (f"INSERT INTO treefile (tree_id, tree_text) "
+    cmd = (f"INSERT INTO treefile (tree_id, {tree_type}) "
            f"VALUES ({tree_id}, '{new_text}')")
     cursor.execute(cmd)
     cursor.close()
@@ -24,20 +27,23 @@ def insert(tree_id, treefile):
     return treefile
 
 
-def main():
+def main(files):
+    files = '*.nex'
     start = timer()
-    tree_files = list(Path('trees').glob('*.nex'))
+    tree_files = list(Path('trees').glob(files))
     with ThreadPoolExecutor(max_workers=50) as pool:
-        futures = [pool.submit(insert, treefile.stem, treefile)
-                   for treefile in tree_files]
+        futures = [pool.submit(insert, treefile) for treefile in tree_files]
         pool.shutdown(wait=True)
         # for future in (futures):
         #     print(future.result())
     end = timer()
+    print(files)
     print(len(tree_files), 'trees')
     print(len(futures), 'insertion')
     print(end-start, 'seconds')
 
 
 if __name__ == '__main__':
-    main()
+    main('*.nex')
+    main('*.xml')
+    main('*.nwk')
