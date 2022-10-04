@@ -61,7 +61,9 @@ CREATE TABLE treefile
 (
     treefile_id serial PRIMARY KEY,
     tree_id integer REFERENCES trees(tree_id),
-    tree_text character varying
+    nexus character varying,
+    newick character varying,
+    phyloxml character varying
 );
 ```
 11. Insert data into table
@@ -165,6 +167,9 @@ STATEMENT
 
 200. Install js packages
 ```powershell
-npm init
-npm i --local archaeopteryx
+yarn init
+yarn add archaeopteryx
+# copy required js libraries to node_modules
+# edit path in html
+#
 ```
