@@ -23,15 +23,14 @@ def insert(treefile):
     cursor.close()
     conn.commit()
     conn.close()
-    print(treefile, 'ok')
+    # print(treefile, 'ok')
     return treefile
 
 
 def main(files):
-    files = '*.nex'
     start = timer()
     tree_files = list(Path('trees').glob(files))
-    with ThreadPoolExecutor(max_workers=50) as pool:
+    with ThreadPoolExecutor(max_workers=16) as pool:
         futures = [pool.submit(insert, treefile) for treefile in tree_files]
         pool.shutdown(wait=True)
         # for future in (futures):
@@ -41,6 +40,7 @@ def main(files):
     print(len(tree_files), 'trees')
     print(len(futures), 'insertion')
     print(end-start, 'seconds')
+    return
 
 
 if __name__ == '__main__':
