@@ -147,7 +147,6 @@ class Trees(db.Model):
         return f'{self.tree_id} {self.root} {self.tree_title}'
 
 
-
 class Treefile(db.Model):
     __tablename__ = 'treefile'
     treefile_id = db.Column(db.Integer, primary_key=True)

@@ -175,6 +175,7 @@ def newick_to_phyloxml(newick: str) -> str:
     Phylo.convert(tmp_in, 'newick', tmp_out, 'phyloxml')
     tmp_out.seek(0)
     phyloxml = tmp_out.read()
+    print(phyloxml)
     return phyloxml
 
 
@@ -212,7 +213,6 @@ def submit():
                     schema = 'nexus'
                 else:
                     schema = 'newick'
-                    f.flash('Tree file is newick format, converted to nexus.')
                 tree_content = dendropy.Tree.get(path=treefile_tmp,
                                                  schema=schema)
                 # different from original nexus
