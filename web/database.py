@@ -7,7 +7,6 @@ from flask_sqlalchemy import SQLAlchemy
 import flask_login as fl
 
 from web import app, admin
-from flask_wtf import FlaskForm
 
 db = SQLAlchemy(app)
 
@@ -153,7 +152,9 @@ class Treefile(db.Model):
     __tablename__ = 'treefile'
     treefile_id = db.Column(db.Integer, primary_key=True)
     tree_id = db.Column(db.Integer, db.ForeignKey('trees.tree_id'))
-    tree_text = db.Column(db.String())
+    nexus = db.Column(db.String())
+    newick = db.Column(db.String())
+    phyloxml = db.Column(db.String())
     upload_date = db.Column(db.Date)
     tree = db.relationship('Trees', back_populates='file')
 

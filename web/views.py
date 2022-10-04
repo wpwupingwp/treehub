@@ -2,11 +2,14 @@
 
 from uuid import uuid4
 from datetime import date
+from pathlib import Path
+from io import StringIO
 
 from flask import g, request, session
 from sqlalchemy import select
 from werkzeug.utils import secure_filename
 import dendropy
+from Bio import Phylo
 import flask as f
 import flask_login as fl
 
@@ -53,7 +56,7 @@ def uploaded_file(filename):
     return f.send_from_directory(app.config['UPLOADED_FILE_DEST'], filename)
 
 
-def upload(data) -> str:
+def upload(data) -> Path:
     """
     Upload uncompressed text file.
     Return '' if not exists.
@@ -63,7 +66,7 @@ def upload(data) -> str:
     length = 8
     upload_path = app.config.get('UPLOADED_FILE_DEST')
     if data is None or isinstance(data, str):
-        return ''
+        return Path()
     # relative path
     filename = secure_filename(data.filename)
     unique_filename = str(uuid4())[:length] + data.filename
@@ -163,6 +166,18 @@ def get_nodes(raw_nodes: list) -> dict:
     return label_taxon
 
 
+def newick_to_phyloxml(newick: str) -> str:
+    # Phylo.convert do not support string
+    tmp_in = StringIO()
+    tmp_out = StringIO()
+    tmp_in.write(newick)
+    tmp_in.seek(0)
+    Phylo.convert(tmp_in, 'newick', tmp_out, 'phyloxml')
+    tmp_out.seek(0)
+    phyloxml = tmp_out.read()
+    return phyloxml
+
+
 @app.route('/submit', methods=('POST', 'GET'))
 def submit():
     # todo: convert id format
@@ -201,9 +216,13 @@ def submit():
                 tree_content = dendropy.Tree.get(path=treefile_tmp,
                                                  schema=schema)
                 # different from original nexus
-                # database only storage nexus format
-                tree_text = tree_content.as_string(schema='nexus')
-                treefile.tree_text = tree_text
+                # dendropy can handle abnormal nexus, biopython cannot
+                nexus = tree_content.as_string(schema='nexus')
+                newick = tree_content.as_string(schema='newick')
+                phyloxml = newick_to_phyloxml(newick)
+                treefile.nexus = nexus
+                treefile.newick = newick
+                treefile.phyloxml = phyloxml
                 # handle nodes
                 raw_nodes = tree_content.taxon_namespace
                 label_taxon = get_nodes(raw_nodes)
@@ -219,6 +238,8 @@ def submit():
             f.flash('Bad tree file.')
             f.flash('The file should be UTF-8 encoding nexus or newick format.')
             return f.render_template('submit.html', form=sf)
+        finally:
+            treefile_tmp.unlink()
         # old tree id end at 118270
         db.session.add(tree)
         # get tree_id
