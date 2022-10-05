@@ -5,8 +5,7 @@ from pathlib import Path
 from io import StringIO
 
 
-def nwk2auspice(newick: str, tmp: Path, file_stem: str, meta_file: Path):
-    print(meta_file)
+def nwk2auspice(newick: str, tmp: Path, file_stem: str, meta: dict):
     def get_auspice_json(node, name_format=False):
         # name format: Order_family_genus_species_others
         nonlocal branch_lengths, n
@@ -67,8 +66,6 @@ def nwk2auspice(newick: str, tmp: Path, file_stem: str, meta_file: Path):
     max_length = max(branch_lengths) * 1000000 + wait
     json_['node_attrs']['div'] = {'value': max_length * -1}
     json_['node_attrs']['num_date'] = {'value': max_length * -1}
-    with open(meta_file, 'r', encoding='utf-8') as m:
-        meta = json.load(m)
     meta['tree'] = json_
     with open(json_file, 'w') as f:
         json.dump(meta, f)

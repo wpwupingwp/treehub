@@ -180,13 +180,19 @@ def tree_newick_file(tree_id):
 
 @app.route('/tree/auspice_file/<int:tree_id>')
 def tree_auspice_file(tree_id):
+    tree = Trees.query.get(tree_id)
     treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
     if treefile is None:
         f.flash('Not found.')
     newick = treefile.newick
     tmp_folder = app.config.get('TMP_FOLDER')
     meta_file = root / 'static' / 'auspice_tree_meta.json'
-    auspice_file = nwk2auspice(newick, tmp_folder, tree_id, meta_file)
+    with open(meta_file, 'r', encoding='utf-8') as _:
+        meta = json.load(_)
+    meta['meta']['title'] = tree.tree_title
+    meta['meta']['updated'] = str(treefile.upload_date)
+    meta['meta']['maintainers'][0]['name'] = ''
+    auspice_file = nwk2auspice(newick, tmp_folder, tree_id, meta)
     return f.url_for('tmp_file', filename=auspice_file)
 
 

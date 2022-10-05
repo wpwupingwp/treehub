@@ -12,16 +12,15 @@
     "updated": "11 March 2022",
     "maintainers": [
       {
-        "name": "Demo",
-        "url": "https://gitee.com"
+        "name": "",
+        "url": "https://example.org"
       }
     ],
     "filters": [
       "subgroup"
     ],
     "panels": [
-      "tree",
-      "map"
+      "tree"
     ],
     "display_defaults": {
       "color_by": "subgroup"
