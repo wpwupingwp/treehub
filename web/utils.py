@@ -8,7 +8,7 @@ from io import StringIO
 def nwk2auspice(newick: str, tmp: Path, file_stem: str, meta: dict):
     def get_auspice_json(node, name_format=False):
         # name format: Order_family_genus_species_others
-        nonlocal branch_lengths, n
+        nonlocal branch_lengths, factor, n
         if name_format:
             if node.name is None:
                 order, family, genus, species, *_ = list('_' * 5)
@@ -34,13 +34,13 @@ def nwk2auspice(newick: str, tmp: Path, file_stem: str, meta: dict):
             order = family = ''
         organism = organism.replace(r"\'", '')
         length = float(
-            node.branch_length) if node.branch_length is not None else 0
+            node.branch_length) if node.branch_length is not None else 0.0001
         branch_lengths.append(length)
         # length = max(length, 0.1)
         # print(organism, length)
         json_ = {'name': organism,
-                 'node_attrs': {'div': -1 * length,
-                                'num_date': {'value': -1 * length * 1000000}},
+                 'node_attrs': {'div': 1 * length,
+                                'num_date': {'value': -1 * length * factor}},
                  'branch_attrs': {'mutations': {}}}
         if name_format:
             json_['node_attrs']['order'] = {'value': order}
@@ -51,6 +51,8 @@ def nwk2auspice(newick: str, tmp: Path, file_stem: str, meta: dict):
                 json_['children'].append(get_auspice_json(ch))
         return json_
 
+    factor = 1
+    # todo
     json_file = tmp / f'{file_stem}.json'
     with StringIO() as s:
         s.write(newick)
@@ -63,8 +65,8 @@ def nwk2auspice(newick: str, tmp: Path, file_stem: str, meta: dict):
     json_ = get_auspice_json(root)
     # wait time for loading
     wait = 2
-    max_length = max(branch_lengths) * 1000000 + wait
-    json_['node_attrs']['div'] = {'value': max_length * -1}
+    max_length = max(branch_lengths) * factor + wait
+    json_['node_attrs']['div'] = {'value': max_length * 1}
     json_['node_attrs']['num_date'] = {'value': max_length * -1}
     meta['tree'] = json_
     with open(json_file, 'w') as f:
