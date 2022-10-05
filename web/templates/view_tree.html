@@ -47,15 +47,20 @@
         </form>
     </nav>
 </div>
-<div id="root"></div>
+<div class="container-fluid">
+<div class="embed-responsive embed-responsive-16by9">
+    <iframe class="" height="100vh" src="http://127.0.0.1:4000/{{tree_id}}"></iframe>
+</div>
+</div>
+
 <div>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     {{render_messages(dismissible=True, dismiss_animate=True)}}
     {% endif %}
     {% endwith %}
-
 </div>
+
 </body>
 <footer class="footer h5 font-weight-bolder text-muted text-center">
     <div class="h6 text-primary text-center">
