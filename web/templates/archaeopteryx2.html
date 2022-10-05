@@ -57,17 +57,24 @@
 
             let settings = {};
             settings.border = '1px solid #909090';
+            settings.collapseLabelWidth = '36px';
             settings.controls0Top = 10;
+            settings.dynamicallyAddNodeVisualizations = true;
+            settings.enableAccessToDatabases = true;
+            settings.enableBranchVisualizations = true;
+            settings.enableCollapseByBranchLenghts = true;
+            settings.enableCollapseByFeature = false;
             settings.enableDownloads = true;
-            settings.enableBranchVisualizations = false;
-            settings.enableCollapseByBranchLenghts = false;
-            settings.enableCollapseByFeature = true;
+            settings.enableDynamicSizing = true;
             settings.enableMsaResidueVisualizations = true;
             settings.enableNodeVisualizations = true;
             settings.nhExportWriteConfidences = true;
-            settings.showShortenNodeNamesButton = false;
             settings.rootOffset = 140;
-
+            settings.showDynahideButton = false;
+            settings.showLineageButton = true;
+            settings.showMutationsButton = true;
+            settings.showSearchPropertiesButton = true;
+            settings.showShortenNodeNamesButton = false;
             //let url = '/tree/newick/{{tree_id}}';
             let url = '/tree/phyloxml/{{tree_id}}';
             fetch(url).then(r=>r.text()).then(data=>{
