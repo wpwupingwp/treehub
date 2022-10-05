@@ -17,8 +17,8 @@ from web import app, lm
 from web.database import Trees, Treefile, Study, Submit, Matrix, NcbiName
 from web.database import Nodes, Visit, db
 from web.auth import auth
-from web.form import LoginForm, UserForm
 from web.form import QueryForm, SubmitForm
+# from web.form import LoginForm, UserForm
 
 
 @app.before_request
@@ -176,11 +176,19 @@ def tree_newick_file(tree_id):
     return f.url_for('tmp_file', filename=filename)
 
 
+@app.route('/tree/edit/<int:tree_id>', methods=('POST', 'GET'))
+def edit_tree(tree_id):
+    tree = Trees.query.get(tree_id)
+    title = tree.tree_title
+    return f.render_template('edit_tree.html',
+                             title=title, tree_id=tree_id)
+
+
 @app.route('/tree/<int:tree_id>', methods=('POST', 'GET'))
 def view_tree(tree_id):
     tree = Trees.query.get(tree_id)
     title = tree.tree_title
-    return f.render_template('edit_tree.html',
+    return f.render_template('view_tree.html',
                              title=title, tree_id=tree_id)
 
 
@@ -215,7 +223,6 @@ def newick_to_phyloxml(newick: str) -> str:
     Phylo.convert(tmp_in, 'newick', tmp_out, 'phyloxml')
     tmp_out.seek(0)
     phyloxml = tmp_out.read()
-    print(phyloxml)
     return phyloxml
 
 
