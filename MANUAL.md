@@ -61,6 +61,7 @@ CREATE TABLE treefile
 (
     treefile_id serial PRIMARY KEY,
     tree_id integer REFERENCES trees(tree_id),
+    upload_date date,
     nexus character varying,
     newick character varying,
     phyloxml character varying
@@ -85,8 +86,6 @@ ADD COLUMN file_bin bytea;
 ALTER TABLE trees
 ADD COLUMN is_dating boolean default false;
 -- add date
-ALTER TABLE treefile
-    ADD COLUMN upload_date date;
 ALTER TABLE matrix
     ADD COLUMN upload_date date;
 ALTER TABLE trees
