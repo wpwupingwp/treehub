@@ -139,9 +139,12 @@ def tree_result(page=1):
 
 @app.route('/tree/<int:tree_id>', methods=('POST', 'GET'))
 def view_tree(tree_id):
-    tree = Trees.query.get(tree_id)
+    treefile = Treefile.query.filter_by(tree_id=tree_id).all()
+    print(treefile)
+    if treefile is None:
+        f.flash('Not found.')
     # todo: use auspice or other js
-    return f.render_template('tree.html', tree=tree)
+    return f.render_template('tree.html', treefile=treefile)
 
 
 def get_nodes(raw_nodes: list) -> dict:
