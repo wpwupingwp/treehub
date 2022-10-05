@@ -144,7 +144,6 @@ def tree_phyloxml(tree_id):
     phyloxml = treefile.phyloxml.rstrip()
     phyloxml = phyloxml.replace('""', '"').replace("''", "'")
     return phyloxml
-    # return f.jsonify(phyloxml)
 
 
 @app.route('/tree/newick/<int:tree_id>')
@@ -160,7 +159,7 @@ def tree_newick(tree_id):
 def view_tree(tree_id):
     tree = Trees.query.get(tree_id)
     title = tree.tree_title
-    return f.render_template('archaeopteryx2.html',
+    return f.render_template('edit_tree.html',
                              title=title, tree_id=tree_id)
 
 
