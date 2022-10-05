@@ -4,6 +4,7 @@ from uuid import uuid4
 from datetime import date
 from pathlib import Path
 from io import StringIO
+import json
 
 from flask import g, request, session
 from sqlalchemy import select
@@ -18,6 +19,7 @@ from web.database import Trees, Treefile, Study, Submit, Matrix, NcbiName
 from web.database import Nodes, Visit, db
 from web.auth import auth
 from web.form import QueryForm, SubmitForm
+from web.utils import nwk2auspice
 # from web.form import LoginForm, UserForm
 
 
@@ -176,19 +178,32 @@ def tree_newick_file(tree_id):
     return f.url_for('tmp_file', filename=filename)
 
 
-@app.route('/tree/edit/<int:tree_id>', methods=('POST', 'GET'))
-def edit_tree(tree_id):
-    tree = Trees.query.get(tree_id)
-    title = tree.tree_title
-    return f.render_template('edit_tree.html',
-                             title=title, tree_id=tree_id)
+@app.route('/tree/auspice_file/<int:tree_id>')
+def tree_auspice_file(tree_id):
+    treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
+    if treefile is None:
+        f.flash('Not found.')
+    newick = treefile.newick
+    tmp_folder = app.config.get('TMP_FOLDER')
+    auspice_file = nwk2auspice(newick, tmp_folder, tree_id)
+    return f.url_for('tmp_file', filename=auspice_file)
+
 
 
 @app.route('/tree/<int:tree_id>', methods=('POST', 'GET'))
 def view_tree(tree_id):
     tree = Trees.query.get(tree_id)
     title = tree.tree_title
+    tree_newick_file(tree_id)
     return f.render_template('view_tree.html',
+                             title=title, tree_id=tree_id)
+
+
+@app.route('/tree/edit/<int:tree_id>', methods=('POST', 'GET'))
+def edit_tree(tree_id):
+    tree = Trees.query.get(tree_id)
+    title = tree.tree_title
+    return f.render_template('edit_tree.html',
                              title=title, tree_id=tree_id)
 
 

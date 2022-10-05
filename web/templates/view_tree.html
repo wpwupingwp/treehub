@@ -1,10 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="web demo">
+    <meta name="author" content="wp">
+    <title>{{ title }}</title>
+    {{ bootstrap.load_css() }}
+    {% from 'bootstrap/nav.html' import render_breadcrumb_item %}
+    <script src="{{ url_for('static', filename='auspice/auspice.chunk.core-vendors.bundle.0873421a4e383da06edc.js') }}"></script>
+    <script src="{{ url_for('static', filename='/dist/auspice.bundle.b339ef8a5b392d0e38ee.js') }}"></script>
 </head>
-<body>
+<body class="container-fluid bg-gray">
+<div class="header sticky-top my-2">
+    <nav class="navbar navbar-expand-lg navbar-light col-md-10 mx-auto"
+         style="background-color: #009a3b">
+        <a class="navbar-brand h5 text-light mt-2" href="#">Plant Tree Database</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#navbarText" aria-controls="navbarText" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
+        <ol class="breadcrumb mr-auto my-2 h5">
+            {{ render_breadcrumb_item('index', 'Home') }}
+            {{ render_breadcrumb_item('tree_list', 'Tree list') }}
+            {{ render_breadcrumb_item('submit_list', 'Submit list') }}
+            {{ render_breadcrumb_item('tree_query', 'Query') }}
+            {{ render_breadcrumb_item('submit', 'Submit') }}
+            {% if current_user.is_authenticated %}
+            {{ render_breadcrumb_item('/auth/tree/{{current_user.user_id}}}', 'My trees') }}
+            {{ render_breadcrumb_item('/auth/logout', 'Logout') }}
+            {% if current_user.username=='admin' %}
+            {{ render_breadcrumb_item('/admin', 'Admin') }}
+            {% endif %}
+            {% else %}
+            {% endif %}
+
+        </ol>
+        <div class="btn btn-dark my-2 mr-auto h3">
+            {{ title }}
+        </div>
+        <form class="form-inline my-2">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search">
+            <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
+        </form>
+    </nav>
+</div>
+<div id="root"></div>
+<div>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {{render_messages(dismissible=True, dismiss_animate=True)}}
+    {% endif %}
+    {% endwith %}
+
+</div>
 </body>
+<footer class="footer h5 font-weight-bolder text-muted text-center">
+    <div class="h6 text-primary text-center">
+        <p>
+            Power by Flask 2.2.2 and Bootstrap 5 <br/>
+            <span>Copyright 2022</span>
+        </p>
+    </div>
+</footer>
 </html>
