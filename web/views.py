@@ -56,6 +56,11 @@ def uploaded_file(filename):
     return f.send_from_directory(app.config['UPLOADED_FILE_DEST'], filename)
 
 
+@app.route('/tmp/<filename>')
+def tmp_file(filename):
+    return f.send_from_directory(app.config['TMP_FOLDER'], filename)
+
+
 def upload(data) -> Path:
     """
     Upload uncompressed text file.
@@ -136,6 +141,7 @@ def tree_result(page=1):
     pagination = results.paginate(page=page, per_page=20)
     return f.render_template('tree_list.html', pagination=pagination)
 
+
 @app.route('/tree/phyloxml/<int:tree_id>')
 def tree_phyloxml(tree_id):
     treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
@@ -153,6 +159,21 @@ def tree_newick(tree_id):
         f.flash('Not found.')
     newick = treefile.newick.rstrip()
     return newick
+
+
+@app.route('/tree/newick_file/<int:tree_id>')
+def tree_newick_file(tree_id):
+    treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
+    if treefile is None:
+        f.flash('Not found.')
+    newick = treefile.newick.rstrip()
+    tmp_folder = app.config.get('TMP_FOLDER')
+    filename = f'{tree_id}.nwk'
+    tmp_file_ = tmp_folder / filename
+    if not tmp_file_.exists():
+        with open(tmp_file_, 'w', encoding='utf-8') as _:
+            _.write(newick)
+    return f.url_for('tmp_file', filename=filename)
 
 
 @app.route('/tree/<int:tree_id>', methods=('POST', 'GET'))

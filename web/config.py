@@ -10,9 +10,11 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 MAX_CONTENT_LENGTH = 100 * 1024 * 1024
 CSRF_ENABLED = True
 UPLOAD_FOLDER = root / 'upload'
+TMP_FOLDER = root / 'tmp'
 UPLOADED_FILE_DEST = UPLOAD_FOLDER / 'file'
-if not UPLOADED_FILE_DEST.exists():
-    UPLOADED_FILE_DEST.mkdir()
+for d in UPLOADED_FILE_DEST, TMP_FOLDER:
+    if not d.exists():
+        d.mkdir()
 # safe
 SECRET_KEY = '2022'
 # bootstrap
