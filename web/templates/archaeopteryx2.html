@@ -68,12 +68,14 @@
             settings.showShortenNodeNamesButton = false;
             settings.rootOffset = 140;
 
-            let confValsInBrackets = false;
-            let confValsAsInternalNodeNames = true;
-            //let data = "((Mus_musculus_b1genep:0.00000,Mus_musculus_b1gened:0.00000):0.00000,(Mus_musculus_b1genew1:0.00000,Mus_musculus_b1genew2:0.00000):0.00000):0.00000; "
-            let data = "{{ newick }}"
-            let tree = archaeopteryx.parseNewHampshire(data, confValsInBrackets, confValsAsInternalNodeNames);
-            archaeopteryx.launch('#phylogram1', tree, options, settings);
+            //let url = '/tree/newick/{{tree_id}}';
+            let url = '/tree/phyloxml/{{tree_id}}';
+            fetch(url).then(r=>r.text()).then(data=>{
+                //console.log(data);
+                //let tree = archaeopteryx.parseNewHampshire(data);
+                let tree = archaeopteryx.parsePhyloXML(data);
+                archaeopteryx.launch('#phylogram1', tree, options, settings);
+            })
         }
 
         window.onload = load;

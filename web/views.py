@@ -136,17 +136,32 @@ def tree_result(page=1):
     pagination = results.paginate(page=page, per_page=20)
     return f.render_template('tree_list.html', pagination=pagination)
 
+@app.route('/tree/phyloxml/<int:tree_id>')
+def tree_phyloxml(tree_id):
+    treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
+    if treefile is None:
+        f.flash('Not found.')
+    phyloxml = treefile.phyloxml.rstrip()
+    phyloxml = phyloxml.replace('""', '"').replace("''", "'")
+    return phyloxml
+    # return f.jsonify(phyloxml)
+
+
+@app.route('/tree/newick/<int:tree_id>')
+def tree_newick(tree_id):
+    treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
+    if treefile is None:
+        f.flash('Not found.')
+    newick = treefile.newick.rstrip()
+    return newick
+
 
 @app.route('/tree/<int:tree_id>', methods=('POST', 'GET'))
 def view_tree(tree_id):
     tree = Trees.query.get(tree_id)
-    treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
-    if treefile is None:
-        f.flash('Not found.')
-    # todo: use auspice or other js
     title = tree.tree_title
-    newick = treefile.newick.rstrip()
-    return f.render_template('archaeopteryx2.html', title=title, newick=newick)
+    return f.render_template('archaeopteryx2.html',
+                             title=title, tree_id=tree_id)
 
 
 def get_nodes(raw_nodes: list) -> dict:
