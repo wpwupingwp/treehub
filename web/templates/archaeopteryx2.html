@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="web demo">
     <meta name="author" content="wp">
-    <title>{{title}}</title>
+    <title>{{ tree.tree_title }}</title>
     {{ bootstrap.load_css() }}
     {% from 'bootstrap/nav.html' import render_breadcrumb_item %}
     <link rel="stylesheet" href="{{ url_for('static', filename='jquery-ui.css') }}">
@@ -31,7 +31,7 @@
         window.onload = load;
     </script>
 </head>
-<body class="container-fluid col-md-10 bg-gray">
+<body class="container-fluid bg-gray">
 <div class="header sticky-top my-2">
     <nav class="navbar navbar-expand-lg navbar-light col-md-10 mx-auto"
          style="background-color: #009a3b">
@@ -56,35 +56,36 @@
             {% endif %}
             {% else %}
             {% endif %}
+
         </ol>
+        <div class="btn btn-dark my-2 mr-auto h3">
+            {{ tree.tree_title }}
+        </div>
         <form class="form-inline my-2">
             <input class="form-control mr-sm-2" type="search" placeholder="Search">
             <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
         </form>
     </nav>
 </div>
-
-<div class="container">
-    <h1>{{ tree.tree_label }}</h1>
-    <h1>{{ treefile.treefile_id }}</h1>
+<div class="container-fluid">
     <div id='phylogram1'></div>
     <div id='controls0' class='ui-widget-content'></div>
 </div>
-    <div>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {{render_messages(dismissible=True, dismiss_animate=True)}}
-        {% endif %}
+<div>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {{render_messages(dismissible=True, dismiss_animate=True)}}
+    {% endif %}
     {% endwith %}
 
-    </div>
+</div>
 </body>
 <footer class="footer h5 font-weight-bolder text-muted text-center">
     <div class="h6 text-primary text-center">
-    <p>
-        Power by Flask 2.2.2 and Bootstrap 5 <br/>
-        <span>Copyright 2022</span>
-    </p>
+        <p>
+            Power by Flask 2.2.2 and Bootstrap 5 <br/>
+            <span>Copyright 2022</span>
+        </p>
     </div>
 </footer>
 </html>
