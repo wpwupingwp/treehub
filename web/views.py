@@ -14,7 +14,7 @@ from Bio import Phylo
 import flask as f
 import flask_login as fl
 
-from web import app, lm
+from web import app, lm, root
 from web.database import Trees, Treefile, Study, Submit, Matrix, NcbiName
 from web.database import Nodes, Visit, db
 from web.auth import auth
@@ -185,7 +185,9 @@ def tree_auspice_file(tree_id):
         f.flash('Not found.')
     newick = treefile.newick
     tmp_folder = app.config.get('TMP_FOLDER')
-    auspice_file = nwk2auspice(newick, tmp_folder, tree_id)
+    meta_file = root / 'static' / 'auspice' / 'auspice_tree_meta.json'
+    print(meta_file)
+    auspice_file = nwk2auspice(newick, tmp_folder, tree_id, meta_file)
     return f.url_for('tmp_file', filename=auspice_file)
 
 
@@ -194,7 +196,7 @@ def tree_auspice_file(tree_id):
 def view_tree(tree_id):
     tree = Trees.query.get(tree_id)
     title = tree.tree_title
-    tree_newick_file(tree_id)
+    tree_auspice_file(tree_id)
     return f.render_template('view_tree.html',
                              title=title, tree_id=tree_id)
 
