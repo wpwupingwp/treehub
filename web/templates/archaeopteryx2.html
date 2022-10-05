@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="web demo">
     <meta name="author" content="wp">
-    <title>{{ tree.tree_title }}</title>
+    <title>{{ title }}</title>
     {{ bootstrap.load_css() }}
     {% from 'bootstrap/nav.html' import render_breadcrumb_item %}
     <link rel="stylesheet" href="{{ url_for('static', filename='jquery-ui.css') }}">
@@ -19,11 +19,59 @@
     <script type="application/javascript">
         function load() {
             let options = {};
-            options.backgroundColorDefault = '#f0f0f0';
+            options.alignPhylogram = false;
+            options.dynahide = true;
+            options.externalNodeFontSize = 10;
+            options.internalNodeFontSize = 10;
+            options.labelColorDefault = '#202020';
+            options.minBranchLengthValueToShow = 0.001;
+            options.minConfidenceValueToShow = 0.5;
+            options.nodeSizeDefault = 2;
+            options.nodeVisualizationsOpacity = 1.0;
+            options.phylogram = true;
+            options.searchIsCaseSensitive = false;
+            options.searchIsPartial = true;
+            options.searchUsesRegex = false;
+            options.showBranchEvents = true;
+            options.showBranchLengthValues = false;
+            options.showConfidenceValues = true;
+            options.showDisributions = true;
+            options.showExternalLabels = true;
+            options.showExternalNodes = false;
+            options.showInternalLabels = false;
+            options.showInternalNodes = false;
+            options.showNodeEvents = true;
+            options.showNodeName = true;
+            options.showNodeVisualizations = true;
+            options.showSequence = false;
+            options.showSequenceAccession = true;
+            options.showSequenceGeneSymbol = true;
+            options.showSequenceName = true;
+            options.showSequenceSymbol = true;
+            options.showTaxonomy = false;
+            options.showTaxonomyCode = true;
+            options.showTaxonomyCommonName = true;
+            options.showTaxonomyRank = true;
+            options.showTaxonomyScientificName = true;
+            options.showTaxonomySynonyms = true;
+
             let settings = {};
+            settings.border = '1px solid #909090';
+            settings.controls0Top = 10;
+            settings.enableDownloads = true;
+            settings.enableBranchVisualizations = false;
+            settings.enableCollapseByBranchLenghts = false;
+            settings.enableCollapseByFeature = true;
+            settings.enableMsaResidueVisualizations = true;
+            settings.enableNodeVisualizations = true;
+            settings.nhExportWriteConfidences = true;
+            settings.showShortenNodeNamesButton = false;
+            settings.rootOffset = 140;
+
             let confValsInBrackets = false;
             let confValsAsInternalNodeNames = true;
-            let data = "((Mus_musculus_b1genep:0.00000,Mus_musculus_b1gened:0.00000):0.00000,(Mus_musculus_b1genew1:0.00000,Mus_musculus_b1genew2:0.00000):0.00000):0.00000; "
+            //let data = "((Mus_musculus_b1genep:0.00000,Mus_musculus_b1gened:0.00000):0.00000,(Mus_musculus_b1genew1:0.00000,Mus_musculus_b1genew2:0.00000):0.00000):0.00000; "
+            let data = "{{ newick }}"
             let tree = archaeopteryx.parseNewHampshire(data, confValsInBrackets, confValsAsInternalNodeNames);
             archaeopteryx.launch('#phylogram1', tree, options, settings);
         }
@@ -59,7 +107,7 @@
 
         </ol>
         <div class="btn btn-dark my-2 mr-auto h3">
-            {{ tree.tree_title }}
+            {{ title }}
         </div>
         <form class="form-inline my-2">
             <input class="form-control mr-sm-2" type="search" placeholder="Search">

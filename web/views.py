@@ -144,7 +144,9 @@ def view_tree(tree_id):
     if treefile is None:
         f.flash('Not found.')
     # todo: use auspice or other js
-    return f.render_template('archaeopteryx2.html', tree=tree, treefile=treefile)
+    title = tree.tree_title
+    newick = treefile.newick.rstrip()
+    return f.render_template('archaeopteryx2.html', title=title, newick=newick)
 
 
 def get_nodes(raw_nodes: list) -> dict:
