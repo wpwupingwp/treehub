@@ -1,74 +1,86 @@
-from sys import argv
+#!/usr/bin/python3
 import json
 from Bio import Phylo
 from pathlib import Path
 from io import StringIO
 
 
-def nwk2auspice(newick: str, tmp: Path, file_stem: str, meta: dict):
-    def get_auspice_json(node, name_format=False):
-        # name format: Order_family_genus_species_others
-        nonlocal branch_lengths, factor, n
-        if name_format:
-            if node.name is None:
-                order, family, genus, species, *_ = list('_' * 5)
-            else:
-                try:
-                    order, family, genus, species, *_ = node.name.split('_')
-                except Exception:
-                    order, family, genus, species, *_ = list('_' * 5)
-            organism = '_'.join([genus, species]) if genus else '_'
-            order = order.strip("'")
-            family = family.strip("'")
-            organism = organism.strip("'")
-            if organism in organisms:
-                organism = f'{organism}_{n}'
-                n += 1
-            else:
-                organisms.add(organism)
-        else:
-            if node.name is None:
-                node.name = f'_{n}'
-                n += 1
-            organism = node.name
-            order = family = ''
-        organism = organism.replace(r"\'", '')
-        length = float(
-            node.branch_length) if node.branch_length is not None else 0.0001
-        branch_lengths.append(length)
-        # length = max(length, 0.1)
-        # print(organism, length)
-        json_ = {'name': organism,
-                 'node_attrs': {'div': 1 * length,
-                                'num_date': {'value': -1 * length * factor}},
-                 'branch_attrs': {'mutations': {}}}
-        if name_format:
-            json_['node_attrs']['order'] = {'value': order}
-            json_['node_attrs']['family'] = {'value': family}
-        if node.clades:
-            json_['children'] = []
-            for ch in node.clades:
-                json_['children'].append(get_auspice_json(ch))
-        return json_
-
-    factor = 1
-    # todo
-    json_file = tmp / f'{file_stem}.json'
+def parse_newick(nwk: str):
     with StringIO() as s:
-        s.write(newick)
+        s.write(nwk)
         s.seek(0)
         tree = Phylo.read(s, 'newick')
-    root = tree.root
-    n = 0
-    organisms = set()
-    branch_lengths = list()
-    json_ = get_auspice_json(root)
-    # wait time for loading
-    wait = 2
-    max_length = max(branch_lengths) * factor + wait
-    json_['node_attrs']['div'] = {'value': max_length * 1}
-    json_['node_attrs']['num_date'] = {'value': max_length * -1}
-    meta['tree'] = json_
-    with open(json_file, 'w') as f:
-        json.dump(meta, f)
+    return tree
+
+
+def phylo_to_json(tree) -> dict:
+    json_ = {'name': tree.name,
+             'node_attrs': {'div': tree.branch_length}}
+    if tree.clades:
+        json_['children'] = []
+        for ch in tree.clades:
+            json_['children'].append(phylo_to_json(ch))
+    return json_
+
+
+def add_node_attr(node: dict, count: int, node_names: dict):
+    # add node attributes, first node is root
+    if node['name'] is None:
+        node['name'] = f'Node_{count}'
+        count += 1
+    # not in -> 0
+    if node['name'] in node_names:
+        n = node_names[node['name']] + 1
+        node['name'] = f'{node["name"]}_{n}'
+        node_names[node['name']] = n
+    else:
+        node_names[node['name']] = 1
+    if node['node_attr']['div'] is None:
+        node['node_attr']['div'] = 0
+    if 'children' in node:
+        for ch in node['children']:
+            add_node_attr(ch, count, node_names)
+    return node
+
+
+def set_branch(node, depth):
+    node['node_attr']['div'] = depth
+    if 'children' in node:
+        for ch in node['children']:
+            set_branch(ch, depth + 1)
+    pass
+
+
+def get_tree(nwk: str):
+    def cumulative_divs(node: dict, so_far=0):
+        node['node_attr']['div'] += so_far
+        if so_far:
+            nonlocal all_branch_zero
+            all_branch_zero = False
+        if 'children' in node:
+            for ch in node['children']:
+                cumulative_divs(ch, node['node_attr']['div'])
+        return so_far
+
+    count = 0
+    node_names = {}
+    all_branch_zero = True
+    tree = parse_newick(nwk)
+    add_node_attr(tree, count, node_names)
+    cumulative_divs(tree)
+    if all_branch_zero:
+        set_branch(tree, 0)
+    return tree
+
+
+def nwk2auspice(newick: str, tmp: Path, file_stem: str):
+    json_file = tmp / f'{file_stem}.json'
+    tree = get_tree(newick)
+    json_dict = {'version': '2.0',
+                 'meta': {'title': file_stem,
+                          'panels': ['tree'],
+                          'description': ''},
+                 'tree': tree}
+    with open(json_file, 'w', encoding='utf-8') as out:
+        json.dump(json_dict, out)
     return json_file
