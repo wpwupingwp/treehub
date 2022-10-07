@@ -33,10 +33,10 @@
 
         <ol class="breadcrumb mr-auto my-2 h5">
             {{ render_breadcrumb_item('index', 'Home') }}
-            {{ render_breadcrumb_item('tree_list', 'Tree list') }}
-            {{ render_breadcrumb_item('submit_list', 'Submit list') }}
             {{ render_breadcrumb_item('tree_query', 'Query') }}
             {{ render_breadcrumb_item('submit', 'Submit') }}
+            {{ render_breadcrumb_item('tree_list', 'Tree list') }}
+            {{ render_breadcrumb_item('submit_list', 'Submit list') }}
             {% if current_user.is_authenticated %}
                 {{ render_breadcrumb_item('/auth/tree/{{current_user.user_id}}}', 'My trees') }}
                 {{ render_breadcrumb_item('/auth/logout', 'Logout') }}
