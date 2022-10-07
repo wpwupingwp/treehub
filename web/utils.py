@@ -5,6 +5,13 @@ from pathlib import Path
 from io import StringIO
 
 
+meta = {'title': '',
+        'panels': ['tree'],
+        'colorings': [{'key': 'subgroup', 'title': 'subgroup',
+                       'type': 'categorical'}],
+        'updated': '',
+}
+
 def parse_newick(nwk: str):
     with StringIO() as s:
         s.write(nwk)

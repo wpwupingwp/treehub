@@ -194,6 +194,8 @@ def tree_auspice_file(tree_id):
         meta = json.load(_)
     meta['meta']['title'] = tree.tree_title
     meta['meta']['panels'] = ['tree']
+    meta['meta']['colorings'] = [{'key': 'subgroup', 'title': 'subgroup',
+                                  'type': 'categorical'}]
     meta['meta']['updated'] = str(treefile.upload_date)
     json_file = nwk2auspice(newick, json_file, meta)
     return f.url_for('tmp_file', filename=json_file)
@@ -202,6 +204,8 @@ def tree_auspice_file(tree_id):
 @app.route('/tree/<int:tree_id>', methods=('POST', 'GET'))
 def view_tree(tree_id):
     tree = Trees.query.get(tree_id)
+    if tree is None:
+        return f.abort(404)
     title = tree.tree_title
     tree_auspice_file(tree_id)
     return f.render_template('view_tree.html',
