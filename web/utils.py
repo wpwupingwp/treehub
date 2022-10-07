@@ -17,7 +17,7 @@ def phylo_to_json(tree) -> dict:
     div = getattr(tree, 'branch_length', None)
     json_ = {'name': tree.name,
              'node_attrs': {'div': div}}
-    if getattr(tree, 'clades', False):
+    if tree.clades:
         json_['children'] = []
         for ch in tree.clades:
             json_['children'].append(phylo_to_json(ch))
@@ -36,8 +36,8 @@ def add_node_attr(node: dict, count: int, node_names: dict):
         node_names[node['name']] = n
     else:
         node_names[node['name']] = 1
-    if node['node_attr']['div'] is None:
-        node['node_attr']['div'] = 0
+    if node['node_attrs']['div'] is None:
+        node['node_attrs']['div'] = 0
     if 'children' in node:
         for ch in node['children']:
             add_node_attr(ch, count, node_names)
@@ -45,7 +45,7 @@ def add_node_attr(node: dict, count: int, node_names: dict):
 
 
 def set_branch(node, depth):
-    node['node_attr']['div'] = depth
+    node['node_attrs']['div'] = depth
     if 'children' in node:
         for ch in node['children']:
             set_branch(ch, depth + 1)
@@ -54,20 +54,21 @@ def set_branch(node, depth):
 
 def get_tree(nwk: str):
     def cumulative_divs(node: dict, so_far=0):
-        node['node_attr']['div'] += so_far
+        node['node_attrs']['div'] += so_far
         if so_far:
             nonlocal all_branch_zero
             all_branch_zero = False
         if 'children' in node:
             for ch in node['children']:
-                cumulative_divs(ch, node['node_attr']['div'])
+                cumulative_divs(ch, node['node_attrs']['div'])
         return so_far
 
     count = 0
     node_names = {}
     all_branch_zero = True
-    newick_tree = parse_newick(nwk)
-    tree_dict = phylo_to_json(newick_tree)
+    tree = parse_newick(nwk)
+    root = tree.root
+    tree_dict = phylo_to_json(root)
     add_node_attr(tree_dict, count, node_names)
     cumulative_divs(tree_dict)
     if all_branch_zero:
