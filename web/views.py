@@ -281,8 +281,7 @@ def submit():
         if sf.matrix_file.data:
             matrix_file_tmp = upload(sf.matrix_file.data)
             with open(matrix_file_tmp, 'r') as _:
-                matrix.filename = str(matrix_file_tmp)
-                matrix.file_bin = _.read()
+                matrix.fasta = _.read()
             matrix_file_tmp.unlink()
             # dirty work
             matrix.analysisstep_id = '20222022'

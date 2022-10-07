@@ -88,9 +88,8 @@ class Matrix(db.Model):
     legacy_id = db.Column(db.String(35))
     description = db.Column(db.String(255))
     input = db.Column(db.Boolean)
-    filename = db.Column(db.String())
     # todo: pg_read_binary_file
-    file_bin = db.Column(db.BLOB())
+    fasta = db.Column(db.String())
     upload_date = db.Column(db.Date)
 
 

@@ -80,8 +80,7 @@ SELECT * FROM treefile;
 ```postgresql
 -- add matrix file
 ALTER TABLE matrix
-ADD COLUMN filename character varying,
-ADD COLUMN file_bin bytea;
+ADD COLUMN fasta character varying,
 -- add dating tree marker
 ALTER TABLE trees
 ADD COLUMN is_dating boolean default false;
