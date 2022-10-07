@@ -73,14 +73,9 @@ def get_tree(nwk: str):
     return tree
 
 
-def nwk2auspice(newick: str, tmp: Path, file_stem: str):
-    json_file = tmp / f'{file_stem}.json'
+def nwk2auspice(newick: str, json_file: Path, meta: dict) -> Path:
     tree = get_tree(newick)
-    json_dict = {'version': '2.0',
-                 'meta': {'title': file_stem,
-                          'panels': ['tree'],
-                          'description': ''},
-                 'tree': tree}
+    json_dict = {'version': '2.0', 'meta': meta, 'tree': tree}
     with open(json_file, 'w', encoding='utf-8') as out:
         json.dump(json_dict, out)
     return json_file
