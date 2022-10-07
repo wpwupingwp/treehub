@@ -39,8 +39,8 @@ def add_node_attr(node: dict, count: int, node_names: dict):
     # not in -> 0
     if node['name'] in node_names:
         n = node_names[node['name']] + 1
-        node['name'] = f'{node["name"]}_{n}'
         node_names[node['name']] = n
+        node['name'] = f'{node["name"]}_{n}'
     else:
         node_names[node['name']] = 1
     if node['node_attrs']['div'] is None:
@@ -83,9 +83,9 @@ def get_tree(nwk: str):
     return tree_dict
 
 
-def nwk2auspice(newick: str, json_file: Path, meta: dict) -> Path:
+def nwk2auspice(newick: str, json_file: Path, json_: dict) -> Path:
     tree = get_tree(newick)
-    json_dict = {'version': '2.0', 'meta': meta, 'tree': tree}
+    json_['tree'] = tree
     with open(json_file, 'w', encoding='utf-8') as out:
-        json.dump(json_dict, out)
+        json.dump(json_, out)
     return json_file

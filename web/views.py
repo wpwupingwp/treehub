@@ -191,13 +191,11 @@ def tree_auspice_file(tree_id):
     newick = treefile.newick
     meta_file = root / 'static' / 'auspice_tree_meta.json'
     with open(meta_file, 'r', encoding='utf-8') as _:
-        meta = json.load(_)
-    meta['title'] = tree.tree_title
-    meta['panels'] = ['tree']
-    meta['colorings'] = [{'key': 'subgroup', 'title': 'subgroup',
-                                  'type': 'categorical'}]
-    meta['updated'] = str(treefile.upload_date)
-    json_file = nwk2auspice(newick, json_file, meta)
+        json_ = json.load(_)
+    json_['meta']['title'] = tree.tree_title
+    json_['meta']['panels'] = ['tree']
+    json_['meta']['updated'] = str(treefile.upload_date)
+    json_file = nwk2auspice(newick, json_file, json_)
     return f.url_for('tmp_file', filename=json_file)
 
 
