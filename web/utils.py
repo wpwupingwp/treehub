@@ -14,9 +14,10 @@ def parse_newick(nwk: str):
 
 
 def phylo_to_json(tree) -> dict:
+    div = getattr(tree, 'branch_length', None)
     json_ = {'name': tree.name,
-             'node_attrs': {'div': tree.branch_length}}
-    if tree.clades:
+             'node_attrs': {'div': div}}
+    if getattr(tree, 'clades', False):
         json_['children'] = []
         for ch in tree.clades:
             json_['children'].append(phylo_to_json(ch))
@@ -65,12 +66,13 @@ def get_tree(nwk: str):
     count = 0
     node_names = {}
     all_branch_zero = True
-    tree = parse_newick(nwk)
-    add_node_attr(tree, count, node_names)
-    cumulative_divs(tree)
+    newick_tree = parse_newick(nwk)
+    tree_dict = phylo_to_json(newick_tree)
+    add_node_attr(tree_dict, count, node_names)
+    cumulative_divs(tree_dict)
     if all_branch_zero:
-        set_branch(tree, 0)
-    return tree
+        set_branch(tree_dict, 0)
+    return tree_dict
 
 
 def nwk2auspice(newick: str, json_file: Path, meta: dict) -> Path:
