@@ -171,3 +171,7 @@ yarn add archaeopteryx
 # edit path in html
 #
 ```
+201. Load auspice
+```powershell
+node auspice.js view --datasetDir plant_tree_db/web/tmp
+```
