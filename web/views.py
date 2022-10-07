@@ -277,6 +277,17 @@ def submit():
         else:
             tree.root = taxon[0].tax_id
 
+        # handle matrix
+        if sf.matrix_file.data:
+            matrix_file_tmp = upload(sf.matrix_file.data)
+            with open(matrix_file_tmp, 'r') as _:
+                matrix.filename = str(matrix_file_tmp)
+                matrix.file_bin = _.read()
+            matrix_file_tmp.unlink()
+            # dirty work
+            matrix.analysisstep_id = '20222022'
+        db.session.add(matrix)
+        db.session.commit()
         # handle tree_text
         treefile_tmp = upload(sf.tree_file.data)
         try:
@@ -324,9 +335,6 @@ def submit():
             db.session.commit()
         db.session.add(treefile)
         db.session.add(study)
-        # dirty work
-        matrix.analysisstep_id = '20222022'
-        db.session.add(matrix)
         if request.headers.getlist('X-Forwarded-For'):
             ip = request.headers.getlist('X-Forwarded-For')[0]
         else:
