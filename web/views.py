@@ -53,6 +53,12 @@ def login():
     pass
 
 
+@app.route('/favicon.ico')
+def favicon():
+    return f.send_from_directory(root/'static', 'favicon.ico',
+                                 mimetype='image/vnd.microsoft.icon')
+
+
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return f.send_from_directory(app.config['UPLOADED_FILE_DEST'], filename)
