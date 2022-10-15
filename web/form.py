@@ -32,12 +32,13 @@ class LoginForm(FlaskForm):
 class QueryForm(FlaskForm):
     # tree
     taxonomy = m.StringField('Taxonomy',
-                             render_kw={'placeholder': 'Oryza sativa'})
-    tree_title = m.StringField('Tree title', validators=[v.length(max=255)],
-                               render_kw={'placeholder': 'Poaceae'})
+                             render_kw={'placeholder': 'eg. Oryza sativa'})
+    tree_title = m.StringField(
+        'Tree title', validators=[v.length(max=255)],
+        render_kw={'placeholder': 'eg. Bootstrap tree of Poaceae'})
     is_dating = m.BooleanField('Is dating tree')
     # study
-    year = m.StringField('Publish year',  render_kw={'placeholder': 2022})
+    year = m.StringField('Publish year',  render_kw={'placeholder': 'eg. 2021'})
     author = m.StringField('Author', validators=[v.length(max=100)],
                            render_kw={'placeholder': 'eg. Charles Darwin'})
     title = m.StringField('Title', validators=[v.length(max=200)],
