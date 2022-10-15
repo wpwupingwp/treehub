@@ -128,9 +128,6 @@ def tree_result(page=1):
         session['item'] = item
         session['order'] = order
         page = 1
-    print(session)
-    print(sf.item.choices)
-    print(sf.order.choices)
     field = name_to_field[item]
     if order == 'Descend':
         order_by = field.desc()
