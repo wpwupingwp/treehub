@@ -48,6 +48,15 @@ class QueryForm(FlaskForm):
     submit = m.SubmitField('Submit')
 
 
+class SortQueryForm(FlaskForm):
+    item = m.SelectField('Sort by', choices=['ID', 'Tree title', 'Kind',
+                                             'Publish year', 'Article title',
+                                             'Journal', 'DOI'], default='ID')
+    order = m.SelectField('Order', choices=['Ascend', 'Descend'],
+                          default='Descend')
+    submit = m.SubmitField('Sort')
+
+
 class TreeForm(FlaskForm):
     # outdated
     taxonomy = m.StringField('Taxonomy', validators=[v.input_required()],

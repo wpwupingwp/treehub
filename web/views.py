@@ -18,7 +18,7 @@ from web import app, lm, root
 from web.database import Trees, Treefile, Study, Submit, Matrix, NcbiName
 from web.database import Nodes, Visit, db
 from web.auth import auth
-from web.form import QueryForm, SubmitForm
+from web.form import QueryForm, SubmitForm, SortQueryForm
 from web.utils import nwk2auspice
 # from web.form import LoginForm, UserForm
 
@@ -110,9 +110,18 @@ def tree_query():
     return f.render_template('tree_query.html', form=qf)
 
 
-@app.route('/tree/list')
-@app.route('/tree/list/<int:page>')
+@app.route('/tree/list', methods=('POST', 'GET'))
+@app.route('/tree/list/<int:page>', methods=('POST', 'GET'))
 def tree_result(page=1):
+    sf = SortQueryForm()
+    if sf.validate_on_submit():
+        name_to_field = {'ID': Trees.tree_id, 'Tree title': Trees.tree_title,
+                         'Kind': Trees.tree_kind, 'Publish year': Study.year,
+                         'Article title': Study.title, 'Journal': Study.journal,
+                         'DOI': Study.doi}
+        item = name_to_field[sf.item.data]
+        if sf.order.data == 'Descend'
+        pass
     query = session['dict']
     study_filters = []
     filters = []
@@ -147,7 +156,7 @@ def tree_result(page=1):
         trees).order_by(Trees.upload_date.desc())
     app.logger.debug(str(results))
     pagination = results.paginate(page=page, per_page=20)
-    return f.render_template('tree_list.html', pagination=pagination)
+    return f.render_template('tree_list.html', pagination=pagination, form=sf)
 
 
 @app.route('/tree/phyloxml/<int:tree_id>')
