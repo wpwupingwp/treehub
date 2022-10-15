@@ -7,7 +7,7 @@
     <meta name="author" content="wp">
     <title>{{ title }}</title>
     {{ bootstrap.load_css() }}
-    {% from 'bootstrap/nav.html' import render_breadcrumb_item %}
+    {% from 'bootstrap4/nav.html' import render_breadcrumb_item %}
     <link rel="stylesheet" href="{{ url_for('static', filename='jquery-ui.css') }}">
     <script src="{{ url_for('static', filename='d3.js') }}"></script>
     <script src="{{ url_for('static', filename='jquery.js') }}"></script>
