@@ -113,15 +113,25 @@ def tree_query():
 @app.route('/tree/list', methods=('POST', 'GET'))
 @app.route('/tree/list/<int:page>', methods=('POST', 'GET'))
 def tree_result(page=1):
-    sf = SortQueryForm()
+    name_to_field = {'ID': Trees.tree_id, 'Tree title': Trees.tree_title,
+                     'Kind': Trees.tree_kind, 'Publish year': Study.year,
+                     'Article title': Study.title, 'Journal': Study.journal,
+                     'DOI': Study.doi}
+    sf = SortQueryForm(obj=session)
     if sf.validate_on_submit():
-        name_to_field = {'ID': Trees.tree_id, 'Tree title': Trees.tree_title,
-                         'Kind': Trees.tree_kind, 'Publish year': Study.year,
-                         'Article title': Study.title, 'Journal': Study.journal,
-                         'DOI': Study.doi}
-        item = name_to_field[sf.item.data]
-        if sf.order.data == 'Descend'
-        pass
+        item = sf.item.data
+        order = sf.order.data
+        session['item'] = item
+        session['order'] = order
+    else:
+        item = session.get('item', 'ID')
+        order = session.get('order', 'Descend')
+    print(session)
+    field = name_to_field[item]
+    if order == 'Descend':
+        order_by = field.desc()
+    else:
+        order_by = field.asc()
     query = session['dict']
     study_filters = []
     filters = []
@@ -153,10 +163,10 @@ def tree_result(page=1):
         Study.title, Study.year, Study.journal, Study.doi,
         Trees.tree_id, Trees.tree_title, Trees.tree_kind, Trees.is_dating).join(
         Study, Study.study_id == Trees.study_id).filter(
-        trees).order_by(Trees.upload_date.desc())
+        trees).order_by(order_by)
     app.logger.debug(str(results))
     pagination = results.paginate(page=page, per_page=20)
-    return f.render_template('tree_list.html', pagination=pagination, form=sf)
+    return f.render_template(f'tree_list.html', pagination=pagination, form=sf)
 
 
 @app.route('/tree/phyloxml/<int:tree_id>')
