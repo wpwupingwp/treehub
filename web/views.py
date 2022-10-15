@@ -117,10 +117,11 @@ def tree_result(page=1):
                      'Kind': Trees.tree_kind, 'Publish year': Study.year,
                      'Article title': Study.title, 'Journal': Study.journal,
                      'DOI': Study.doi}
-    item = session.get('item', 'ID')
-    order = session.get('order', 'Descend')
+    item = session.get('item', None)
+    order = session.get('order', None)
     sf = SortQueryForm()
     sf.item.choices = SortQueryForm.new_item_choices(item)
+    sf.order.choices = SortQueryForm.new_order_choices(order)
     if sf.validate_on_submit():
         item = sf.item.data
         order = sf.order.data
@@ -129,6 +130,7 @@ def tree_result(page=1):
         page = 1
     print(session)
     print(sf.item.choices)
+    print(sf.order.choices)
     field = name_to_field[item]
     if order == 'Descend':
         order_by = field.desc()
