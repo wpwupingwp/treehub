@@ -1,10 +1,8 @@
 #!/usr/bin/python3
 
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileAllowed
 import wtforms as m
 from wtforms import validators as v
-from wtforms.fields import DateField
 
 # cannot use flask_upload, _uploads.uploaded_file is broken
 # that photos.url() cannot be used, use flask instead
@@ -76,8 +74,6 @@ class SortQueryForm(FlaskForm):
             return list(reversed(old))
 
 
-
-
 class TreeForm(FlaskForm):
     # outdated
     taxonomy = m.StringField('Taxonomy', validators=[v.input_required()],
@@ -96,7 +92,7 @@ class TreeForm(FlaskForm):
     # todo
     # tree_file = m.MultipleFileField('Tree file (NEXUS or newick format)')
     tree_file = m.FileField('Tree files (NEXUS format)',
-                                    validators=[v.data_required()])
+                            validators=[v.data_required()])
 
 
 class MatrixForm(FlaskForm):
