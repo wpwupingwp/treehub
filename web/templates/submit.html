@@ -5,6 +5,6 @@
     {% for error in form.errors.items() %}
         <div class="invalid-feedback">{{error}}</div>
     {% endfor %}
-    {{ render_form(form, enctype='multipart/form-data') }}
+    {{ render_form(form, enctype='multipart/form-data', form_type='horizontal') }}
 </div>
 {% endblock %}
