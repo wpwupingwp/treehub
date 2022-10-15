@@ -49,12 +49,25 @@ class QueryForm(FlaskForm):
 
 
 class SortQueryForm(FlaskForm):
-    item = m.SelectField('Sort by', choices=['ID', 'Tree title', 'Kind',
-                                             'Publish year', 'Article title',
-                                             'Journal', 'DOI'], default='ID')
+    item = m.SelectField('Sort by',
+                         choices=['ID', 'Tree title', 'Kind', 'Publish year',
+                                  'Article title', 'Journal', 'DOI'])
     order = m.SelectField('Order', choices=['Ascend', 'Descend'],
                           default='Descend')
     submit = m.SubmitField('Sort')
+
+    @staticmethod
+    def new_item_choices(key=None):
+        old = ['ID', 'Tree title', 'Kind', 'Publish year', 'Article title',
+               'Journal', 'DOI']
+        if key is None:
+            return old
+        else:
+            index = old.index(key)
+            new = [key, *old[:index], *old[index+1:]]
+            return new
+
+
 
 
 class TreeForm(FlaskForm):
