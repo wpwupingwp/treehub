@@ -126,6 +126,7 @@ def tree_result(page=1):
         order = sf.order.data
         session['item'] = item
         session['order'] = order
+        page = 1
     print(session)
     print(sf.item.choices)
     field = name_to_field[item]
