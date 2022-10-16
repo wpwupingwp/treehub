@@ -10,20 +10,20 @@
     </div>
 </div>
 <div class="card-deck">
-    {% for card in cards %}
+    {% for study, img in cards %}
     <div class="card">
         <div class="card-header bg-dark text-white">
-            Taxon A
+            {{study.title}}
         </div>
-        <img class="card-img-top" src="..." alt="Card image cap">
+        <img class="card-img-top" src="{{img}}" alt="Card image cap">
         <div class="card-body">
-            <h5 class="card-title">Article title</h5>
-            <p class="card-text">Contents</p>
+            <h5 class="card-title">{{study.title}}</h5>
+            <p class="card-text">{{study.abstract}}</p>
             <a href="#" class="btn btn-outline-primary">View tree</a>
             <a href="#" class="btn btn-outline-success">View article</a>
         </div>
         <div class="card-footer">
-            <small class="text-muted">Last updated 3 mins ago</small>
+            <small class="text-muted">Last updated {{study.upload_date}}</small>
         </div>
     </div>
     {% endfor %}

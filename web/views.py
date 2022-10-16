@@ -86,8 +86,6 @@ def upload(data) -> Path:
     native_path = upload_path / unique_filename
     # absolute path
     data.save(native_path)
-    # relative path
-    url = f.url_for('uploaded_file', filename=unique_filename)
     # return url
     return native_path
 
@@ -408,17 +406,25 @@ def submit_list(page=1):
 @app.route('/index')
 def index():
     news = Study.query.filter(Study.news==True).order_by(
-        Study.upload_date.desc()).limit(3).fetchall()
+        Study.upload_date.desc()).limit(3)
     tmp_imgs = []
+    tmp_folder = app.config.get('TMP_FOLDER')
     for i in news:
-        if not i.cover_img:
-            img = ''
+        img = ''
+        if i.cover_img_name is None:
+            continue
         else:
-            img = Study.cover_img_name
-            with open(img, 'wb') as _:
-                _.write(i.cover_img)
-        tmp_imgs.append(img)
-    return f.render_template('index.html', cards=news, imgs=tmp_imgs)
+            print(i.cover_img_name)
+            print(img)
+            img = tmp_folder / i.cover_img_name
+            if not img.exists():
+                with open(img, 'wb') as _:
+                    _.write(i.cover_img)
+        url = f.url_for('tmp_file', filename=img)
+        tmp_imgs.append(url)
+    cards = list(zip(news, tmp_imgs))
+    print(cards)
+    return f.render_template('index.html', cards=cards)
 
 
 app.register_blueprint(auth, url_prefix='/auth')
