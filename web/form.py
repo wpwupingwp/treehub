@@ -171,7 +171,7 @@ class SubmitForm(FlaskForm):
     doi = m.StringField('DOI', validators=[v.length(max=100)],
                         render_kw={'placeholder': 'eg. 10.9999/1234567890'})
     cover_img = m.FileField('Cover image (.jpg or .png)')
-    for_new = m.BooleanField('Submit for news', default=False)
+    for_news = m.BooleanField('Submit for news', default=False)
     submit = m.SubmitField('Submit')
 
 

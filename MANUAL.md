@@ -80,7 +80,7 @@ SELECT * FROM treefile;
 ```postgresql
 -- add matrix file
 ALTER TABLE matrix
-ADD COLUMN fasta character varying,
+ADD COLUMN fasta character varying;
 -- add dating tree marker
 ALTER TABLE trees
 ADD COLUMN is_dating boolean default false;
@@ -92,6 +92,10 @@ ALTER TABLE trees
 -- add submit user
 ALTER TABLE trees
     ADD COLUMN email character varying(255);
+-- add cover and news
+ALTER TABLE study
+    ADD COLUMN cover_img bytea,
+    ADD COLUMN news boolean default false;
 ```
 13. add user table
 ```postgresql
