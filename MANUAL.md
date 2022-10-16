@@ -89,6 +89,8 @@ ALTER TABLE matrix
     ADD COLUMN upload_date date;
 ALTER TABLE trees
     ADD COLUMN upload_date date;
+ALTER TABLE study 
+    RENAME COLUMN lastmodifieddate TO upload_date;
 -- add submit user
 ALTER TABLE trees
     ADD COLUMN email character varying(255);

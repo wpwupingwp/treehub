@@ -126,7 +126,7 @@ class Study(db.Model):
     doi = db.Column(db.String(100))
     cover_img = db.Column(db.BINARY())
     news = db.Column(db.Boolean())
-    lastmodifieddate = db.Column(db.Date)
+    upload_date = db.Column(db.Date)
 
 
 class Trees(db.Model):

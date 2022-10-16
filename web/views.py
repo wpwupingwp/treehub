@@ -290,7 +290,7 @@ def submit():
         matrix = Matrix()
         for i in [tree, treefile, study, matrix]:
             sf.populate_obj(i)
-        for j in [matrix, treefile, tree]:
+        for j in [matrix, treefile, tree, study]:
             j.upload_date = upload_date
         # handle root id
         taxon = NcbiName.query.filter_by(name_txt=tree.root).all()
@@ -406,6 +406,7 @@ def submit_list(page=1):
 @app.route('/')
 @app.route('/index')
 def index():
+    news = Study.query.filter(news==True).order_by()
     cards = [1, 2, 3]
 
     return f.render_template('index.html', cards=cards)
