@@ -13,14 +13,14 @@
     {% for study, img in cards %}
     <div class="card">
         <div class="card-header bg-dark text-white">
-            {{study.title}}
+            {{study.tree_title}}
         </div>
         <img class="card-img-top" src="{{img}}" alt="Card image cap">
         <div class="card-body">
             <h5 class="card-title">{{study.title}}</h5>
             <p class="card-text">{{study.abstract}}</p>
-            <a href="#" class="btn btn-outline-primary">View tree</a>
-            <a href="#" class="btn btn-outline-success">View article</a>
+            <a href="/tree/{{study.tree_id}}" class="btn btn-outline-primary">View tree</a>
+            <a href="https://dx.doi.org/{{study.doi}}" class="btn btn-outline-success">View article</a>
         </div>
         <div class="card-footer">
             <small class="text-muted">Last updated {{study.upload_date}}</small>
