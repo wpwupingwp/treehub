@@ -111,7 +111,8 @@ class StudyForm(FlaskForm):
     # outdated
     year = m.StringField('Publish year')
     author = m.StringField('Author', validators=[v.length(max=100)])
-    title = m.StringField('Title', validators=[v.length(max=200)])
+    title = m.StringField('Article title', validators=[v.length(max=200)])
+    abstract = m.StringField('Abstract', validators=[v.length(max=2020)])
     keywords = m.StringField('Keywords', validators=[v.length(max=50)])
     doi = m.StringField('DOI', validators=[v.length(max=100)])
 
@@ -162,12 +163,15 @@ class SubmitForm(FlaskForm):
     author = m.StringField(
         'Author', validators=[v.length(max=100)],
         render_kw={'placeholder': 'eg. Carl Linnaeus, Charles Robert Darwin'})
-    title = m.StringField('Title', validators=[v.length(max=200)],
+    title = m.StringField('Article title', validators=[v.length(max=200)],
                           render_kw={'placeholder': 'Article title'})
+    abstract = m.TextAreaField('Abstract', validators=[v.length(max=2020)])
     keywords = m.StringField('Keywords', validators=[v.length(max=50)],
                              render_kw={'placeholder': 'Article keywords'})
     doi = m.StringField('DOI', validators=[v.length(max=100)],
                         render_kw={'placeholder': 'eg. 10.9999/1234567890'})
+    cover_img = m.FileField('Cover image (.jpg or .png)')
+    for_new = m.BooleanField('Submit for news', default=False)
     submit = m.SubmitField('Submit')
 
 
