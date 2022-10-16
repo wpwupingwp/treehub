@@ -20,14 +20,14 @@
             <h5 class="card-title">{{study.title}}</h5>
             <p class="card-text">{{study.abstract}}</p>
             <a href="/tree/{{study.tree_id}}" class="btn btn-outline-primary">View tree</a>
-            <a href="https://dx.doi.org/{{study.doi}}" class="btn btn-outline-success">View article</a>
+            <a href="https://doi.org/{{study.doi}}" class="btn btn-outline-success">View article</a>
         </div>
         <div class="card-footer">
             <small class="text-muted">Last updated {{study.upload_date}}</small>
         </div>
     </div>
     {% endfor %}
-    <a href="#" class="btn btn-outline-secondary my-lg-auto">More...</a>
+    <a href="/tree/list" class="btn btn-outline-secondary my-lg-auto">More...</a>
 </div>
 
 
