@@ -19,7 +19,7 @@ from web.database import Trees, Treefile, Study, Submit, Matrix, NcbiName
 from web.database import Nodes, Visit, db
 from web.auth import auth
 from web.form import QueryForm, SubmitForm, SortQueryForm
-from web.utils import nwk2auspice
+from web.utils import nwk2auspice, compress_photo
 # from web.form import LoginForm, UserForm
 
 
@@ -367,7 +367,8 @@ def submit():
                          tree.tree_id, treefile.treefile_id, study.study_id,
                          matrix.matrix_id, sf.news.data)
         if sf.cover_img.data:
-            img_tmp = upload(sf.cover_img.data)
+            img_tmp_big = upload(sf.cover_img.data)
+            img_tmp = compress_photo(img_tmp_big)
             submit_.cover_img_name = str(img_tmp.name)
             with open(img_tmp, 'rb') as _:
                 submit_.cover_img = _.read()

@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 import json
-from Bio import Phylo
 from pathlib import Path
 from io import StringIO
+
+from Bio import Phylo
+from PIL import Image, ImageOps
 
 
 meta = {'title': '',
@@ -89,3 +91,19 @@ def nwk2auspice(newick: str, json_file: Path, json_: dict) -> Path:
     with open(json_file, 'w', encoding='utf-8') as out:
         json.dump(json_, out)
     return json_file
+
+
+def compress_photo(old_path: Path) -> Path:
+    """
+    Compress and rotate image with PIL
+    Args:
+        old_path: Path
+    """
+    small = 1024 * 1024
+    if old_path.stat().st_size <= small:
+        return old_path
+    old = Image.open(old_path)
+    rotate = ImageOps.exif_transpose(old)
+    rotate.thumbnail((1024, 1024))
+    rotate.save(old_path, 'JPEG')
+    return old_path
