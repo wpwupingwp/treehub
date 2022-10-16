@@ -9,25 +9,25 @@
         <a class="btn btn-lg btn-dark" href="/tree/117900" role="button">Demo</a>
     </div>
 </div>
-
-
-{% for card in cards.items %}
 <div class="card-deck">
-  <div class="card">
-      <div class="card-header bg-dark text-white">
-          Featured
-      </div>
-    <img class="card-img-top" src="..." alt="Card image cap">
-    <div class="card-body">
-      <h5 class="card-title">Card title</h5>
-      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-        <a href="#" class="btn btn-primary">View</a>
+    {% for card in cards %}
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            Taxon A
+        </div>
+        <img class="card-img-top" src="..." alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title">Article title</h5>
+            <p class="card-text">Contents</p>
+            <a href="#" class="btn btn-outline-primary">View tree</a>
+            <a href="#" class="btn btn-outline-success">View article</a>
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">Last updated 3 mins ago</small>
+        </div>
     </div>
-    <div class="card-footer">
-      <small class="text-muted">Last updated 3 mins ago</small>
-    </div>
-  </div>
     {% endfor %}
+    <a href="#" class="btn btn-outline-secondary my-lg-auto">More...</a>
 </div>
 
 
@@ -35,10 +35,10 @@
 {% block footer %}
 <footer class="footer h5 font-weight-bolder text-muted text-center">
     <div class="h6 text-primary text-center">
-    <p>
-        Power by Flask 2.2.2 and Bootstrap 5 <br/>
-        <span>Copyright 2022</span>
-    </p>
+        <p>
+            Power by Flask 2.2.2 and Bootstrap 5 <br/>
+            <span>Copyright 2022</span>
+        </p>
     </div>
 </footer>
 {% endblock %}

@@ -400,7 +400,9 @@ def submit_list(page=1):
 @app.route('/')
 @app.route('/index')
 def index():
-    return f.render_template('index.html')
+    cards = [1, 2, 3]
+
+    return f.render_template('index.html', cards=cards)
 
 
 app.register_blueprint(auth, url_prefix='/auth')
