@@ -310,7 +310,7 @@ def submit():
                 matrix.fasta = _.read()
             matrix_file_tmp.unlink()
             # dirty work
-            matrix.analysisstep_id = '20222022'
+        matrix.analysisstep_id = '20222022'
         db.session.add(matrix)
         db.session.commit()
         # handle tree_text
@@ -359,6 +359,12 @@ def submit():
             db.session.add(new_node)
             db.session.commit()
         db.session.add(treefile)
+        # handle cover_img
+        if sf.cover_img.data:
+            img_tmp = upload(sf.cover_img.data)
+            with open(img_tmp, 'rb') as _:
+                study.cover_img = _.read()
+            img_tmp.unlink()
         db.session.add(study)
         if request.headers.getlist('X-Forwarded-For'):
             ip = request.headers.getlist('X-Forwarded-For')[0]

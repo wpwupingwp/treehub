@@ -125,7 +125,7 @@ class Study(db.Model):
     url = db.Column(db.String(255))
     doi = db.Column(db.String(100))
     cover_img = db.Column(db.BINARY())
-    for_news = db.Column(db.Boolean())
+    news = db.Column(db.Boolean())
     lastmodifieddate = db.Column(db.Date)
 
 
