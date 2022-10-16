@@ -362,6 +362,7 @@ def submit():
         # handle cover_img
         if sf.cover_img.data:
             img_tmp = upload(sf.cover_img.data)
+            study.cover_img_name = str(img_tmp.name)
             with open(img_tmp, 'rb') as _:
                 study.cover_img = _.read()
             img_tmp.unlink()
@@ -406,10 +407,18 @@ def submit_list(page=1):
 @app.route('/')
 @app.route('/index')
 def index():
-    news = Study.query.filter(news==True).order_by()
-    cards = [1, 2, 3]
-
-    return f.render_template('index.html', cards=cards)
+    news = Study.query.filter(Study.news==True).order_by(
+        Study.upload_date.desc()).limit(3).fetchall()
+    tmp_imgs = []
+    for i in news:
+        if not i.cover_img:
+            img = ''
+        else:
+            img = Study.cover_img_name
+            with open(img, 'wb') as _:
+                _.write(i.cover_img)
+        tmp_imgs.append(img)
+    return f.render_template('index.html', cards=news, imgs=tmp_imgs)
 
 
 app.register_blueprint(auth, url_prefix='/auth')

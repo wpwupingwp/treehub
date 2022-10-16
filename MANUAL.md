@@ -96,6 +96,7 @@ ALTER TABLE trees
     ADD COLUMN email character varying(255);
 -- add cover and news
 ALTER TABLE study
+    ADD COLUMN cover_img_name character varying,
     ADD COLUMN cover_img bytea,
     ADD COLUMN news boolean default false;
 ```
