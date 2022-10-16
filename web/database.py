@@ -124,9 +124,6 @@ class Study(db.Model):
     legacy_id = db.Column(db.String(30))
     url = db.Column(db.String(255))
     doi = db.Column(db.String(100))
-    cover_img = db.Column(db.BINARY())
-    cover_img_name = db.Column(db.String())
-    news = db.Column(db.Boolean())
     upload_date = db.Column(db.Date)
 
 
@@ -174,9 +171,12 @@ class Submit(db.Model):
     treefile_id = db.Column(db.Integer)
     study_id = db.Column(db.Integer)
     matrix_id = db.Column(db.Integer)
+    cover_img = db.Column(db.BINARY())
+    cover_img_name = db.Column(db.String())
+    news = db.Column(db.Boolean())
 
     def __init__(self, email, ip, date, user_id, tree_id, treefile_id, study_id,
-                 matrix_id):
+                 matrix_id, news):
         self.email = email
         self.ip = ip
         self.date = date
@@ -185,6 +185,7 @@ class Submit(db.Model):
         self.treefile_id =  treefile_id
         self.study_id = study_id
         self.matrix_id = matrix_id
+        self.news = news
 
 
 class MyModelView(ModelView):

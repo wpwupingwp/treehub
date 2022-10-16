@@ -358,12 +358,6 @@ def submit():
             db.session.commit()
         db.session.add(treefile)
         # handle cover_img
-        if sf.cover_img.data:
-            img_tmp = upload(sf.cover_img.data)
-            study.cover_img_name = str(img_tmp.name)
-            with open(img_tmp, 'rb') as _:
-                study.cover_img = _.read()
-            img_tmp.unlink()
         db.session.add(study)
         if request.headers.getlist('X-Forwarded-For'):
             ip = request.headers.getlist('X-Forwarded-For')[0]
@@ -371,7 +365,13 @@ def submit():
             ip = request.remote_addr
         submit_ = Submit(sf.email.data, ip, upload_date, session['user_id'],
                          tree.tree_id, treefile.treefile_id, study.study_id,
-                         matrix.matrix_id)
+                         matrix.matrix_id, sf.news.data)
+        if sf.cover_img.data:
+            img_tmp = upload(sf.cover_img.data)
+            submit_.cover_img_name = str(img_tmp.name)
+            with open(img_tmp, 'rb') as _:
+                submit_.cover_img = _.read()
+            img_tmp.unlink()
         db.session.add(submit_)
         db.session.commit()
         f.flash('Submit ok.')
@@ -405,24 +405,29 @@ def submit_list(page=1):
 @app.route('/')
 @app.route('/index')
 def index():
-    news = Study.query.filter(Study.news==True).order_by(
-        Study.upload_date.desc()).limit(3)
+    results = db.session.query(Submit, Study, Trees).with_entities(
+        Submit.date, Submit.cover_img, Submit.cover_img_name,
+        Study.upload_date, Study.title, Study.abstract, Study.doi,
+        Trees.tree_title, Trees.tree_id).join(
+        Submit, Submit.study_id==Study.study_id).join(
+        Trees, Submit.tree_id==Trees.tree_id).filter(
+        Submit.news==True).order_by(Submit.date.desc()).limit(3)
     tmp_imgs = []
     tmp_folder = app.config.get('TMP_FOLDER')
-    for i in news:
+    for r in results:
         img = ''
-        if i.cover_img_name is None:
+        if r.cover_img_name is None:
             continue
         else:
-            print(i.cover_img_name)
+            print(r.cover_img_name)
             print(img)
-            img = tmp_folder / i.cover_img_name
+            img = tmp_folder / r.cover_img_name
             if not img.exists():
                 with open(img, 'wb') as _:
-                    _.write(i.cover_img)
-        url = f.url_for('tmp_file', filename=img)
+                    _.write(r.cover_img)
+        url = f.url_for('tmp_file', filename=r.cover_img_name)
         tmp_imgs.append(url)
-    cards = list(zip(news, tmp_imgs))
+    cards = list(zip(results, tmp_imgs))
     print(cards)
     return f.render_template('index.html', cards=cards)
 
