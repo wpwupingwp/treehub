@@ -9,6 +9,28 @@
         <a class="btn btn-lg btn-dark" href="/tree/117900" role="button">Demo</a>
     </div>
 </div>
+
+
+{% for card in cards.items %}
+<div class="card-deck">
+  <div class="card">
+      <div class="card-header bg-dark text-white">
+          Featured
+      </div>
+    <img class="card-img-top" src="..." alt="Card image cap">
+    <div class="card-body">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+        <a href="#" class="btn btn-primary">View</a>
+    </div>
+    <div class="card-footer">
+      <small class="text-muted">Last updated 3 mins ago</small>
+    </div>
+  </div>
+    {% endfor %}
+</div>
+
+
 {% endblock %}
 {% block footer %}
 <footer class="footer h5 font-weight-bolder text-muted text-center">
