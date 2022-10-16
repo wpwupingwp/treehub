@@ -418,10 +418,9 @@ def index():
     for r in results:
         img = ''
         if r.cover_img_name is None:
+            tmp_imgs.append(img)
             continue
         else:
-            print(r.cover_img_name)
-            print(img)
             img = tmp_folder / r.cover_img_name
             if not img.exists():
                 with open(img, 'wb') as _:
@@ -429,7 +428,6 @@ def index():
         url = f.url_for('tmp_file', filename=r.cover_img_name)
         tmp_imgs.append(url)
     cards = list(zip(results, tmp_imgs))
-    print(cards)
     return f.render_template('index.html', cards=cards)
 
 
