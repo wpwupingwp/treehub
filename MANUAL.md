@@ -143,6 +143,7 @@ CREATE TABLE visits
 16. add genus, family, order info
 ```postgresql
 COPY (SELECT * FROM ncbi_nodes) TO 'ncbi_nodes' WITH CSV DELIMITER '|' HEADER;
+COPY (SELECT * FROM ncbi_names) TO 'ncbi_names' WITH CSV DELIMITER '|' HEADER;
 ```
 99. query
 ```postgresql
