@@ -140,6 +140,10 @@ CREATE TABLE visits
     matrix_id integer 
 ); 
 ```
+16. add genus, family, order info
+```postgresql
+COPY (SELECT * FROM ncbi_nodes) TO 'ncbi_nodes' WITH CSV DELIMITER '|' HEADER;
+```
 99. query
 ```postgresql
 SELECT DISTINCT node_label, designated_tax_id,  tree_id FROM nodes 
