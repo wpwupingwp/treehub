@@ -152,6 +152,11 @@ COPY (SELECT * FROM ncbi_nodes) TO 'ncbi_nodes' WITH CSV DELIMITER '|' HEADER;
 ```powershell
 python3 import_lineage.py
 ```
+```postgresql
+CREATE INDEX genus_idx ON ncbi_names (genus_id);
+CREATE INDEX family_idx ON ncbi_names (family_id);
+CREATE INDEX order_idx ON ncbi_names (order_id)
+```
 99. query
 ```postgresql
 SELECT DISTINCT node_label, designated_tax_id,  tree_id FROM nodes 
