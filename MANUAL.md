@@ -99,6 +99,11 @@ ALTER TABLE submit
     ADD COLUMN cover_img_name character varying,
     ADD COLUMN cover_img bytea,
     ADD COLUMN news boolean default false;
+-- add lineage info
+ALTER TABLE ncbi_names
+    ADD COLUMN genus_id integer,
+    ADD COLUMN family_id integer,
+    ADD COLUMN order_id integer;
 ```
 13. add user table
 ```postgresql
@@ -143,7 +148,9 @@ CREATE TABLE visits
 16. add genus, family, order info
 ```postgresql
 COPY (SELECT * FROM ncbi_nodes) TO 'ncbi_nodes' WITH CSV DELIMITER '|' HEADER;
-COPY (SELECT * FROM ncbi_names) TO 'ncbi_names' WITH CSV DELIMITER '|' HEADER;
+```
+```powershell
+python3 import_lineage.py
 ```
 99. query
 ```postgresql
