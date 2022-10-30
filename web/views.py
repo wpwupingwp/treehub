@@ -108,11 +108,18 @@ def tree_query():
     return f.render_template('tree_query.html', form=qf)
 
 
-def query_lineage(lineage: str):
-    # todo
-    tax_id = NcbiName.query().filter(NcbiName.name_txt==lineage).fetchone()
-    NcbiName.query().filter(NcbiName.genus_id)
-    pass
+def query_taxonomy(taxonomy: str):
+    # speed up
+    species_tax_id = NcbiName.query.filter(
+        NcbiName.name_txt==taxonomy).with_entities(NcbiName.tax_id).all()
+    species_tax_id = [i[0] for i in species_tax_id]
+    combine = NcbiName.query.filter(or_(NcbiName.genus_id.in_(species_tax_id),
+                                        NcbiName.family_id.in_(species_tax_id),
+                                        NcbiName.order_id.in_(species_tax_id))).with_entities(NcbiName.tax_id).all()
+    combine = [i[0] for i in combine]
+    node_condition = Trees.tree_id.in_(select(Nodes.tree_id).where(
+        Nodes.designated_tax_id.in_(combine)))
+    return node_condition
 
 
 @app.route('/tree/list', methods=('POST', 'GET'))
@@ -142,30 +149,23 @@ def tree_result(page=1):
     study_filters = []
     filters = []
     if query.get('taxonomy') and not query.get('species'):
-        species_tax_id = select(NcbiName.tax_id).where(
-            NcbiName.name_txt==query.get('taxonomy'))
-        combine = select(NcbiName.tax_id).where(or_(
-            NcbiName.genus_id.in_(species_tax_id),
-            NcbiName.family_id.in_(species_tax_id),
-            NcbiName.order_id.in_(species_tax_id)))
-        node_condition = Trees.tree_id.in_(select(Nodes.tree_id).where(
-            Nodes.designated_tax_id.in_(combine)))
+        node_condition = query_taxonomy(query.get('taxonomy'))
         filters.append(node_condition)
-    if query.get("species"):
+    if query.get('species'):
         node_condition = Trees.tree_id.in_(select(Nodes.tree_id).where(
             Nodes.node_label.like(f'{query.get("species")}%')))
         filters.append(node_condition)
-    if query.get("is_dating"):
+    if query.get('is_dating'):
         filters.append(Trees.is_dating == True)
-    if query.get("year"):
-        study_filters.append(Study.year == int(query.get("year")))
-    if query.get("author"):
+    if query.get('year'):
+        study_filters.append(Study.year == int(query.get('year')))
+    if query.get('author'):
         study_filters.append(Study.author.like(f'%{query.get("author")}%'))
-    if query.get("title"):
+    if query.get('title'):
         study_filters.append(Study.title.like(f'%{query.get("title")}%'))
-    if query.get("keywords"):
+    if query.get('keywords'):
         study_filters.append(Study.keywords.like(f'%{query.get("title")}%'))
-    if query.get("doi"):
+    if query.get('doi'):
         study_filters.append(Study.doi == query.doi.data)
     if study_filters:
         study_condition = Trees.study_id.in_(
