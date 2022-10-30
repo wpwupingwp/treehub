@@ -100,6 +100,9 @@ class NcbiName(db.Model):
     unique_name = db.Column(db.String(255))
     # scientific name or not
     name_class = db.Column(db.String(32))
+    genus_id = db.Column(db.Integer)
+    family_id = db.Column(db.Integer)
+    order_id = db.Column(db.Integer)
 
 
 class Study(db.Model):
