@@ -109,6 +109,7 @@ def tree_query():
     return f.render_template('tree_query.html', form=qf)
 
 
+@lru_cache(maxsize=100)
 def query_taxonomy(taxonomy: str):
     # speed up
     species_tax_id = NcbiName.query.filter(
@@ -120,8 +121,10 @@ def query_taxonomy(taxonomy: str):
             NcbiName.order_id.in_(species_tax_id))).with_entities(
         NcbiName.tax_id).all()
     combine = [i[0] for i in combine]
-    node_condition = Trees.tree_id.in_(select(Nodes.tree_id).where(
-        Nodes.designated_tax_id.in_(combine)))
+    tree_id = Nodes.query.filter(Nodes.designated_tax_id.in_(
+        combine)).with_entities(Nodes.tree_id).all()
+    tree_id = [i[0] for i in tree_id]
+    node_condition = Trees.tree_id.in_(tree_id)
     return node_condition
 
 
