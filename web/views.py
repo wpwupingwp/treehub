@@ -5,6 +5,7 @@ from datetime import date
 from pathlib import Path
 from io import StringIO
 import json
+from functools import lru_cache
 
 from flask import g, request, session
 from sqlalchemy import select, or_
@@ -113,9 +114,11 @@ def query_taxonomy(taxonomy: str):
     species_tax_id = NcbiName.query.filter(
         NcbiName.name_txt==taxonomy).with_entities(NcbiName.tax_id).all()
     species_tax_id = [i[0] for i in species_tax_id]
-    combine = NcbiName.query.filter(or_(NcbiName.genus_id.in_(species_tax_id),
-                                        NcbiName.family_id.in_(species_tax_id),
-                                        NcbiName.order_id.in_(species_tax_id))).with_entities(NcbiName.tax_id).all()
+    combine = NcbiName.query.filter(
+        or_(NcbiName.genus_id.in_(species_tax_id),
+            NcbiName.family_id.in_(species_tax_id),
+            NcbiName.order_id.in_(species_tax_id))).with_entities(
+        NcbiName.tax_id).all()
     combine = [i[0] for i in combine]
     node_condition = Trees.tree_id.in_(select(Nodes.tree_id).where(
         Nodes.designated_tax_id.in_(combine)))
@@ -180,7 +183,7 @@ def tree_result(page=1):
         Trees.tree_id, Trees.tree_title, Trees.tree_kind, Trees.is_dating).join(
         Study, Study.study_id == Trees.study_id).filter(
         trees).order_by(order_by)
-    app.logger.debug(str(results))
+    # app.logger.debug(str(results))
     pagination = results.paginate(page=page, per_page=20)
     return f.render_template(f'tree_list.html', pagination=pagination, form=sf)
 
