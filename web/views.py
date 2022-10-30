@@ -7,7 +7,7 @@ from io import StringIO
 import json
 
 from flask import g, request, session
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from werkzeug.utils import secure_filename
 import dendropy
 from Bio import Phylo
@@ -108,6 +108,13 @@ def tree_query():
     return f.render_template('tree_query.html', form=qf)
 
 
+def query_lineage(lineage: str):
+    # todo
+    tax_id = NcbiName.query().filter(NcbiName.name_txt==lineage).fetchone()
+    NcbiName.query().filter(NcbiName.genus_id)
+    pass
+
+
 @app.route('/tree/list', methods=('POST', 'GET'))
 @app.route('/tree/list/<int:page>', methods=('POST', 'GET'))
 def tree_result(page=1):
@@ -115,8 +122,8 @@ def tree_result(page=1):
                      'Kind': Trees.tree_kind, 'Publish year': Study.year,
                      'Article title': Study.title, 'Journal': Study.journal,
                      'DOI': Study.doi}
-    item = session.get('item', None)
-    order = session.get('order', None)
+    item = session.get('item', 'ID')
+    order = session.get('order', 'Descend')
     sf = SortQueryForm()
     sf.item.choices = SortQueryForm.new_item_choices(item)
     sf.order.choices = SortQueryForm.new_order_choices(order)
@@ -134,9 +141,19 @@ def tree_result(page=1):
     query = session['dict']
     study_filters = []
     filters = []
-    if query.get("taxonomy"):
+    if query.get('taxonomy') and not query.get('species'):
+        species_tax_id = select(NcbiName.tax_id).where(
+            NcbiName.name_txt==query.get('taxonomy'))
+        combine = select(NcbiName.tax_id).where(or_(
+            NcbiName.genus_id.in_(species_tax_id),
+            NcbiName.family_id.in_(species_tax_id),
+            NcbiName.order_id.in_(species_tax_id)))
         node_condition = Trees.tree_id.in_(select(Nodes.tree_id).where(
-            Nodes.node_label.like(f'{query.get("taxonomy")}%')))
+            Nodes.designated_tax_id.in_(combine)))
+        filters.append(node_condition)
+    if query.get("species"):
+        node_condition = Trees.tree_id.in_(select(Nodes.tree_id).where(
+            Nodes.node_label.like(f'{query.get("species")}%')))
         filters.append(node_condition)
     if query.get("is_dating"):
         filters.append(Trees.is_dating == True)
