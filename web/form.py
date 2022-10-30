@@ -29,8 +29,10 @@ class LoginForm(FlaskForm):
 
 class QueryForm(FlaskForm):
     # tree
-    taxonomy = m.StringField('Taxonomy',
-                             render_kw={'placeholder': 'eg. Oryza sativa'})
+    taxonomy = m.StringField(
+        'Taxonomy', render_kw={'placeholder': 'eg. Rosales, Fabaceae, Zea'})
+    species = m.StringField(
+        'Species', render_kw={'placeholder': 'eg. Oryza sativa'})
     tree_title = m.StringField(
         'Tree title', validators=[v.length(max=255)],
         render_kw={'placeholder': 'eg. Bootstrap tree of Poaceae'})

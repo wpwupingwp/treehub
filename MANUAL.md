@@ -159,10 +159,9 @@ CREATE INDEX order_idx ON ncbi_names (order_id)
 ```
 99. query
 ```postgresql
-SELECT DISTINCT node_label, designated_tax_id,  tree_id FROM nodes 
-WHERE nodes.designated_tax_id 
-IN (SELECT tax_id FROM ncbi_names 
-WHERE ncbi_names.name_txt LIKE 'Oryza sativa');
+select * from nodes where nodes.designated_tax_id in
+(select tax_id from ncbi_names where ncbi_names.genus_id in 
+(SELECT tax_id FROM ncbi_names WHERE ncbi_names.name_txt = 'Oryza'));
 -- ambigous search
 SELECT DISTINCT node_label, designated_tax_id,  tree_id 
 FROM nodes WHERE node_label LIKE 'Oryza sativa%'
