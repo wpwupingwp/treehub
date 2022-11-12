@@ -182,12 +182,12 @@ def tree_result(page=1):
         # filters.append(Trees.study_id.in_(studies))
     # trees = db.session.query(Trees.tree_id).filter(*filters).subquery()
     trees = Trees.tree_id.in_(select(Trees.tree_id).where(*filters))
+    x = Trees.query.filter(trees)
     results = db.session.query(Study, Trees).with_entities(
         Study.title, Study.year, Study.journal, Study.doi,
         Trees.tree_id, Trees.tree_title, Trees.tree_kind, Trees.is_dating).join(
         Study, Study.study_id == Trees.study_id).filter(
         trees).order_by(order_by)
-    # app.logger.debug(str(results))
     pagination = results.paginate(page=page, per_page=20)
     return f.render_template(f'tree_list.html', pagination=pagination, form=sf)
 
@@ -389,6 +389,8 @@ def submit():
         db.session.add(treefile)
         db.session.add(study)
         # get id
+        db.session.commit()
+        tree.study_id = study.study_id
         db.session.commit()
         if request.headers.getlist('X-Forwarded-For'):
             ip = request.headers.getlist('X-Forwarded-For')[0]
