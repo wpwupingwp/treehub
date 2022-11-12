@@ -381,8 +381,9 @@ def submit():
             db.session.add(new_node)
             db.session.commit()
         db.session.add(treefile)
-        # handle cover_img
         db.session.add(study)
+        # get id
+        db.session.commit()
         if request.headers.getlist('X-Forwarded-For'):
             ip = request.headers.getlist('X-Forwarded-For')[0]
         else:

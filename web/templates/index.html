@@ -11,16 +11,23 @@
 </div>
 <div class="card-deck">
     {% for study, img in cards %}
-    <div class="card">
+    <div class="card" style="width: 18rem">
         <div class="card-header bg-dark text-white">
             {{study.tree_title}}
         </div>
-        <img class="card-img-top" src="{{img}}" alt="Card image cap">
+        <img class="card-img-top img-fluid" src="{{img}}" alt="Card image cap" style="width:300px;height:300px">
         <div class="card-body">
             <h5 class="card-title">{{study.title}}</h5>
-            <p class="card-text">{{study.abstract}}</p>
-            <a href="/tree/{{study.tree_id}}" class="btn btn-outline-primary">View tree</a>
-            <a href="https://doi.org/{{study.doi}}" class="btn btn-outline-success">View article</a>
+            <button class="btn btn-outline-dark" type="button" data-toggle="collapse"
+                    data-target="#collapseExample" aria-expanded="false"
+                    aria-controls="collapseExample">
+                Abstract
+            </button>
+            <div class="collapse" id="collapseExample">
+                <div class="card card-body"> {{study.abstract}}</div>
+            </div>
+            <a href="/tree/{{study.tree_id}}" class="btn btn-outline-primary" target="_blank">View tree</a>
+            <a href="https://doi.org/{{study.doi}}" class="btn btn-outline-success" target="_blank">View article</a>
         </div>
         <div class="card-footer">
             <small class="text-muted">Last updated {{study.upload_date}}</small>
