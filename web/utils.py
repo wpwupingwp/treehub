@@ -103,6 +103,7 @@ def compress_photo(old_path: Path) -> Path:
     if old_path.stat().st_size <= small:
         return old_path
     old = Image.open(old_path)
+    old = old.convert('RGB')
     rotate = ImageOps.exif_transpose(old)
     rotate.thumbnail((1024, 1024))
     rotate.save(old_path, 'JPEG')
