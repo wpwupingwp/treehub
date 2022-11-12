@@ -283,9 +283,12 @@ def get_nodes(raw_nodes: list) -> dict:
             new_names[i] = species
     new_found = NcbiName.query.filter(and_(
         NcbiName.name_class=='scientific name',
-        NcbiName.name_txt.in_(new_names))).all()
-    for j in new_found:
-        label_taxon[j] = new_found[j].tax_id
+        NcbiName.name_txt.in_(new_names.values()))).all()
+    new_found_dict = {k.name_txt: k.tax_id for k in new_found}
+    for j in new_names:
+        j_species = new_names[j]
+        if j_species in new_found_dict:
+            label_taxon[j] = new_found_dict[j_species]
     return label_taxon
 
 
@@ -368,6 +371,7 @@ def submit():
                     f.flash('eg. Oryza sativa id9999')
             # dendropy error class is too long
         except Exception:
+            raise
             f.flash('Bad tree file.')
             f.flash('The file should be UTF-8 encoding nexus or newick format.')
             return f.render_template('submit.html', form=sf)
