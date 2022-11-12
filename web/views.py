@@ -313,6 +313,7 @@ def submit():
             sf.populate_obj(i)
         for j in [matrix, treefile, tree, study]:
             j.upload_date = upload_date
+        tree.root = str(tree.root).strip()
         # handle root id
         taxon = NcbiName.query.filter_by(name_txt=tree.root).all()
         # first or none
