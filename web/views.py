@@ -1,14 +1,15 @@
 #!/usr/bin/python3
 
-from uuid import uuid4
 from datetime import date
-from pathlib import Path
-from io import StringIO
-import json
 from functools import lru_cache
+from io import StringIO
+from pathlib import Path
+from uuid import uuid4
+import json
+import re
 
 from flask import g, request, session
-from sqlalchemy import select, or_
+from sqlalchemy import select, or_, and_
 from werkzeug.utils import secure_filename
 import dendropy
 from Bio import Phylo
@@ -272,18 +273,19 @@ def get_nodes(raw_nodes: list) -> dict:
     node_exist = Nodes.query.filter(Nodes.node_label.in_(name_list)).all()
     for i in node_exist:
         label_taxon[i.node_label] = i.designated_tax_id
-    new_nodes_name = [i for i in name_list if i not in label_taxon]
-    for i in new_nodes_name:
-        if i.count(' ') >= 1:
-            if ' x ' not in i:
-                short_name = ' '.join(i.split(' ')[:2])
-            else:
-                short_name = ' '.join(i.split(' ')[:3])
-            retry = NcbiName.query.filter(
-                NcbiName.name_class=='scientific name').filter(
-                NcbiName.name_txt.like(f'{short_name}%')).all()
-            if len(retry) != 0:
-                label_taxon[i] = retry[0].tax_id
+    not_found = [i for i in name_list if i not in label_taxon]
+    new_names = {}
+    pattern = re.compile(r'.*([A-Z][a-z]+)(_| )([a-z]+).*')
+    for i in not_found:
+        x = re.search(pattern, i)
+        if x is not None:
+            species = x.group(1) + ' ' + x.group(3)
+            new_names[i] = species
+    new_found = NcbiName.query.filter(and_(
+        NcbiName.name_class=='scientific name',
+        NcbiName.name_txt.in_(new_names))).all()
+    for j in new_found:
+        label_taxon[j] = new_found[j].tax_id
     return label_taxon
 
 
