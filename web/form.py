@@ -161,6 +161,7 @@ class SubmitForm(FlaskForm):
                                          ('Other', 'Other')])
     matrix_file = m.FileField('Matrix file (fasta format)')
     # study
+    journal = m.StringField('Journal',  render_kw={'placeholder': 'eg. JSE'})
     year = m.IntegerField('Publish year', default=2022)
     author = m.StringField(
         'Author', validators=[v.length(max=100)],

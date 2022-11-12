@@ -19,11 +19,11 @@
         <div class="card-body">
             <h5 class="card-title">{{study.title}}</h5>
             <button class="btn btn-outline-dark" type="button" data-toggle="collapse"
-                    data-target="#collapseExample" aria-expanded="false"
-                    aria-controls="collapseExample">
+                    data-target="#x{{study.tree_id}}" aria-expanded="false"
+                    aria-controls="x{{study.tree_id}}">
                 Abstract
             </button>
-            <div class="collapse" id="collapseExample">
+            <div class="collapse" id="x{{study.tree_id}}">
                 <div class="card card-body"> {{study.abstract}}</div>
             </div>
             <a href="/tree/{{study.tree_id}}" class="btn btn-outline-primary" target="_blank">View tree</a>
