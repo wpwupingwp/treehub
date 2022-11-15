@@ -78,55 +78,60 @@ class SortQueryForm(FlaskForm):
             return list(reversed(old))
 
 
-
 class SubmitForm(FlaskForm):
     # todo: currently support one file per submit
     # tree
-    email = m.StringField('Email', validators=[v.email(), v.input_required()],
+    email = m.StringField(gettext('Email(*)'),
+                          validators=[v.email(), v.input_required()],
                           render_kw={'placeholder': 'eg. alex@example.org'})
-    root = m.StringField('Taxonomy', validators=[v.input_required()],
+    root = m.StringField(gettext('Taxonomy(*)'), validators=[v.input_required()],
                          render_kw={'placeholder': 'root node or lineage name'})
-    tree_title = m.StringField('Tree title', validators=[v.length(max=255)],
+    tree_title = m.StringField(gettext('Tree title'),
+                               validators=[v.length(max=255)],
                                render_kw={'placeholder': 'eg. XXX tree of YYY'})
-    is_dating = m.BooleanField('Dating tree')
-    tree_type = m.SelectField('Tree type', default='Consensus',
+    is_dating = m.BooleanField(gettext('Dating tree'))
+    tree_type = m.SelectField(gettext('Tree type'), default='Consensus',
                               choices=[('Consensus', 'Consensus'),
                                        ('Single', 'Single'),
                                        ('Other', 'Other')])
-    tree_kind = m.RadioField('Tree kind', default='Species Tree',
+    tree_kind = m.RadioField(gettext('Tree kind'), default='Species Tree',
                              choices=[('Species Tree', 'Species Tree'),
                                       ('Gene Tree', 'Gene Tree'),
                                       ('Other', 'Other')])
     # tree_file = m.MultipleFileField('Tree file (NEXUS or newick format)')
-    tree_file = m.FileField('Tree files (NEXUS or newick format)',
+    tree_file = m.FileField(gettext('Tree files (NEXUS or newick format) (*)'),
                             validators=[v.data_required()])
     # matrix
-    matrix_title = m.StringField(
-        'Matrix title', validators=[v.length(max=255)],
-        render_kw={'placeholder': 'eg. XXX matrix of tree YYY'})
-    description = m.SelectField('Matrix type', default='Nucleic Acid',
+    matrix_title = m.StringField(gettext('Matrix title'),
+                                 validators=[v.length(max=255)],
+                                 render_kw={'placeholder':
+                                                'eg. XXX matrix of tree YYY'})
+    description = m.SelectField(gettext('Matrix type'), default='Nucleic Acid',
                                 choices=[('Nucleic Acid', 'Nucleic Acid'),
                                          ('Amino Acid', 'Amino Acid'),
                                          ('Morphological', 'Morphological'),
                                          ('Combination', 'Combination'),
                                          ('Other', 'Other')])
-    matrix_file = m.FileField('Matrix file (fasta format)')
+    matrix_file = m.FileField(gettext('Matrix file (fasta format)'))
     # study
-    journal = m.StringField('Journal',  render_kw={'placeholder': 'eg. JSE'})
-    year = m.IntegerField('Publish year', default=2022)
+    journal = m.StringField(gettext('Journal'),
+                            render_kw={'placeholder': 'eg. JSE'})
+    year = m.IntegerField(gettext('Publish year'), default=2022)
     author = m.StringField(
-        'Author', validators=[v.length(max=100)],
+        gettext('Author'), validators=[v.length(max=100)],
         render_kw={'placeholder': 'eg. Carl Linnaeus, Charles Robert Darwin'})
-    title = m.StringField('Article title', validators=[v.length(max=200)],
+    title = m.StringField(gettext('Article title'),
+                          validators=[v.length(max=200)],
                           render_kw={'placeholder': 'Article title'})
-    abstract = m.TextAreaField('Abstract', validators=[v.length(max=2020)])
-    keywords = m.StringField('Keywords', validators=[v.length(max=50)],
+    abstract = m.TextAreaField(gettext('Abstract'),
+                               validators=[v.length(max=2020)])
+    keywords = m.StringField(gettext('Keywords'), validators=[v.length(max=50)],
                              render_kw={'placeholder': 'Article keywords'})
-    doi = m.StringField('DOI', validators=[v.length(max=100)],
+    doi = m.StringField(gettext('DOI'), validators=[v.length(max=100)],
                         render_kw={'placeholder': 'eg. 10.9999/1234567890'})
-    cover_img = m.FileField('Cover image (.jpg or .png)')
-    news = m.BooleanField('Submit for news', default=False)
-    submit = m.SubmitField('Submit')
+    cover_img = m.FileField(gettext('Cover image (.jpg or .png)'))
+    news = m.BooleanField(gettext('Submit for news'), default=False)
+    submit = m.SubmitField(gettext('Submit'))
 
 
 tmp2 = '''
