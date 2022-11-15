@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container col-md-10 shadow">
-    <h1 class="text-center">Submit list</h1>
+    <!--h1 class="text-center">Submit list</h1-->
     <table class="table table-hover">
         <thead class="thead-dark">
         <tr>
             <th>#</th>
-            <th>User</th>
-            <th>date</th>
-            <th>Tree ID</th>
-            <th>Tree file ID</th>
-            <th>Study ID</th>
-            <th>Matrix ID</th>
+            <th>{{_('User')}}</th>
+            <th>{{_('date')}}</th>
+            <th>{{_('Tree ID')}}</th>
+            <th>{{_('Tree file ID')}}</th>
+            <th>{{_('Study ID')}}</th>
+            <th>{{_('Matrix ID')}}</th>
             {% if current_user.username=='admin' %}
-                <th>Manage</th>
+                <th>{{_('Manage')}}</th>
             {% endif %}
         </tr>
         </thead>
@@ -29,7 +29,7 @@
             <td>{{submit.matrix_id}}</td>
                 {% if current_user.username=='admin' %}
                     <td>
-                        <a href="/submit/remove/{{submit.submit_id}}">Delete</a>
+                        <a href="/submit/remove/{{submit.submit_id}}">{{_('Delete')}}</a>
                     </td>
                 {% endif %}
             {% endfor %}

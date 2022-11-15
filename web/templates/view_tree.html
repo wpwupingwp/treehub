@@ -23,28 +23,26 @@
         </button>
 
         <ol class="breadcrumb mr-auto my-2 h5">
-            {{ render_breadcrumb_item('index', 'Home') }}
-            {{ render_breadcrumb_item('tree_query', 'Query') }}
-            {{ render_breadcrumb_item('submit', 'Submit') }}
-            {{ render_breadcrumb_item('tree_list', 'Tree list') }}
-            {{ render_breadcrumb_item('submit_list', 'Submit list') }}
-            {{ render_breadcrumb_item('edit_tree', 'Edit', tree_id=tree_id) }}
-            {% if current_user.is_authenticated %}
-            {{ render_breadcrumb_item('/auth/tree/{{current_user.user_id}}}', 'My trees') }}
-            {{ render_breadcrumb_item('/auth/logout', 'Logout') }}
-            {% if current_user.username=='admin' %}
-            {{ render_breadcrumb_item('/admin', 'Admin') }}
-            {% endif %}
-            {% else %}
-            {% endif %}
-
+                {{ render_breadcrumb_item('index', _('Home')) }}
+                {{ render_breadcrumb_item('tree_query', _('Query')) }}
+                {{ render_breadcrumb_item('submit', _('Submit')) }}
+                {{ render_breadcrumb_item('tree_list', _('Tree list')) }}
+                {{ render_breadcrumb_item('submit_list', _('Submit list')) }}
+                {{ render_breadcrumb_item('edit_tree', 'Edit', tree_id=tree_id) }}
+                {% if current_user.is_authenticated %}
+                    {{ render_breadcrumb_item('/auth/tree/{{current_user.user_id}}}', _('My trees')) }}
+                    {{ render_breadcrumb_item('/auth/logout', _('Logout')) }}
+                    {% if current_user.username=='admin' %}
+                        {{ render_breadcrumb_item('/admin', _('Admin')) }}
+                    {% endif %}
+                {% endif %}
         </ol>
         <div class="btn btn-dark my-2 mr-auto h3">
             {{ title }}
         </div>
         <form class="form-inline my-2">
             <input class="form-control mr-sm-2" type="search" placeholder="Search">
-            <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
+            <button class="btn btn-primary my-2 my-sm-0" type="submit">{{_('Search')}}</button>
         </form>
     </nav>
 </div>
@@ -66,8 +64,8 @@
 <footer class="footer h5 font-weight-bolder text-muted text-center">
     <div class="h6 text-primary text-center">
         <p>
-            Power by Flask 2.2.2 and Bootstrap 5 <br/>
-            <span>Copyright 2022</span>
+            {{_('Power by Flask 2.2.2 and Bootstrap 4 ')}}<br/>
+            <span>{{_('Copyright 2022')}}</span>
         </p>
     </div>
 </footer>
