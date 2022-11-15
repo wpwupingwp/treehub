@@ -2,11 +2,11 @@
 {% block content %}
 <div class="jumbotron text-center">
     <h1 class="h2">Plant tree database</h1><br>
-    <h2 class="h3">Search, Visualize, Analyze and Submit</h2><br>
+    <h2 class="h3">{{_('Search, Visualize, Analyze and Submit')}}</h2><br>
     <div class="mx-auto">
-        <a class="btn btn-lg btn-success" href="/tree/query" role="button">Query</a>
-        <a class="btn btn-lg btn-primary" href="/submit" role="button">Submit</a>
-        <a class="btn btn-lg btn-dark" href="/tree/117900" role="button">Demo</a>
+        <a class="btn btn-lg btn-success" href="/tree/query" role="button">{{_('Query')}}</a>
+        <a class="btn btn-lg btn-primary" href="/submit" role="button">{{_('Submit')}}</a>
+        <a class="btn btn-lg btn-dark" href="/tree/117900" role="button">{{_('Demo')}}</a>
     </div>
 </div>
 <div class="card-deck">
@@ -21,31 +21,21 @@
             <button class="btn btn-outline-dark" type="button" data-toggle="collapse"
                     data-target="#x{{study.tree_id}}" aria-expanded="false"
                     aria-controls="x{{study.tree_id}}">
-                Abstract
+                {{_('Abstract')}}
             </button>
             <div class="collapse" id="x{{study.tree_id}}">
                 <div class="card card-body"> {{study.abstract}}</div>
             </div>
-            <a href="/tree/{{study.tree_id}}" class="btn btn-outline-primary" target="_blank">Tree</a>
-            <a href="https://doi.org/{{study.doi}}" class="btn btn-outline-success" target="_blank">Article</a>
+            <a href="/tree/{{study.tree_id}}" class="btn btn-outline-primary" target="_blank">{{_('Phylogeny tree')}}</a>
+            <a href="https://doi.org/{{study.doi}}" class="btn btn-outline-success" target="_blank">{{_('Article')}}</a>
         </div>
         <div class="card-footer">
-            <small class="text-muted">Last updated {{study.upload_date}}</small>
+            <small class="text-muted">{{_('Last updated')}} {{study.upload_date}}</small>
         </div>
     </div>
     {% endfor %}
-    <a href="/tree/list" class="btn btn-outline-secondary my-lg-auto">More...</a>
+    <a href="/tree/list" class="btn btn-outline-secondary my-lg-auto">{{_('More...')}}</a>
 </div>
 
 
-{% endblock %}
-{% block footer %}
-<footer class="footer h5 font-weight-bolder text-muted text-center">
-    <div class="h6 text-primary text-center">
-        <p>
-            Power by Flask 2.2.2 and Bootstrap 5 <br/>
-            <span>Copyright 2022</span>
-        </p>
-    </div>
-</footer>
 {% endblock %}

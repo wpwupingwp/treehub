@@ -9,7 +9,7 @@ import json
 import re
 
 from flask import g, request, session
-from flask import flash as flask_flash
+from flask import flash
 from flask_babel import gettext
 from sqlalchemy import select, or_, and_
 from werkzeug.utils import secure_filename
@@ -34,11 +34,6 @@ def get_locale():
         return stored_local
     else:
         return request.accept_languages.best_match(['zh', 'en'])
-
-
-def flash(info: str):
-    # auto alias _ in jinjia2
-    return gettext(flask_flash(info))
 
 
 @app.before_request
@@ -212,7 +207,7 @@ def tree_result(page=1):
 def tree_phyloxml(tree_id):
     treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
     if treefile is None:
-        flash('Tree not found.')
+        flash(gettext('Tree not found.'))
     phyloxml = treefile.phyloxml.rstrip()
     phyloxml = phyloxml.replace('""', '"').replace("''", "'")
     return phyloxml
@@ -222,7 +217,7 @@ def tree_phyloxml(tree_id):
 def tree_newick(tree_id):
     treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
     if treefile is None:
-        flash('Treefile found.')
+        flash(gettext('Treefile not found.'))
     newick = treefile.newick.rstrip()
     return newick
 
@@ -231,7 +226,7 @@ def tree_newick(tree_id):
 def tree_newick_file(tree_id):
     treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
     if treefile is None:
-        flash('Not found.')
+        flash(gettext('Treefile not found.'))
     newick = treefile.newick.rstrip()
     tmp_folder = app.config.get('TMP_FOLDER')
     filename = f'{tree_id}.nwk'
@@ -251,7 +246,7 @@ def tree_auspice_file(tree_id):
     tree = Trees.query.get(tree_id)
     treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
     if treefile is None:
-        flash('Not found.')
+        flash(gettext('Treefile not found.'))
     newick = treefile.newick
     meta_file = root / 'static' / 'auspice_tree_meta.json'
     with open(meta_file, 'r', encoding='utf-8') as _:
@@ -339,8 +334,8 @@ def submit():
         taxon = NcbiName.query.filter_by(name_txt=tree.root).all()
         # first or none
         if len(taxon) == 0:
-            flash('Taxonomy name not found. '
-                    'Currently only support accepted name.')
+            flash(gettext('Taxonomy name not found. '
+                          'Currently only support accepted name.'))
             return f.render_template('submit.html', form=sf)
             # return f.redirect('/submit')
         else:
@@ -380,16 +375,16 @@ def submit():
                 label_taxon = get_nodes(raw_nodes)
                 not_found = len(raw_nodes) - len(label_taxon)
                 if not_found > 0:
-                    flash(f'{not_found} of {len(raw_nodes)} '
-                            'nodes have invalid name.')
-                    flash('Node name in tree file should be '
-                            '"scientific name with other id" format')
-                    flash('eg. Oryza sativa id9999')
+                    flash(gettext('%(not_found)s of %(total)s nodes have '
+                                  'invalid name.',
+                                  not_found=not_found, total=len(raw_nodes)))
+                    flash(gettext('Node name in tree file should be ' 
+                                  '"scientific name with other id" format '
+                                  '(eg. Oryza sativa id9999'))
             # dendropy error class is too long
         except Exception:
-            raise
-            flash('Bad tree file.')
-            flash('The file should be UTF-8 encoding nexus or newick format.')
+            flash(gettext('Bad tree file. The file should be UTF-8 encoding '
+                          'nexus or newick format.'))
             return f.render_template('submit.html', form=sf)
         finally:
             treefile_tmp.unlink()
@@ -424,7 +419,7 @@ def submit():
             img_tmp.unlink()
         db.session.add(submit_)
         db.session.commit()
-        flash('Submit ok.')
+        flash(gettext('Submit ok.'))
         return f.redirect(f'/submit/list')
     return f.render_template('submit.html', form=sf)
 
@@ -440,7 +435,7 @@ def remove_submit(submit_id):
     for i in (matrix, study, treefile, tree, submit):
         db.session.delete(i)
     db.session.commit()
-    flash('Remove ok.')
+    flash(gettext('Remove ok.'))
     return f.redirect('/submit/list')
 
 

@@ -1,0 +1,203 @@
+# Translations template for PROJECT.
+# Copyright (C) 2022 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2022-11-15 11:25+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.11.0\n"
+
+#: views.py:210
+msgid "Tree not found."
+msgstr ""
+
+#: views.py:220 views.py:229 views.py:249
+msgid "Treefile not found."
+msgstr ""
+
+#: views.py:337
+msgid "Taxonomy name not found. Currently only support accepted name."
+msgstr ""
+
+#: views.py:380
+#, python-format
+msgid "%(not_found)s of %(total)s nodes have invalid name."
+msgstr ""
+
+#: views.py:381
+msgid ""
+"Node name in tree file should be \"scientific name with other id\" format"
+" (eg. Oryza sativa id9999"
+msgstr ""
+
+#: views.py:386
+msgid "Bad tree file. The file should be UTF-8 encoding nexus or newick format."
+msgstr ""
+
+#: views.py:422
+msgid "Submit ok."
+msgstr ""
+
+#: views.py:438
+msgid "Remove ok."
+msgstr ""
+
+#: templates/base.html:35 templates/edit_tree.html:111
+#: templates/view_tree.html:26
+msgid "Home"
+msgstr ""
+
+#: templates/base.html:36 templates/edit_tree.html:112 templates/index.html:7
+#: templates/view_tree.html:27
+msgid "Query"
+msgstr ""
+
+#: templates/base.html:37 templates/edit_tree.html:113 templates/index.html:8
+#: templates/view_tree.html:28
+msgid "Submit"
+msgstr ""
+
+#: templates/base.html:38 templates/edit_tree.html:114
+#: templates/view_tree.html:29
+msgid "Tree list"
+msgstr ""
+
+#: templates/base.html:39 templates/edit_tree.html:115
+#: templates/view_tree.html:30
+msgid "Submit list"
+msgstr ""
+
+#: templates/base.html:41 templates/edit_tree.html:118
+#: templates/view_tree.html:33
+msgid "My trees"
+msgstr ""
+
+#: templates/base.html:42 templates/edit_tree.html:119
+#: templates/view_tree.html:34
+msgid "Logout"
+msgstr ""
+
+#: templates/base.html:44 templates/edit_tree.html:121
+#: templates/view_tree.html:36
+msgid "Admin"
+msgstr ""
+
+#: templates/base.html:51 templates/edit_tree.html:130
+#: templates/view_tree.html:45
+msgid "Search"
+msgstr ""
+
+#: templates/base.html:75 templates/view_tree.html:67
+msgid "Power by Flask 2.2.2 and Bootstrap 4 "
+msgstr ""
+
+#: templates/base.html:76 templates/view_tree.html:68
+msgid "Copyright 2022"
+msgstr ""
+
+#: templates/edit_tree.html:116
+msgid "Back to View"
+msgstr ""
+
+#: templates/index.html:5
+msgid "Search, Visualize, Analyze and Submit"
+msgstr ""
+
+#: templates/index.html:9
+msgid "Demo"
+msgstr ""
+
+#: templates/index.html:24
+msgid "Abstract"
+msgstr ""
+
+#: templates/index.html:29
+msgid "Phylogeny tree"
+msgstr ""
+
+#: templates/index.html:30
+msgid "Article"
+msgstr ""
+
+#: templates/index.html:33
+msgid "Last updated"
+msgstr ""
+
+#: templates/index.html:37
+msgid "More..."
+msgstr ""
+
+#: templates/submit_list.html:9
+msgid "User"
+msgstr ""
+
+#: templates/submit_list.html:10
+msgid "date"
+msgstr ""
+
+#: templates/submit_list.html:11
+msgid "Tree ID"
+msgstr ""
+
+#: templates/submit_list.html:12
+msgid "Tree file ID"
+msgstr ""
+
+#: templates/submit_list.html:13
+msgid "Study ID"
+msgstr ""
+
+#: templates/submit_list.html:14
+msgid "Matrix ID"
+msgstr ""
+
+#: templates/submit_list.html:16 templates/tree_list.html:18
+msgid "Manage"
+msgstr ""
+
+#: templates/submit_list.html:32
+msgid "Delete"
+msgstr ""
+
+#: templates/tree_list.html:12
+msgid "Tree title"
+msgstr ""
+
+#: templates/tree_list.html:13
+msgid "Kind"
+msgstr ""
+
+#: templates/tree_list.html:14
+msgid "Year"
+msgstr ""
+
+#: templates/tree_list.html:15
+msgid "Title"
+msgstr ""
+
+#: templates/tree_list.html:16
+msgid "Journal"
+msgstr ""
+
+#: templates/tree_list.html:17
+msgid "DOI"
+msgstr ""
+
+#: templates/tree_list.html:36
+msgid "View"
+msgstr ""
+
+#: templates/tree_list.html:37 templates/view_tree.html:31
+msgid "Edit"
+msgstr ""
+

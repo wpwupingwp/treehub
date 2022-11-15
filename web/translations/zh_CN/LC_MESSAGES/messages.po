@@ -1,0 +1,211 @@
+# Chinese (Simplified, China) translations for PROJECT.
+# Copyright (C) 2022 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2022-11-15 11:25+0800\n"
+"PO-Revision-Date: 2022-11-15 10:26+0800\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_Hans_CN\n"
+"Language-Team: zh_Hans_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.11.0\n"
+
+#: views.py:210
+msgid "Tree not found."
+msgstr "指定系统树未找到"
+
+#: views.py:220 views.py:229 views.py:249
+msgid "Treefile not found."
+msgstr "指定树文件未找到"
+
+#: views.py:337
+msgid "Taxonomy name not found. Currently only support accepted name."
+msgstr "未找到指定类群名称。目前仅支持接收名"
+
+#: views.py:380
+#, python-format
+msgid "%(not_found)s of %(total)s nodes have invalid name."
+msgstr "%(total)s个节点中的%(not_found)s个未识别出对应物种名称"
+
+#: views.py:381
+msgid ""
+"Node name in tree file should be \"scientific name with other id\" format"
+" (eg. Oryza sativa id9999"
+msgstr "系统树文件中节点的名称应当为\"物种名 其他ID\"的格式（例如 Oryza sativa id9999）"
+
+#: views.py:386
+msgid "Bad tree file. The file should be UTF-8 encoding nexus or newick format."
+msgstr "系统树文件无法识别，应当为utf-8编码（或ascii编码）的NEXUS或NWK格式"
+
+#: views.py:422
+#, fuzzy
+msgid "Submit ok."
+msgstr "提交成功"
+
+#: views.py:438
+msgid "Remove ok."
+msgstr "删除成功"
+
+#: templates/base.html:35 templates/edit_tree.html:111
+#: templates/view_tree.html:26
+msgid "Home"
+msgstr "首页"
+
+#: templates/base.html:36 templates/edit_tree.html:112 templates/index.html:7
+#: templates/view_tree.html:27
+msgid "Query"
+msgstr "查询"
+
+#: templates/base.html:37 templates/edit_tree.html:113 templates/index.html:8
+#: templates/view_tree.html:28
+msgid "Submit"
+msgstr "提交"
+
+#: templates/base.html:38 templates/edit_tree.html:114
+#: templates/view_tree.html:29
+msgid "Tree list"
+msgstr "系统树列表"
+
+#: templates/base.html:39 templates/edit_tree.html:115
+#: templates/view_tree.html:30
+msgid "Submit list"
+msgstr "提交列表"
+
+#: templates/base.html:41 templates/edit_tree.html:118
+#: templates/view_tree.html:33
+msgid "My trees"
+msgstr "我的树"
+
+#: templates/base.html:42 templates/edit_tree.html:119
+#: templates/view_tree.html:34
+msgid "Logout"
+msgstr "注销"
+
+#: templates/base.html:44 templates/edit_tree.html:121
+#: templates/view_tree.html:36
+msgid "Admin"
+msgstr "管理"
+
+#: templates/base.html:51 templates/edit_tree.html:130
+#: templates/view_tree.html:45
+msgid "Search"
+msgstr "搜索"
+
+#: templates/base.html:75 templates/view_tree.html:67
+msgid "Power by Flask 2.2.2 and Bootstrap 4 "
+msgstr "植物所数据中心？？？"
+
+#: templates/base.html:76 templates/view_tree.html:68
+msgid "Copyright 2022"
+msgstr ""
+
+#: templates/edit_tree.html:116
+msgid "Back to View"
+msgstr "切换到可视化"
+
+#: templates/index.html:5
+msgid "Search, Visualize, Analyze and Submit"
+msgstr "查询、可视化、分析提交系统发育树"
+
+#: templates/index.html:9
+msgid "Demo"
+msgstr "查看示例"
+
+#: templates/index.html:24
+msgid "Abstract"
+msgstr "摘要"
+
+#: templates/index.html:29
+msgid "Phylogeny tree"
+msgstr "系统树"
+
+#: templates/index.html:30
+msgid "Article"
+msgstr "论文"
+
+#: templates/index.html:33
+msgid "Last updated"
+msgstr "更新日期"
+
+#: templates/index.html:37
+msgid "More..."
+msgstr "更多"
+
+#: templates/submit_list.html:9
+#, fuzzy
+msgid "User"
+msgstr "查询"
+
+#: templates/submit_list.html:10
+msgid "date"
+msgstr "日期"
+
+#: templates/submit_list.html:11
+#, fuzzy
+msgid "Tree ID"
+msgstr "系统树ID"
+
+#: templates/submit_list.html:12
+msgid "Tree file ID"
+msgstr "树文件ID"
+
+#: templates/submit_list.html:13
+msgid "Study ID"
+msgstr "研究ID"
+
+#: templates/submit_list.html:14
+msgid "Matrix ID"
+msgstr "比对矩阵ID"
+
+#: templates/submit_list.html:16 templates/tree_list.html:18
+msgid "Manage"
+msgstr "操作"
+
+#: templates/submit_list.html:32
+msgid "Delete"
+msgstr "删除"
+
+#: templates/tree_list.html:12
+msgid "Tree title"
+msgstr "树标题"
+
+#: templates/tree_list.html:13
+msgid "Kind"
+msgstr "类型"
+
+#: templates/tree_list.html:14
+#, fuzzy
+msgid "Year"
+msgstr "日期"
+
+#: templates/tree_list.html:15
+msgid "Title"
+msgstr "论文标题"
+
+#: templates/tree_list.html:16
+msgid "Journal"
+msgstr "期刊"
+
+#: templates/tree_list.html:17
+msgid "DOI"
+msgstr "DOI"
+
+#: templates/tree_list.html:36
+msgid "View"
+msgstr "可视化"
+
+#: templates/tree_list.html:37 templates/view_tree.html:31
+msgid "Edit"
+msgstr "编辑"
+
+#~ msgid "Tree"
+#~ msgstr "系统树"
+
