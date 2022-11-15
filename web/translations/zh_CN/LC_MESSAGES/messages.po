@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-11-15 11:36+0800\n"
+"POT-Creation-Date: 2022-11-15 11:52+0800\n"
 "PO-Revision-Date: 2022-11-15 10:26+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hans_CN\n"
@@ -30,7 +30,7 @@ msgstr "密码"
 msgid "Password again"
 msgstr "再次输入密码"
 
-#: form.py:20 form.py:28 form.py:51 form.py:134 templates/base.html:37
+#: form.py:20 form.py:28 form.py:51 form.py:139 templates/base.html:37
 #: templates/edit_tree.html:113 templates/index.html:8
 #: templates/view_tree.html:28
 msgid "Submit"
@@ -48,7 +48,7 @@ msgstr "类群"
 msgid "Species"
 msgstr "物种"
 
-#: form.py:37 form.py:89 templates/tree_list.html:12
+#: form.py:37 form.py:91 templates/tree_list.html:12
 msgid "Tree title"
 msgstr "树标题"
 
@@ -56,11 +56,11 @@ msgstr "树标题"
 msgid "Is dating tree"
 msgstr "是否为时间树"
 
-#: form.py:42 form.py:119
+#: form.py:42 form.py:124
 msgid "Publish year"
 msgstr "发表年份"
 
-#: form.py:44 form.py:121
+#: form.py:44 form.py:126
 msgid "Author"
 msgstr "作者"
 
@@ -68,11 +68,11 @@ msgstr "作者"
 msgid "Title"
 msgstr "论文标题"
 
-#: form.py:48 form.py:128
+#: form.py:48 form.py:133
 msgid "Keywords"
 msgstr "关键词"
 
-#: form.py:49 form.py:130 templates/tree_list.html:17
+#: form.py:49 form.py:135 templates/tree_list.html:17
 msgid "DOI"
 msgstr "DOI"
 
@@ -88,53 +88,93 @@ msgstr "邮箱（必填）"
 msgid "Taxonomy(*)"
 msgstr "类群（必填）"
 
-#: form.py:92
+#: form.py:89
+msgid "root node or lineage name"
+msgstr "整体对应类群"
+
+#: form.py:94
 msgid "Dating tree"
 msgstr "是否为时间树"
 
-#: form.py:93
+#: form.py:95
 #, fuzzy
 msgid "Tree type"
 msgstr "树类型1"
 
-#: form.py:97
+#: form.py:96 form.py:97
+msgid "Consensus"
+msgstr "一致树"
+
+#: form.py:98
+msgid "Single"
+msgstr "单一树"
+
+#: form.py:99 form.py:104 form.py:119
+msgid "Other"
+msgstr "其他"
+
+#: form.py:100
 msgid "Tree kind"
 msgstr "树类型2"
 
-#: form.py:102
+#: form.py:101 form.py:102
+msgid "Species Tree"
+msgstr "物种树"
+
+#: form.py:103
+msgid "Gene Tree"
+msgstr "基因树"
+
+#: form.py:106
 msgid "Tree files (NEXUS or newick format) (*)"
 msgstr "系统树文件（单个nexus或newick格式文件）（必填）"
 
-#: form.py:105
+#: form.py:109
 msgid "Matrix title"
 msgstr "比对矩阵标题"
 
-#: form.py:109
+#: form.py:114
 msgid "Matrix type"
 msgstr "比对矩阵类型"
 
-#: form.py:115
+#: form.py:114 form.py:115
+msgid "Nucleic Acid"
+msgstr "核酸序列"
+
+#: form.py:116
+msgid "Amino Acid"
+msgstr "氨基酸序列"
+
+#: form.py:117
+msgid "Morphological"
+msgstr "形态"
+
+#: form.py:118
+msgid "Combination"
+msgstr "组合"
+
+#: form.py:120
 msgid "Matrix file (fasta format)"
 msgstr "比对矩阵文件（fasta格式）"
 
-#: form.py:117 templates/tree_list.html:16
+#: form.py:122 templates/tree_list.html:16
 msgid "Journal"
 msgstr "期刊"
 
-#: form.py:123
+#: form.py:128
 #, fuzzy
 msgid "Article title"
 msgstr "期刊标题"
 
-#: form.py:126 templates/index.html:24
+#: form.py:131 templates/index.html:24
 msgid "Abstract"
 msgstr "摘要"
 
-#: form.py:132
+#: form.py:137
 msgid "Cover image (.jpg or .png)"
 msgstr "封面图片"
 
-#: form.py:133
+#: form.py:138
 msgid "Submit for news"
 msgstr "是否提交至首页展示"
 

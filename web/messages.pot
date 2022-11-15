@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-11-15 11:36+0800\n"
+"POT-Creation-Date: 2022-11-15 11:52+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,7 @@ msgstr ""
 msgid "Password again"
 msgstr ""
 
-#: form.py:20 form.py:28 form.py:51 form.py:134 templates/base.html:37
+#: form.py:20 form.py:28 form.py:51 form.py:139 templates/base.html:37
 #: templates/edit_tree.html:113 templates/index.html:8
 #: templates/view_tree.html:28
 msgid "Submit"
@@ -47,7 +47,7 @@ msgstr ""
 msgid "Species"
 msgstr ""
 
-#: form.py:37 form.py:89 templates/tree_list.html:12
+#: form.py:37 form.py:91 templates/tree_list.html:12
 msgid "Tree title"
 msgstr ""
 
@@ -55,11 +55,11 @@ msgstr ""
 msgid "Is dating tree"
 msgstr ""
 
-#: form.py:42 form.py:119
+#: form.py:42 form.py:124
 msgid "Publish year"
 msgstr ""
 
-#: form.py:44 form.py:121
+#: form.py:44 form.py:126
 msgid "Author"
 msgstr ""
 
@@ -67,11 +67,11 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-#: form.py:48 form.py:128
+#: form.py:48 form.py:133
 msgid "Keywords"
 msgstr ""
 
-#: form.py:49 form.py:130 templates/tree_list.html:17
+#: form.py:49 form.py:135 templates/tree_list.html:17
 msgid "DOI"
 msgstr ""
 
@@ -87,51 +87,91 @@ msgstr ""
 msgid "Taxonomy(*)"
 msgstr ""
 
-#: form.py:92
+#: form.py:89
+msgid "root node or lineage name"
+msgstr ""
+
+#: form.py:94
 msgid "Dating tree"
 msgstr ""
 
-#: form.py:93
+#: form.py:95
 msgid "Tree type"
 msgstr ""
 
-#: form.py:97
+#: form.py:96 form.py:97
+msgid "Consensus"
+msgstr ""
+
+#: form.py:98
+msgid "Single"
+msgstr ""
+
+#: form.py:99 form.py:104 form.py:119
+msgid "Other"
+msgstr ""
+
+#: form.py:100
 msgid "Tree kind"
 msgstr ""
 
-#: form.py:102
+#: form.py:101 form.py:102
+msgid "Species Tree"
+msgstr ""
+
+#: form.py:103
+msgid "Gene Tree"
+msgstr ""
+
+#: form.py:106
 msgid "Tree files (NEXUS or newick format) (*)"
 msgstr ""
 
-#: form.py:105
+#: form.py:109
 msgid "Matrix title"
 msgstr ""
 
-#: form.py:109
+#: form.py:114
 msgid "Matrix type"
 msgstr ""
 
-#: form.py:115
+#: form.py:114 form.py:115
+msgid "Nucleic Acid"
+msgstr ""
+
+#: form.py:116
+msgid "Amino Acid"
+msgstr ""
+
+#: form.py:117
+msgid "Morphological"
+msgstr ""
+
+#: form.py:118
+msgid "Combination"
+msgstr ""
+
+#: form.py:120
 msgid "Matrix file (fasta format)"
 msgstr ""
 
-#: form.py:117 templates/tree_list.html:16
+#: form.py:122 templates/tree_list.html:16
 msgid "Journal"
 msgstr ""
 
-#: form.py:123
+#: form.py:128
 msgid "Article title"
 msgstr ""
 
-#: form.py:126 templates/index.html:24
+#: form.py:131 templates/index.html:24
 msgid "Abstract"
 msgstr ""
 
-#: form.py:132
+#: form.py:137
 msgid "Cover image (.jpg or .png)"
 msgstr ""
 
-#: form.py:133
+#: form.py:138
 msgid "Submit for news"
 msgstr ""
 

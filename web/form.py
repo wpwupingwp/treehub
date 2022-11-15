@@ -21,8 +21,8 @@ class UserForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
-    username = m.StringField(gettext('Username'), validators=[v.input_required(),
-                                                      v.length(max=100)])
+    username = m.StringField(gettext('Username'),
+                             validators=[v.input_required(), v.length(max=100)])
     password = m.PasswordField(gettext('Password'), validators=[
         v.input_required(), v.length(min=4, max=100)])
     submit = m.SubmitField(gettext('Submit'))
@@ -84,34 +84,39 @@ class SubmitForm(FlaskForm):
     email = m.StringField(gettext('Email(*)'),
                           validators=[v.email(), v.input_required()],
                           render_kw={'placeholder': 'eg. alex@example.org'})
-    root = m.StringField(gettext('Taxonomy(*)'), validators=[v.input_required()],
-                         render_kw={'placeholder': 'root node or lineage name'})
+    root = m.StringField(gettext('Taxonomy(*)'),
+                         validators=[v.input_required()],
+                         render_kw={'placeholder': gettext(
+                             'root node or lineage name')})
     tree_title = m.StringField(gettext('Tree title'),
                                validators=[v.length(max=255)],
                                render_kw={'placeholder': 'eg. XXX tree of YYY'})
     is_dating = m.BooleanField(gettext('Dating tree'))
-    tree_type = m.SelectField(gettext('Tree type'), default='Consensus',
-                              choices=[('Consensus', 'Consensus'),
-                                       ('Single', 'Single'),
-                                       ('Other', 'Other')])
-    tree_kind = m.RadioField(gettext('Tree kind'), default='Species Tree',
-                             choices=[('Species Tree', 'Species Tree'),
-                                      ('Gene Tree', 'Gene Tree'),
-                                      ('Other', 'Other')])
+    tree_type = m.SelectField(gettext('Tree type'),
+                              default=gettext('Consensus'),
+                              choices=[(gettext('Consensus'), 'Consensus'),
+                                       (gettext('Single'), 'Single'),
+                                       (gettext('Other'), 'Other')])
+    tree_kind = m.RadioField(gettext('Tree kind'),
+                             default=gettext('Species Tree'),
+                             choices=[(gettext('Species Tree'), 'Species Tree'),
+                                      (gettext('Gene Tree'), 'Gene Tree'),
+                                      (gettext('Other'), 'Other')])
     # tree_file = m.MultipleFileField('Tree file (NEXUS or newick format)')
     tree_file = m.FileField(gettext('Tree files (NEXUS or newick format) (*)'),
                             validators=[v.data_required()])
     # matrix
     matrix_title = m.StringField(gettext('Matrix title'),
                                  validators=[v.length(max=255)],
-                                 render_kw={'placeholder':
-                                                'eg. XXX matrix of tree YYY'})
-    description = m.SelectField(gettext('Matrix type'), default='Nucleic Acid',
-                                choices=[('Nucleic Acid', 'Nucleic Acid'),
-                                         ('Amino Acid', 'Amino Acid'),
-                                         ('Morphological', 'Morphological'),
-                                         ('Combination', 'Combination'),
-                                         ('Other', 'Other')])
+                                 render_kw={'placeholder': 'eg. XXX matrix of '
+                                                           'tree YYY'})
+    description = m.SelectField(
+        gettext('Matrix type'), default=gettext('Nucleic Acid'),
+        choices=[(gettext('Nucleic Acid'), 'Nucleic Acid'),
+                 (gettext('Amino Acid'), 'Amino Acid'),
+                 (gettext('Morphological'), 'Morphological'),
+                 (gettext('Combination'), 'Combination'),
+                 (gettext('Other'), 'Other')])
     matrix_file = m.FileField(gettext('Matrix file (fasta format)'))
     # study
     journal = m.StringField(gettext('Journal'),
