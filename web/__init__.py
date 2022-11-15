@@ -3,12 +3,14 @@
 from flask import Flask
 from flask_admin import Admin
 from flask_bootstrap import Bootstrap4
+from flask_babel import Babel
 from flask_login import LoginManager
 
 from pathlib import Path
 
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
+babel = Babel(app)
 bootstrap = Bootstrap4(app)
 lm = LoginManager()
 lm.login_view = 'admin.login'
