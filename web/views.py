@@ -10,7 +10,7 @@ import re
 
 from flask import g, request, session
 from flask import flash as flask_flash
-from flask_babel import gettext as gt
+from flask_babel import gettext
 from sqlalchemy import select, or_, and_
 from werkzeug.utils import secure_filename
 import dendropy
@@ -37,7 +37,8 @@ def get_locale():
 
 
 def flash(info: str):
-    return gt(flask_flash(info))
+    # auto alias _ in jinjia2
+    return gettext(flask_flash(info))
 
 
 @app.before_request
