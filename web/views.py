@@ -36,6 +36,12 @@ def get_locale():
         return request.accept_languages.best_match(['zh', 'en'])
 
 
+@app.route('/locale/<loc>')
+def set_locale(loc):
+    session['locale'] = loc
+    return f.redirect('/index')
+
+
 @app.before_request
 def track():
     if session.get('tracked', False):
