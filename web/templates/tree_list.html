@@ -14,8 +14,7 @@
         <th>{{_('Year')}}</th>
         <th>{{_('Title')}}</th>
         <th>{{_('Journal')}}</th>
-        <th>{{_('DOI')}}</th>
-        <th>{{_('Manage')}}</th>
+        <th class="text-nowrap">{{_('Manage')}}</th>
     </tr>
     </thead>
     <tbody>
@@ -27,15 +26,13 @@
         <td>{{tree.year}}</td>
         <td>{{tree.title}}</td>
         <td>{{tree.journal}}</td>
-        <td>
-            {% if tree.doi is not none %}
-            <a href="https://doi.org/{{tree.doi}}">{{tree.doi}}</a>
-            {% endif %}
-        </td>
-        <td>
+        <td class="text-nowrap">
             <a href="/tree/{{tree.tree_id}}">{{_('View')}}</a>
             <a href="/tree/edit/{{tree.tree_id}}">{{_('Edit')}}</a>
-        </td>
+            {% if tree.doi is not none %}
+            <a href="https://doi.org/{{tree.doi}}">{{_('Article')}}</a>
+            {% endif %}
+        </tdc>
         {% endfor %}
     </tr>
     </tbody>
