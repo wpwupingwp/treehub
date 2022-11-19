@@ -83,7 +83,7 @@ ALTER TABLE matrix
 ADD COLUMN fasta character varying;
 -- add dating tree marker
 ALTER TABLE trees
-ADD COLUMN is_dating boolean default false;
+ADD COLUMN tree_type_new character varying(50);
 -- add date
 ALTER TABLE matrix
     ADD COLUMN upload_date date;

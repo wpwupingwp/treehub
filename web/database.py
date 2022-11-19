@@ -138,10 +138,10 @@ class Trees(db.Model):
     tree_label = db.Column(db.String(255))
     tree_title = db.Column(db.String(255))
     tree_type = db.Column(db.String(30))
+    tree_type_new = db.Column(db.String(50))
     tree_kind = db.Column(db.String(30))
     tree_quality = db.Column(db.String(30))
     study_id = db.Column(db.Integer)
-    is_dating = db.Column(db.Boolean, default=False)
     upload_date = db.Column(db.Date)
     file = db.relationship('Treefile', back_populates='tree')
 
