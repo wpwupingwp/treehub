@@ -10,11 +10,10 @@
     <tr>
         <!--th>#</th-->
         <th>{{_('Tree title')}}</th>
-        <th>{{_('Kind')}}</th>
         <th>{{_('Year')}}</th>
         <th>{{_('Title')}}</th>
         <th>{{_('Journal')}}</th>
-        <th class="text-nowrap">{{_('Manage')}}</th>
+        <th class="text-nowrap">{{_('Action')}}</th>
     </tr>
     </thead>
     <tbody>
@@ -22,7 +21,6 @@
     <tr>
         <!--td>{{tree.tree_id}}</td-->
         <td class="font-italic">{{tree.tree_title}}</td>
-        <td class="text-nowrap">{{tree.tree_kind}}</td>
         <td>{{tree.year}}</td>
         <td>{{tree.title}}</td>
         <td>{{tree.journal}}</td>
@@ -32,7 +30,10 @@
             {% if tree.doi is not none %}
             <a href="https://doi.org/{{tree.doi}}">{{_('Article')}}</a>
             {% endif %}
-        </tdc>
+            <a href="/matrix/from_tree/{{tree.tree_id}}">{{_('Matrix')}}</a>
+        </td>
+        <td class="text-nowrap">
+        </td>
         {% endfor %}
     </tr>
     </tbody>

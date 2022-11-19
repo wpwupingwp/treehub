@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-11-19 21:52+0800\n"
+"POT-Creation-Date: 2022-11-19 22:04+0800\n"
 "PO-Revision-Date: 2022-11-15 10:26+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hans_CN\n"
@@ -84,7 +84,7 @@ msgstr "发表年份"
 msgid "Author"
 msgstr "作者"
 
-#: form.py:51 templates/tree_list.html:15
+#: form.py:51 templates/tree_list.html:14
 msgid "Title"
 msgstr "论文标题"
 
@@ -148,7 +148,7 @@ msgstr "组合"
 msgid "Matrix file (fasta format)"
 msgstr "比对矩阵文件（fasta格式）"
 
-#: form.py:123 templates/tree_list.html:16
+#: form.py:123 templates/tree_list.html:15
 msgid "Journal"
 msgstr "期刊"
 
@@ -168,38 +168,38 @@ msgstr "封面图片"
 msgid "Submit for news"
 msgstr "是否提交至首页展示"
 
-#: views.py:217
+#: views.py:216
 msgid "Tree not found."
 msgstr "指定系统树未找到"
 
-#: views.py:227 views.py:236 views.py:256
+#: views.py:226 views.py:235 views.py:255
 msgid "Treefile not found."
 msgstr "指定树文件未找到"
 
-#: views.py:345
+#: views.py:344
 msgid "Taxonomy name not found. Currently only support accepted name."
 msgstr "未找到指定类群名称。目前仅支持接收名"
 
-#: views.py:388
+#: views.py:387
 #, python-format
 msgid "%(not_found)s of %(total)s nodes have invalid name."
 msgstr "%(total)s个节点中的%(not_found)s个未识别出对应物种名称"
 
-#: views.py:389
+#: views.py:388
 msgid ""
 "Node name in tree file should be \"scientific name with other id\" format"
 " (eg. Oryza sativa id9999"
 msgstr "系统树文件中节点的名称应当为\"物种名 其他ID\"的格式（例如 Oryza sativa id9999）"
 
-#: views.py:394
+#: views.py:393
 msgid "Bad tree file. The file should be UTF-8 encoding nexus or newick format."
 msgstr "系统树文件无法识别，应当为utf-8编码（或ascii编码）的NEXUS或NWK格式"
 
-#: views.py:430
+#: views.py:429
 msgid "Submit ok."
 msgstr "提交成功"
 
-#: views.py:446
+#: views.py:445
 msgid "Remove ok."
 msgstr "删除成功"
 
@@ -267,7 +267,7 @@ msgstr "查看示例"
 msgid "Phylogeny tree"
 msgstr "系统树"
 
-#: templates/index.html:30 templates/tree_list.html:33
+#: templates/index.html:30 templates/tree_list.html:31
 msgid "Article"
 msgstr "论文"
 
@@ -303,7 +303,7 @@ msgstr "研究ID"
 msgid "Matrix ID"
 msgstr "比对矩阵ID"
 
-#: templates/submit_list.html:16 templates/tree_list.html:17
+#: templates/submit_list.html:16
 msgid "Manage"
 msgstr "操作"
 
@@ -312,18 +312,25 @@ msgid "Delete"
 msgstr "删除"
 
 #: templates/tree_list.html:13
-msgid "Kind"
-msgstr "类型"
-
-#: templates/tree_list.html:14
 msgid "Year"
 msgstr "日期"
 
-#: templates/tree_list.html:30
+#: templates/tree_list.html:16
+msgid "Action"
+msgstr "操作"
+
+#: templates/tree_list.html:28
 msgid "View"
 msgstr "可视化"
 
-#: templates/tree_list.html:31 templates/view_tree.html:31
+#: templates/tree_list.html:29 templates/view_tree.html:31
 msgid "Edit"
 msgstr "编辑"
+
+#: templates/tree_list.html:33
+msgid "Matrix"
+msgstr "比对矩阵"
+
+#~ msgid "Kind"
+#~ msgstr "类型"
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-11-19 21:52+0800\n"
+"POT-Creation-Date: 2022-11-19 22:04+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -83,7 +83,7 @@ msgstr ""
 msgid "Author"
 msgstr ""
 
-#: form.py:51 templates/tree_list.html:15
+#: form.py:51 templates/tree_list.html:14
 msgid "Title"
 msgstr ""
 
@@ -147,7 +147,7 @@ msgstr ""
 msgid "Matrix file (fasta format)"
 msgstr ""
 
-#: form.py:123 templates/tree_list.html:16
+#: form.py:123 templates/tree_list.html:15
 msgid "Journal"
 msgstr ""
 
@@ -167,38 +167,38 @@ msgstr ""
 msgid "Submit for news"
 msgstr ""
 
-#: views.py:217
+#: views.py:216
 msgid "Tree not found."
 msgstr ""
 
-#: views.py:227 views.py:236 views.py:256
+#: views.py:226 views.py:235 views.py:255
 msgid "Treefile not found."
 msgstr ""
 
-#: views.py:345
+#: views.py:344
 msgid "Taxonomy name not found. Currently only support accepted name."
 msgstr ""
 
-#: views.py:388
+#: views.py:387
 #, python-format
 msgid "%(not_found)s of %(total)s nodes have invalid name."
 msgstr ""
 
-#: views.py:389
+#: views.py:388
 msgid ""
 "Node name in tree file should be \"scientific name with other id\" format"
 " (eg. Oryza sativa id9999"
 msgstr ""
 
-#: views.py:394
+#: views.py:393
 msgid "Bad tree file. The file should be UTF-8 encoding nexus or newick format."
 msgstr ""
 
-#: views.py:430
+#: views.py:429
 msgid "Submit ok."
 msgstr ""
 
-#: views.py:446
+#: views.py:445
 msgid "Remove ok."
 msgstr ""
 
@@ -266,7 +266,7 @@ msgstr ""
 msgid "Phylogeny tree"
 msgstr ""
 
-#: templates/index.html:30 templates/tree_list.html:33
+#: templates/index.html:30 templates/tree_list.html:31
 msgid "Article"
 msgstr ""
 
@@ -302,7 +302,7 @@ msgstr ""
 msgid "Matrix ID"
 msgstr ""
 
-#: templates/submit_list.html:16 templates/tree_list.html:17
+#: templates/submit_list.html:16
 msgid "Manage"
 msgstr ""
 
@@ -311,18 +311,22 @@ msgid "Delete"
 msgstr ""
 
 #: templates/tree_list.html:13
-msgid "Kind"
-msgstr ""
-
-#: templates/tree_list.html:14
 msgid "Year"
 msgstr ""
 
-#: templates/tree_list.html:30
+#: templates/tree_list.html:16
+msgid "Action"
+msgstr ""
+
+#: templates/tree_list.html:28
 msgid "View"
 msgstr ""
 
-#: templates/tree_list.html:31 templates/view_tree.html:31
+#: templates/tree_list.html:29 templates/view_tree.html:31
 msgid "Edit"
+msgstr ""
+
+#: templates/tree_list.html:33
+msgid "Matrix"
 msgstr ""
 

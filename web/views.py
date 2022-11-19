@@ -111,7 +111,6 @@ def upload(data) -> Path:
 
 @app.route('/tree/list_all')
 def tree_list():
-    session['dict'] = {'is_dating': False}
     return f.redirect('/tree/list')
 
 
@@ -203,7 +202,7 @@ def tree_result(page=1):
     x = Trees.query.filter(trees)
     results = db.session.query(Study, Trees).with_entities(
         Study.title, Study.year, Study.journal, Study.doi,
-        Trees.tree_id, Trees.tree_title, Trees.tree_kind, Trees.is_dating).join(
+        Trees.tree_id, Trees.tree_title, Trees.tree_type_new,).join(
         Study, Study.study_id == Trees.study_id).filter(
         trees).order_by(order_by)
     pagination = results.paginate(page=page, per_page=20)
@@ -320,6 +319,12 @@ def newick_to_phyloxml(newick: str) -> str:
     tmp_out.seek(0)
     phyloxml = tmp_out.read()
     return phyloxml
+
+
+@app.route('/matrix/from_tree/<int:tree_id>')
+def get_matrix_from_treeid(tree_id):
+    f.abort(404)
+    return
 
 
 @app.route('/submit', methods=('POST', 'GET'))
