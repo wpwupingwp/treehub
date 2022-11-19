@@ -89,7 +89,8 @@ class SubmitForm(FlaskForm):
                          render_kw={'placeholder': gettext(
                              'root node or lineage name')})
     tree_title = m.StringField(gettext('Tree title'),
-                               validators=[v.length(max=255)],
+                               validators=[v.input_required(),
+                                           v.length(max=255)],
                                render_kw={'placeholder': 'eg. XXX tree of YYY'})
     is_dating = m.BooleanField(gettext('Dating tree'))
     tree_type = m.SelectField(gettext('Tree type'),
