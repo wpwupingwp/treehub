@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-11-15 11:52+0800\n"
+"POT-Creation-Date: 2022-11-19 21:52+0800\n"
 "PO-Revision-Date: 2022-11-15 10:26+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hans_CN\n"
@@ -30,7 +30,7 @@ msgstr "密码"
 msgid "Password again"
 msgstr "再次输入密码"
 
-#: form.py:20 form.py:28 form.py:51 form.py:139 templates/base.html:37
+#: form.py:20 form.py:28 form.py:56 form.py:140 templates/base.html:37
 #: templates/edit_tree.html:113 templates/index.html:8
 #: templates/view_tree.html:28
 msgid "Submit"
@@ -48,169 +48,158 @@ msgstr "类群"
 msgid "Species"
 msgstr "物种"
 
-#: form.py:37 form.py:91 templates/tree_list.html:12
+#: form.py:37 templates/tree_list.html:12
 msgid "Tree title"
 msgstr "树标题"
 
-#: form.py:40
-msgid "Is dating tree"
-msgstr "是否为时间树"
-
-#: form.py:42 form.py:124
-msgid "Publish year"
-msgstr "发表年份"
-
-#: form.py:44 form.py:126
-msgid "Author"
-msgstr "作者"
-
-#: form.py:46 templates/tree_list.html:15
-msgid "Title"
-msgstr "论文标题"
-
-#: form.py:48 form.py:133
-msgid "Keywords"
-msgstr "关键词"
-
-#: form.py:49 form.py:135 templates/tree_list.html:17
-msgid "DOI"
-msgstr "DOI"
-
-#: form.py:59
-msgid "Sort"
-msgstr "排序"
-
-#: form.py:84
-msgid "Email(*)"
-msgstr "邮箱（必填）"
-
-#: form.py:87
-msgid "Taxonomy(*)"
-msgstr "类群（必填）"
-
-#: form.py:89
-msgid "root node or lineage name"
-msgstr "整体对应类群"
-
-#: form.py:94
-msgid "Dating tree"
-msgstr "是否为时间树"
-
-#: form.py:95
-#, fuzzy
+#: form.py:41 form.py:101
 msgid "Tree type"
-msgstr "树类型1"
+msgstr "比对矩阵类型"
 
-#: form.py:96 form.py:97
-msgid "Consensus"
-msgstr "一致树"
-
-#: form.py:98
-msgid "Single"
-msgstr "单一树"
-
-#: form.py:99 form.py:104 form.py:119
-msgid "Other"
-msgstr "其他"
-
-#: form.py:100
-msgid "Tree kind"
-msgstr "树类型2"
-
-#: form.py:101 form.py:102
+#: form.py:41 form.py:101
 msgid "Species Tree"
 msgstr "物种树"
 
-#: form.py:103
-msgid "Gene Tree"
+#: form.py:42 form.py:102
+msgid "Species tree"
+msgstr "物种树"
+
+#: form.py:43 form.py:103
+msgid "Gene tree"
 msgstr "基因树"
 
-#: form.py:106
+#: form.py:44 form.py:104
+msgid "Dating tree"
+msgstr "时间树"
+
+#: form.py:45 form.py:105 form.py:120
+msgid "Other"
+msgstr "其他"
+
+#: form.py:47 form.py:125
+msgid "Publish year"
+msgstr "发表年份"
+
+#: form.py:49 form.py:127
+msgid "Author"
+msgstr "作者"
+
+#: form.py:51 templates/tree_list.html:15
+msgid "Title"
+msgstr "论文标题"
+
+#: form.py:53 form.py:134
+msgid "Keywords"
+msgstr "关键词"
+
+#: form.py:54 form.py:136
+msgid "DOI"
+msgstr "DOI"
+
+#: form.py:64
+msgid "Sort"
+msgstr "排序"
+
+#: form.py:89
+msgid "Email(*)"
+msgstr "邮箱（必填）"
+
+#: form.py:92
+msgid "Taxonomy(*)"
+msgstr "类群（必填）"
+
+#: form.py:94
+msgid "root node or lineage name"
+msgstr "类群名称"
+
+#: form.py:96
+msgid "Tree title(*)"
+msgstr "树标题（必填）"
+
+#: form.py:107
 msgid "Tree files (NEXUS or newick format) (*)"
 msgstr "系统树文件（单个nexus或newick格式文件）（必填）"
 
-#: form.py:109
+#: form.py:110
 msgid "Matrix title"
 msgstr "比对矩阵标题"
 
-#: form.py:114
+#: form.py:115
 msgid "Matrix type"
 msgstr "比对矩阵类型"
 
-#: form.py:114 form.py:115
+#: form.py:115 form.py:116
 msgid "Nucleic Acid"
 msgstr "核酸序列"
 
-#: form.py:116
+#: form.py:117
 msgid "Amino Acid"
 msgstr "氨基酸序列"
 
-#: form.py:117
-msgid "Morphological"
-msgstr "形态"
-
 #: form.py:118
+msgid "Morphological"
+msgstr "形态特征"
+
+#: form.py:119
 msgid "Combination"
 msgstr "组合"
 
-#: form.py:120
+#: form.py:121
 msgid "Matrix file (fasta format)"
 msgstr "比对矩阵文件（fasta格式）"
 
-#: form.py:122 templates/tree_list.html:16
+#: form.py:123 templates/tree_list.html:16
 msgid "Journal"
 msgstr "期刊"
 
-#: form.py:128
-#, fuzzy
+#: form.py:129
 msgid "Article title"
 msgstr "期刊标题"
 
-#: form.py:131 templates/index.html:24
+#: form.py:132 templates/index.html:24
 msgid "Abstract"
 msgstr "摘要"
 
-#: form.py:137
+#: form.py:138
 msgid "Cover image (.jpg or .png)"
 msgstr "封面图片"
 
-#: form.py:138
+#: form.py:139
 msgid "Submit for news"
 msgstr "是否提交至首页展示"
 
-#: views.py:210
+#: views.py:217
 msgid "Tree not found."
 msgstr "指定系统树未找到"
 
-#: views.py:220 views.py:229 views.py:249
+#: views.py:227 views.py:236 views.py:256
 msgid "Treefile not found."
 msgstr "指定树文件未找到"
 
-#: views.py:337
+#: views.py:345
 msgid "Taxonomy name not found. Currently only support accepted name."
 msgstr "未找到指定类群名称。目前仅支持接收名"
 
-#: views.py:380
+#: views.py:388
 #, python-format
 msgid "%(not_found)s of %(total)s nodes have invalid name."
 msgstr "%(total)s个节点中的%(not_found)s个未识别出对应物种名称"
 
-#: views.py:381
+#: views.py:389
 msgid ""
 "Node name in tree file should be \"scientific name with other id\" format"
 " (eg. Oryza sativa id9999"
 msgstr "系统树文件中节点的名称应当为\"物种名 其他ID\"的格式（例如 Oryza sativa id9999）"
 
-#: views.py:386
+#: views.py:394
 msgid "Bad tree file. The file should be UTF-8 encoding nexus or newick format."
 msgstr "系统树文件无法识别，应当为utf-8编码（或ascii编码）的NEXUS或NWK格式"
 
-#: views.py:422
-#, fuzzy
+#: views.py:430
 msgid "Submit ok."
 msgstr "提交成功"
 
-#: views.py:438
+#: views.py:446
 msgid "Remove ok."
 msgstr "删除成功"
 
@@ -254,11 +243,11 @@ msgstr "管理"
 msgid "Search"
 msgstr "搜索"
 
-#: templates/base.html:75 templates/view_tree.html:67
+#: templates/base.html:80 templates/view_tree.html:67
 msgid "Power by Flask 2.2.2 and Bootstrap 4 "
 msgstr "植物所数据中心？？？"
 
-#: templates/base.html:76 templates/view_tree.html:68
+#: templates/base.html:81 templates/view_tree.html:68
 msgid "Copyright 2022"
 msgstr ""
 
@@ -278,7 +267,7 @@ msgstr "查看示例"
 msgid "Phylogeny tree"
 msgstr "系统树"
 
-#: templates/index.html:30
+#: templates/index.html:30 templates/tree_list.html:33
 msgid "Article"
 msgstr "论文"
 
@@ -291,16 +280,14 @@ msgid "More..."
 msgstr "更多"
 
 #: templates/submit_list.html:9
-#, fuzzy
 msgid "User"
-msgstr "查询"
+msgstr "用户"
 
 #: templates/submit_list.html:10
 msgid "date"
 msgstr "日期"
 
 #: templates/submit_list.html:11
-#, fuzzy
 msgid "Tree ID"
 msgstr "系统树ID"
 
@@ -316,7 +303,7 @@ msgstr "研究ID"
 msgid "Matrix ID"
 msgstr "比对矩阵ID"
 
-#: templates/submit_list.html:16 templates/tree_list.html:18
+#: templates/submit_list.html:16 templates/tree_list.html:17
 msgid "Manage"
 msgstr "操作"
 
@@ -329,18 +316,14 @@ msgid "Kind"
 msgstr "类型"
 
 #: templates/tree_list.html:14
-#, fuzzy
 msgid "Year"
 msgstr "日期"
 
-#: templates/tree_list.html:36
+#: templates/tree_list.html:30
 msgid "View"
 msgstr "可视化"
 
-#: templates/tree_list.html:37 templates/view_tree.html:31
+#: templates/tree_list.html:31 templates/view_tree.html:31
 msgid "Edit"
 msgstr "编辑"
-
-#~ msgid "Tree"
-#~ msgstr "系统树"
 

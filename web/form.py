@@ -37,7 +37,12 @@ class QueryForm(FlaskForm):
     tree_title = m.StringField(gettext('Tree title'),
                                validators=[v.length(max=255)], render_kw={
             'placeholder': 'eg. Bootstrap tree of Poaceae'})
-    is_dating = m.BooleanField(gettext('Is dating tree'))
+    tree_type_new = m.SelectField(
+        gettext('Tree type'), default=gettext('Species Tree'),
+        choices=[('Species tree', gettext('Species tree')),
+                 ('Gene tree', gettext('Gene tree')),
+                 ('Dating tree', gettext('Dating tree')),
+                 ('Other', gettext('Other'))])
     # study
     year = m.StringField(gettext('Publish year'),
                          render_kw={'placeholder': 'eg. 2021'})
@@ -88,21 +93,16 @@ class SubmitForm(FlaskForm):
                          validators=[v.input_required()],
                          render_kw={'placeholder': gettext(
                              'root node or lineage name')})
-    tree_title = m.StringField(gettext('Tree title'),
+    tree_title = m.StringField(gettext('Tree title(*)'),
                                validators=[v.input_required(),
                                            v.length(max=255)],
                                render_kw={'placeholder': 'eg. XXX tree of YYY'})
-    is_dating = m.BooleanField(gettext('Dating tree'))
-    tree_type = m.SelectField(gettext('Tree type'),
-                              default=gettext('Consensus'),
-                              choices=[(gettext('Consensus'), 'Consensus'),
-                                       (gettext('Single'), 'Single'),
-                                       (gettext('Other'), 'Other')])
-    tree_kind = m.RadioField(gettext('Tree kind'),
-                             default=gettext('Species Tree'),
-                             choices=[(gettext('Species Tree'), 'Species Tree'),
-                                      (gettext('Gene Tree'), 'Gene Tree'),
-                                      (gettext('Other'), 'Other')])
+    tree_type_new = m.SelectField(
+        gettext('Tree type'), default=gettext('Species Tree'),
+        choices=[('Species tree', gettext('Species tree')),
+                 ('Gene tree', gettext('Gene tree')),
+                 ('Dating tree', gettext('Dating tree')),
+                 ('Other', gettext('Other'))])
     # tree_file = m.MultipleFileField('Tree file (NEXUS or newick format)')
     tree_file = m.FileField(gettext('Tree files (NEXUS or newick format) (*)'),
                             validators=[v.data_required()])
@@ -113,11 +113,11 @@ class SubmitForm(FlaskForm):
                                                            'tree YYY'})
     description = m.SelectField(
         gettext('Matrix type'), default=gettext('Nucleic Acid'),
-        choices=[(gettext('Nucleic Acid'), 'Nucleic Acid'),
-                 (gettext('Amino Acid'), 'Amino Acid'),
-                 (gettext('Morphological'), 'Morphological'),
-                 (gettext('Combination'), 'Combination'),
-                 (gettext('Other'), 'Other')])
+        choices=[('Nucleic acid', gettext('Nucleic Acid')),
+                 ('Amino acid', gettext('Amino Acid')),
+                 ('Morphological', gettext('Morphological')),
+                 ('Combination', gettext('Combination')),
+                 ('Other', gettext('Other'))])
     matrix_file = m.FileField(gettext('Matrix file (fasta format)'))
     # study
     journal = m.StringField(gettext('Journal'),
@@ -138,19 +138,3 @@ class SubmitForm(FlaskForm):
     cover_img = m.FileField(gettext('Cover image (.jpg or .png)'))
     news = m.BooleanField(gettext('Submit for news'), default=False)
     submit = m.SubmitField(gettext('Submit'))
-
-
-tmp2 = '''
-<form method="post">
-    {{ form.csrf_token() }}
-    <div class="row ">
-        <div class="col">
-            {{ render_field(form.root, form_type='horizontal') }}
-        </div>
-        <div class="col">
-            {{ render_field(form.submit, form_type='horizontal') }}
-        </div>
-    </div>
-</form>
-
-'''

@@ -179,8 +179,9 @@ def tree_result(page=1):
         node_condition = Trees.tree_id.in_(select(Nodes.tree_id).where(
             Nodes.node_label.like(f'{query.get("species")}%')))
         filters.append(node_condition)
-    if query.get('is_dating'):
-        filters.append(Trees.is_dating == True)
+    if query.get('tree_type_new'):
+        type_new = str(query.get('tree_type_new')).capitalize()
+        filters.append(Trees.tree_type_new == type_new)
     if query.get('year'):
         study_filters.append(Study.year == int(query.get('year')))
     if query.get('author'):
@@ -336,6 +337,7 @@ def submit():
         for j in [matrix, treefile, tree, study]:
             j.upload_date = upload_date
         tree.root = str(tree.root).strip()
+        tree.tree_type_new = str(tree.tree_type_new).capitalize()
         # handle root id
         taxon = NcbiName.query.filter_by(name_txt=tree.root).all()
         # first or none
