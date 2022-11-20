@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container col-md-10 shadow">
+    <a href="/submit/cancel" class="btn btn-danger align-center my-2">{{_('Cancel submit')}}</a>
     {% from 'bootstrap4/form.html' import render_form, render_field, render_hidden_errors %}
     {% for error in form.errors.items() %}
         <div class="invalid-feedback">{{error}}</div>
