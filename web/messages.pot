@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-11-20 21:19+0800\n"
+"POT-Creation-Date: 2022-11-20 23:06+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,7 @@ msgstr ""
 msgid "Password again"
 msgstr ""
 
-#: form.py:21 form.py:29 form.py:57 form.py:118 templates/base.html:37
+#: form.py:21 form.py:29 form.py:57 templates/base.html:37
 #: templates/edit_tree.html:113 templates/index.html:8
 #: templates/view_tree.html:28
 msgid "Submit"
@@ -149,6 +149,10 @@ msgstr ""
 msgid "Add more"
 msgstr ""
 
+#: form.py:118
+msgid "Finish submit"
+msgstr ""
+
 #: form.py:122
 msgid "Email <span class=\"text-danger h5\">*</span>"
 msgstr ""
@@ -218,11 +222,11 @@ msgstr ""
 msgid "Submit No.%(n)s trees ok."
 msgstr ""
 
-#: views.py:487
+#: views.py:493
 msgid "Submit not found."
 msgstr ""
 
-#: views.py:512
+#: views.py:518
 msgid "Remove ok."
 msgstr ""
 
@@ -300,6 +304,10 @@ msgstr ""
 
 #: templates/index.html:37
 msgid "More..."
+msgstr ""
+
+#: templates/submit_2.html:5
+msgid "Cancel submit"
 msgstr ""
 
 #: templates/submit_list.html:9
