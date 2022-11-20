@@ -83,27 +83,17 @@ class SortQueryForm(FlaskForm):
             return list(reversed(old))
 
 
-class SubmitForm(FlaskForm):
-    # todo: currently support one file per submit
-    # tree
-    email = m.StringField(gettext('Email(*)'),
-                          validators=[v.email(), v.input_required()],
-                          render_kw={'placeholder': 'eg. alex@example.org'})
-    root = m.StringField(gettext('Taxonomy(*)'),
-                         validators=[v.input_required()],
-                         render_kw={'placeholder': gettext(
-                             'root node or lineage name')})
+class TreeMatrixForm(FlaskForm):
     tree_title = m.StringField(gettext('Tree title(*)'),
                                validators=[v.input_required(),
                                            v.length(max=255)],
                                render_kw={'placeholder': 'eg. XXX tree of YYY'})
-    tree_type_new = m.SelectField(
+    tree_type_new = m.RadioField(
         gettext('Tree type'), default=gettext('Species Tree'),
         choices=[('Species tree', gettext('Species tree')),
                  ('Gene tree', gettext('Gene tree')),
                  ('Dating tree', gettext('Dating tree')),
                  ('Other', gettext('Other'))])
-    # tree_file = m.MultipleFileField('Tree file (NEXUS or newick format)')
     tree_file = m.FileField(gettext('Tree files (NEXUS or newick format) (*)'),
                             validators=[v.data_required()])
     # matrix
@@ -111,7 +101,7 @@ class SubmitForm(FlaskForm):
                                  validators=[v.length(max=255)],
                                  render_kw={'placeholder': 'eg. XXX matrix of '
                                                            'tree YYY'})
-    description = m.SelectField(
+    description = m.RadioField(
         gettext('Matrix type'), default=gettext('Nucleic Acid'),
         choices=[('Nucleic acid', gettext('Nucleic Acid')),
                  ('Amino acid', gettext('Amino Acid')),
@@ -119,6 +109,16 @@ class SubmitForm(FlaskForm):
                  ('Combination', gettext('Combination')),
                  ('Other', gettext('Other'))])
     matrix_file = m.FileField(gettext('Matrix file (fasta format)'))
+
+
+class SubmitForm(FlaskForm):
+    email = m.StringField(gettext('Email(*)'),
+                          validators=[v.email(), v.input_required()],
+                          render_kw={'placeholder': 'eg. alex@example.org'})
+    root = m.StringField(gettext('Taxonomy(*)'),
+                         validators=[v.input_required()],
+                         render_kw={'placeholder': gettext(
+                             'root node or lineage name')})
     # study
     journal = m.StringField(gettext('Journal'),
                             render_kw={'placeholder': 'eg. JSE'})
@@ -137,4 +137,5 @@ class SubmitForm(FlaskForm):
                         render_kw={'placeholder': 'eg. 10.9999/1234567890'})
     cover_img = m.FileField(gettext('Cover image (.jpg or .png)'))
     news = m.BooleanField(gettext('Submit for news'), default=False)
+    x = m.FormField(TreeMatrixForm, label=1)
     submit = m.SubmitField(gettext('Submit'))
