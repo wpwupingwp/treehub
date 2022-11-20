@@ -182,7 +182,8 @@ def tree_result(page=1):
     if query.get('tree_type_new'):
         type_new = str(query.get('tree_type_new')).capitalize()
         if type_new != 'Any':
-            filters.append(Trees.tree_type_new == type_new)
+            filters.append(or_(Trees.tree_type_new == type_new,
+                               Trees.tree_kind == type_new.title()))
     if query.get('year'):
         study_filters.append(Study.year == int(query.get('year')))
     if query.get('author'):
