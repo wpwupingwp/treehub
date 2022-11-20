@@ -111,6 +111,7 @@ def upload(data) -> Path:
 
 @app.route('/tree/list_all')
 def tree_list():
+    session['dict'] = {}
     return f.redirect('/tree/list')
 
 
@@ -169,7 +170,6 @@ def tree_result(page=1):
     else:
         order_by = field.asc()
     query = session['dict']
-    print(query)
     study_filters = []
     filters = []
     if query.get('taxonomy') and not query.get('species'):
