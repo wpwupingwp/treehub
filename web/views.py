@@ -380,7 +380,6 @@ def handle_tree_info(tree_form, final=False):
     matrix.analysisstep_id = '20222022'
     db.session.add(matrix)
     db.session.commit()
-    print('tree', tree, 'file', treefile, 'matrix', matrix)
     # handle tree_text
     treefile_tmp = upload(tree_form.tree_file.data)
     try:
@@ -414,7 +413,6 @@ def handle_tree_info(tree_form, final=False):
                               '(eg. Oryza sativa id9999'))
         # dendropy error class is too long
     except Exception:
-        raise
         flash(gettext('Bad tree file. The file should be UTF-8 encoding '
                       'nexus or newick format.'))
         return f.render_template('submit_2.html', form=tree_form)
@@ -424,7 +422,6 @@ def handle_tree_info(tree_form, final=False):
     db.session.add(tree)
     # get tree_id
     db.session.commit()
-    print('tree', tree, 'file', treefile, 'matrix', matrix)
     treefile.tree_id = tree.tree_id
     for i in label_taxon:
         new_node = Nodes(i, label_taxon[i], tree.tree_id)
@@ -452,7 +449,6 @@ def handle_tree_info(tree_form, final=False):
         db.session.add(next_submit)
         db.session.commit()
         session['submit_'] = next_submit.submit_id
-    print(submit_)
     return
 
 
