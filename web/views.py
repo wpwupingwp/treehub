@@ -478,6 +478,7 @@ def submit_data(n):
             return f.redirect(f'/submit/list')
     return f.render_template('submit_2.html', form=tf)
 
+
 @app.route('/submit/cancel')
 def cancel_submit():
     study = Study.query.get(session['study'])

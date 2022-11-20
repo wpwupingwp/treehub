@@ -1,11 +1,38 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container col-md-10 shadow">
-    <a href="/submit/cancel" class="btn btn-danger align-center my-2">{{_('Cancel submit')}}</a>
+    <div class="text-right">
+        <a href="/submit/cancel" class="btn btn-dark my-2 ">{{_('Cancel submit')}}</a>
+    </div>
     {% from 'bootstrap4/form.html' import render_form, render_field, render_hidden_errors %}
     {% for error in form.errors.items() %}
         <div class="invalid-feedback">{{error}}</div>
     {% endfor %}
-    {{ render_form(form, enctype='multipart/form-data', form_type='horizontal') }}
+    <div class="form my-2">
+        <form method="post" enctype='multipart/form-data'>
+            {{ form.csrf_token() }}
+
+            <div class="form-group">
+            {{ render_field(form.tree_title, form_type='horizontal') }}
+            {{ render_field(form.tree_file, form_type='horizontal') }}
+            {{ render_field(form.tree_type_new, form_type='horizontal') }}
+            </div>
+            <hr/>
+            <div class="form-group">
+            {{ render_field(form.matrix_title, form_type='horizontal') }}
+            {{ render_field(form.matrix_file, form_type='horizontal') }}
+            {{ render_field(form.description, form_type='horizontal') }}
+            </div>
+            <hr/>
+            <div class="form-group">
+            {{ render_field(form.cover_img, form_type='horizontal') }}
+            {{ render_field(form.news, form_type='horizontal') }}
+            </div>
+            <div class="text-center p-2">
+                {{ render_field(form.next) }}
+                {{ render_field(form.submit) }}
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

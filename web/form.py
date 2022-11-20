@@ -92,7 +92,7 @@ class TreeMatrixForm(FlaskForm):
     tree_file = m.FileField(gettext('Tree files (NEXUS or newick format) '
                                     '<span class="text-danger h5">*</span>'),
                             validators=[v.data_required()])
-    tree_type_new = m.RadioField(
+    tree_type_new = m.SelectField(
         gettext('Tree type'), default=gettext('Species tree'),
         choices=[('Species tree', gettext('Species tree')),
                  ('Gene tree', gettext('Gene tree')),
@@ -104,8 +104,8 @@ class TreeMatrixForm(FlaskForm):
                                  render_kw={'placeholder': 'eg. XXX matrix of '
                                                            'tree YYY'})
     matrix_file = m.FileField(gettext('Matrix file (fasta format)'))
-    description = m.RadioField(
-        gettext('Matrix type'), default=gettext('Nucleic acid'),
+    description = m.SelectField(
+        gettext('Matrix type'), default=gettext('Nucleic acid'),render_kw={'class': 'form-radio-inline'},
         choices=[('Nucleic acid', gettext('Nucleic acid')),
                  ('Amino acid', gettext('Amino acid')),
                  ('Morphological', gettext('Morphological')),
@@ -115,7 +115,7 @@ class TreeMatrixForm(FlaskForm):
     news = m.BooleanField(gettext('Submit for news'), default=False)
     next = m.SubmitField(gettext('Add more'),
                          render_kw={'class': 'btn-success'})
-    submit = m.SubmitField(gettext('Submit'))
+    submit = m.SubmitField(gettext('Finish submit'))
 
 
 class SubmitForm(FlaskForm):
