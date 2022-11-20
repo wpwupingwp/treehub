@@ -328,6 +328,17 @@ def get_matrix_from_treeid(tree_id):
 
 
 def handle_submit_info(info_form):
+    root = str(info_form.root.data).strip()
+    # handle root id
+    taxon = NcbiName.query.filter_by(name_txt=root).all()
+    # first or none
+    if len(taxon) == 0:
+        flash(gettext('Taxonomy name not found. '
+                      'Currently only support accepted name.'))
+        return f.render_template('submit_1.html', form=info_form)
+    else:
+        root_id = taxon[0].tax_id
+        session['root_id'] = root_id
     upload_date = date.isoformat(date.today())
     study = Study()
     info_form.populate_obj(study)
@@ -343,6 +354,8 @@ def handle_submit_info(info_form):
                      study.study_id)
     db.session.add(submit_)
     db.session.commit()
+    session['study'] = study.study_id
+    session['submit_'] = submit_.submit_id
     return study, submit_
 
 
@@ -355,17 +368,8 @@ def handle_tree_info(tree_form, final=False):
         tree_form.populate_obj(i)
     for j in [matrix, treefile, tree]:
         j.upload_date = upload_date
-    tree.root = str(tree.root).strip()
     tree.tree_type_new = str(tree.tree_type_new).capitalize()
-    # handle root id
-    taxon = NcbiName.query.filter_by(name_txt=tree.root).all()
-    # first or none
-    if len(taxon) == 0:
-        flash(gettext('Taxonomy name not found. '
-                      'Currently only support accepted name.'))
-        return f.render_template('submit_1.html', form=tree_form)
-    else:
-        tree.root = taxon[0].tax_id
+    tree.root = session['root_id']
     # handle matrix
     if tree_form.matrix_file.data:
         matrix_file_tmp = upload(tree_form.matrix_file.data)
@@ -376,6 +380,7 @@ def handle_tree_info(tree_form, final=False):
     matrix.analysisstep_id = '20222022'
     db.session.add(matrix)
     db.session.commit()
+    print('tree', tree, 'file', treefile, 'matrix', matrix)
     # handle tree_text
     treefile_tmp = upload(tree_form.tree_file.data)
     try:
@@ -399,6 +404,7 @@ def handle_tree_info(tree_form, final=False):
             raw_nodes = tree_content.taxon_namespace
             label_taxon = get_nodes(raw_nodes)
             not_found = len(raw_nodes) - len(label_taxon)
+            print('tree', tree, 'file', treefile, 'matrix', matrix)
             if not_found > 0:
                 flash(gettext('%(not_found)s of %(total)s nodes have '
                               'invalid name.',
@@ -408,6 +414,7 @@ def handle_tree_info(tree_form, final=False):
                               '(eg. Oryza sativa id9999'))
         # dendropy error class is too long
     except Exception:
+        raise
         flash(gettext('Bad tree file. The file should be UTF-8 encoding '
                       'nexus or newick format.'))
         return f.render_template('submit_2.html', form=tree_form)
@@ -417,6 +424,7 @@ def handle_tree_info(tree_form, final=False):
     db.session.add(tree)
     # get tree_id
     db.session.commit()
+    print('tree', tree, 'file', treefile, 'matrix', matrix)
     treefile.tree_id = tree.tree_id
     for i in label_taxon:
         new_node = Nodes(i, label_taxon[i], tree.tree_id)
@@ -444,6 +452,7 @@ def handle_tree_info(tree_form, final=False):
         db.session.add(next_submit)
         db.session.commit()
         session['submit_'] = next_submit.submit_id
+    print(submit_)
     return
 
 
@@ -451,10 +460,8 @@ def handle_tree_info(tree_form, final=False):
 def submit_info():
     sf = SubmitForm()
     if sf.validate_on_submit():
-        study, submit_ = handle_submit_info(sf)
+        handle_submit_info(sf)
         session['tree_n'] = 1
-        session['study'] = study.study_id
-        session['submit_'] = submit_.submit_id
         flash(gettext('Submit info ok.'))
         return f.redirect(f'/submit/{session["tree_n"]}')
     return f.render_template('submit_1.html', form=sf)
@@ -462,17 +469,18 @@ def submit_info():
 
 @app.route('/submit/<int:n>', methods=('POST', 'GET'))
 def submit_data(n):
-    sf = TreeMatrixForm()
-    if sf.validate_on_submit():
-        if sf.next.data:
-            pass
-        if sf.submit.data:
-            pass
-        handle_tree_info(sf)
-        session['tree_n'] += 1
-        flash(gettext('Submit tree ok.'))
-        return f.redirect(f'/submit/{session["tree_n"]}')
-    return f.render_template('submit_2.html', form=sf, n=session['tree_n'])
+    tf = TreeMatrixForm()
+    if tf.validate_on_submit():
+        if tf.next.data:
+            handle_tree_info(tf)
+            flash(gettext('Submit No.%(n)s tree ok.', n=n))
+            session['tree_n'] += 1
+            return f.redirect(f'/submit/{session["tree_n"]}')
+        if tf.submit.data:
+            handle_tree_info(tf, final=True)
+            flash(gettext('Submit No.%(n)s trees ok.', n=n))
+            return f.redirect(f'/submit/list')
+    return f.render_template('submit_2.html', form=tf)
 
 
 @app.route('/submit/remove/<int:submit_id>')
