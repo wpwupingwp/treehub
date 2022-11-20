@@ -143,5 +143,5 @@ class SubmitForm(FlaskForm):
                         render_kw={'placeholder': 'eg. 10.9999/1234567890'})
     cover_img = m.FileField(gettext('Cover image (.jpg or .png)'))
     news = m.BooleanField(gettext('Submit for news'), default=False)
-    x = m.FormField(TreeMatrixForm, label=1)
+    # x = m.FormField(TreeMatrixForm, label=1)
     submit = m.SubmitField(gettext('Next'))

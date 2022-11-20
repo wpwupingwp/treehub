@@ -178,17 +178,12 @@ class Submit(db.Model):
     cover_img_name = db.Column(db.String())
     news = db.Column(db.Boolean())
 
-    def __init__(self, email, ip, date, user_id, tree_id, treefile_id, study_id,
-                 matrix_id, news):
+    def __init__(self, email, ip, date, user_id, study_id):
         self.email = email
         self.ip = ip
         self.date = date
         self.user_id = user_id
-        self.tree_id = tree_id
-        self.treefile_id =  treefile_id
         self.study_id = study_id
-        self.matrix_id = matrix_id
-        self.news = news
 
 
 class MyModelView(ModelView):

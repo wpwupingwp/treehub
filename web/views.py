@@ -22,7 +22,7 @@ from web import app, babel, lm, root
 from web.database import Trees, Treefile, Study, Submit, Matrix, NcbiName
 from web.database import Nodes, Visit, db
 from web.auth import auth
-from web.form import QueryForm, SubmitForm, SortQueryForm
+from web.form import QueryForm, SubmitForm, SortQueryForm, TreeMatrixForm
 from web.utils import nwk2auspice, compress_photo
 # from web.form import LoginForm, UserForm
 
@@ -327,15 +327,33 @@ def get_matrix_from_treeid(tree_id):
     return
 
 
-def handle_submit(submit_form):
+def handle_submit_info(info_form):
+    upload_date = date.isoformat(date.today())
+    study = Study()
+    info_form.populate_obj(study)
+    study.upload_date = upload_date
+    db.session.add(study)
+    # get id
+    db.session.commit()
+    if request.headers.getlist('X-Forwarded-For'):
+        ip = request.headers.getlist('X-Forwarded-For')[0]
+    else:
+        ip = request.remote_addr
+    submit_ = Submit(info_form.email.data, ip, upload_date, session['user_id'],
+                     study.study_id)
+    db.session.add(submit_)
+    db.session.commit()
+    return study, submit_
+
+
+def handle_tree_info(tree_form, final=False):
     upload_date = date.isoformat(date.today())
     tree = Trees()
     treefile = Treefile()
-    study = Study()
     matrix = Matrix()
-    for i in [tree, treefile, study, matrix]:
-        submit_form.populate_obj(i)
-    for j in [matrix, treefile, tree, study]:
+    for i in [tree, treefile, matrix]:
+        tree_form.populate_obj(i)
+    for j in [matrix, treefile, tree]:
         j.upload_date = upload_date
     tree.root = str(tree.root).strip()
     tree.tree_type_new = str(tree.tree_type_new).capitalize()
@@ -345,14 +363,12 @@ def handle_submit(submit_form):
     if len(taxon) == 0:
         flash(gettext('Taxonomy name not found. '
                       'Currently only support accepted name.'))
-        return f.render_template('submit_1.html', form=sf)
-        # return f.redirect('/submit')
+        return f.render_template('submit_1.html', form=tree_form)
     else:
         tree.root = taxon[0].tax_id
-
     # handle matrix
-    if submit_form.matrix_file.data:
-        matrix_file_tmp = upload(submit_form.matrix_file.data)
+    if tree_form.matrix_file.data:
+        matrix_file_tmp = upload(tree_form.matrix_file.data)
         with open(matrix_file_tmp, 'r') as _:
             matrix.fasta = _.read()
         matrix_file_tmp.unlink()
@@ -361,7 +377,7 @@ def handle_submit(submit_form):
     db.session.add(matrix)
     db.session.commit()
     # handle tree_text
-    treefile_tmp = upload(submit_form.tree_file.data)
+    treefile_tmp = upload(tree_form.tree_file.data)
     try:
         with open(treefile_tmp, 'r') as _:
             line = _.readline()
@@ -394,7 +410,7 @@ def handle_submit(submit_form):
     except Exception:
         flash(gettext('Bad tree file. The file should be UTF-8 encoding '
                       'nexus or newick format.'))
-        return f.render_template('submit_1.html', form=sf)
+        return f.render_template('submit_2.html', form=tree_form)
     finally:
         treefile_tmp.unlink()
     # old tree id end at 118270
@@ -407,59 +423,84 @@ def handle_submit(submit_form):
         db.session.add(new_node)
         db.session.commit()
     db.session.add(treefile)
-    db.session.add(study)
     # get id
+    tree.study_id = session['study']
     db.session.commit()
-    tree.study_id = study.study_id
-    db.session.commit()
-    if request.headers.getlist('X-Forwarded-For'):
-        ip = request.headers.getlist('X-Forwarded-For')[0]
-    else:
-        ip = request.remote_addr
-    submit_ = Submit(submit_form.email.data, ip, upload_date, session['user_id'],
-                     tree.tree_id, treefile.treefile_id, study.study_id,
-                     matrix.matrix_id, submit_form.news.data)
-    if submit_form.cover_img.data:
-        img_tmp_big = upload(submit_form.cover_img.data)
+    submit_ = Submit.query.get(session['submit_'])
+    submit_.tree_id = tree.tree_id
+    submit_.treefile_id = treefile.treefile_id
+    submit_.matrix_id = matrix.matrix_id
+    if tree_form.cover_img.data:
+        img_tmp_big = upload(tree_form.cover_img.data)
         img_tmp = compress_photo(img_tmp_big)
         submit_.cover_img_name = str(img_tmp.name)
         with open(img_tmp, 'rb') as _:
             submit_.cover_img = _.read()
         img_tmp.unlink()
-    db.session.add(submit_)
     db.session.commit()
+    if not final:
+        next_submit = Submit(submit_.email, submit_.ip, submit_.date,
+                             submit_.user_id, submit_.study_id)
+        db.session.add(next_submit)
+        db.session.commit()
+        session['submit_'] = next_submit.submit_id
+    return
 
 
 @app.route('/submit', methods=('POST', 'GET'))
 def submit_info():
     sf = SubmitForm()
     if sf.validate_on_submit():
-        handle_submit(sf)
-        flash(gettext('Submit ok.'))
-        return f.redirect(f'/submit/list')
+        study, submit_ = handle_submit_info(sf)
+        session['tree_n'] = 1
+        session['study'] = study.study_id
+        session['submit_'] = submit_.submit_id
+        flash(gettext('Submit info ok.'))
+        return f.redirect(f'/submit/{session["tree_n"]}')
     return f.render_template('submit_1.html', form=sf)
 
 
 @app.route('/submit/<int:n>', methods=('POST', 'GET'))
 def submit_data(n):
-    sf = SubmitForm()
+    sf = TreeMatrixForm()
     if sf.validate_on_submit():
-        handle_submit(sf)
-        flash(gettext('Submit ok.'))
-        return f.redirect(f'/submit/list')
-    return f.render_template('submit_2.html', form=sf)
+        if sf.next.data:
+            pass
+        if sf.submit.data:
+            pass
+        handle_tree_info(sf)
+        session['tree_n'] += 1
+        flash(gettext('Submit tree ok.'))
+        return f.redirect(f'/submit/{session["tree_n"]}')
+    return f.render_template('submit_2.html', form=sf, n=session['tree_n'])
 
 
 @app.route('/submit/remove/<int:submit_id>')
 def remove_submit(submit_id):
+    # todo: how to remove clean
     submit = Submit.query.get(submit_id)
-    tree = Trees.query.get(submit.tree_id)
-    treefile = Treefile.query.get(submit.treefile_id)
+    submit_id_list = [submit.submit_id]
     study = Study.query.get(submit.study_id)
-    matrix = Matrix.query.get(submit.matrix_id)
-    nodes = Nodes.query.filter(Nodes.tree_id==submit.tree_id).delete()
-    for i in (matrix, study, treefile, tree, submit):
+    other_submits = Submit.query.filter(Submit.study_id==study.study_id).all()
+    for i in other_submits:
+        submit_id_list.append(i.submit_id)
+    tree = Trees.query.filter(Trees.study_id==study.study_id).all()
+    tree_id_list = [i.tree_id for i in tree]
+    treefile = Treefile.query.filter(Treefile.tree_id.in_(tree_id_list))
+    matrix_id_list = [i.matrix_id for i in other_submits]
+    matrix_id_list.append(submit.matrix_id)
+    matrix = Matrix.query.filter(Matrix.matrix_id.in_(matrix_id_list))
+    nodes = Nodes.query.filter(Nodes.tree_id.in_(tree_id_list))
+    # delete
+    nodes.delete()
+    matrix.delete()
+    treefile.delete()
+    for i in tree:
         db.session.delete(i)
+    for j in other_submits:
+        db.session.delete(j)
+    db.session.delete(submit)
+    db.session.delete(study)
     db.session.commit()
     flash(gettext('Remove ok.'))
     return f.redirect('/submit/list')
