@@ -89,20 +89,21 @@ class TreeMatrixForm(FlaskForm):
         gettext('Tree title <span class="text-danger h5">*</span>'),
         validators=[v.input_required(), v.length(max=255)],
         render_kw={'placeholder': 'eg. XXX tree of YYY'})
+    tree_file = m.FileField(gettext('Tree files (NEXUS or newick format) '
+                                    '<span class="text-danger h5">*</span>'),
+                            validators=[v.data_required()])
     tree_type_new = m.RadioField(
         gettext('Tree type'), default=gettext('Species tree'),
         choices=[('Species tree', gettext('Species tree')),
                  ('Gene tree', gettext('Gene tree')),
                  ('Dating tree', gettext('Dating tree')),
                  ('Other', gettext('Other'))])
-    tree_file = m.FileField(gettext('Tree files (NEXUS or newick format) '
-                                    '<span class="text-danger h5">*</span>'),
-                            validators=[v.data_required()])
     # matrix
     matrix_title = m.StringField(gettext('Matrix title'),
                                  validators=[v.length(max=255)],
                                  render_kw={'placeholder': 'eg. XXX matrix of '
                                                            'tree YYY'})
+    matrix_file = m.FileField(gettext('Matrix file (fasta format)'))
     description = m.RadioField(
         gettext('Matrix type'), default=gettext('Nucleic acid'),
         choices=[('Nucleic acid', gettext('Nucleic Acid')),
@@ -110,7 +111,6 @@ class TreeMatrixForm(FlaskForm):
                  ('Morphological', gettext('Morphological')),
                  ('Combination', gettext('Combination')),
                  ('Other', gettext('Other'))])
-    matrix_file = m.FileField(gettext('Matrix file (fasta format)'))
     submit = m.SubmitField(gettext('Submit'))
 
 
