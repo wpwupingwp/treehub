@@ -106,8 +106,8 @@ class TreeMatrixForm(FlaskForm):
     matrix_file = m.FileField(gettext('Matrix file (fasta format)'))
     description = m.RadioField(
         gettext('Matrix type'), default=gettext('Nucleic acid'),
-        choices=[('Nucleic acid', gettext('Nucleic Acid')),
-                 ('Amino acid', gettext('Amino Acid')),
+        choices=[('Nucleic acid', gettext('Nucleic acid')),
+                 ('Amino acid', gettext('Amino acid')),
                  ('Morphological', gettext('Morphological')),
                  ('Combination', gettext('Combination')),
                  ('Other', gettext('Other'))])
