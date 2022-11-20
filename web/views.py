@@ -483,6 +483,9 @@ def submit_data(n):
 def remove_submit(submit_id):
     # todo: how to remove clean
     submit = Submit.query.get(submit_id)
+    if submit is None:
+        flash(gettext('Submit not found.'))
+        return f.redirect('/submit/list')
     submit_id_list = [submit.submit_id]
     study = Study.query.get(submit.study_id)
     other_submits = Submit.query.filter(Submit.study_id==study.study_id).all()
