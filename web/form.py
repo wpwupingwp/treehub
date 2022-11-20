@@ -39,8 +39,9 @@ class QueryForm(FlaskForm):
                                validators=[v.length(max=255)], render_kw={
             'placeholder': 'eg. Bootstrap tree of Poaceae'})
     tree_type_new = m.SelectField(
-        gettext('Tree type'), default=gettext('Species Tree'),
-        choices=[('Species tree', gettext('Species tree')),
+        gettext('Tree type'), default=gettext('Any'),
+        choices=[('Any', gettext('Any')),
+                 ('Species tree', gettext('Species tree')),
                  ('Gene tree', gettext('Gene tree')),
                  ('Dating tree', gettext('Dating tree')),
                  ('Other', gettext('Other'))])

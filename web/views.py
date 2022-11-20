@@ -169,6 +169,7 @@ def tree_result(page=1):
     else:
         order_by = field.asc()
     query = session['dict']
+    print(query)
     study_filters = []
     filters = []
     if query.get('taxonomy') and not query.get('species'):
@@ -180,7 +181,8 @@ def tree_result(page=1):
         filters.append(node_condition)
     if query.get('tree_type_new'):
         type_new = str(query.get('tree_type_new')).capitalize()
-        filters.append(Trees.tree_type_new == type_new)
+        if type_new != 'Any':
+            filters.append(Trees.tree_type_new == type_new)
     if query.get('year'):
         study_filters.append(Study.year == int(query.get('year')))
     if query.get('author'):
@@ -195,14 +197,11 @@ def tree_result(page=1):
         study_condition = Trees.study_id.in_(
             select(Study.study_id).where(*study_filters))
         filters.append(study_condition)
-        # studies = db.session.query(Study.study_id).filter(*study_filters).subquery()
-        # filters.append(Trees.study_id.in_(studies))
-    # trees = db.session.query(Trees.tree_id).filter(*filters).subquery()
     trees = Trees.tree_id.in_(select(Trees.tree_id).where(*filters))
     x = Trees.query.filter(trees)
     results = db.session.query(Study, Trees).with_entities(
         Study.title, Study.year, Study.journal, Study.doi,
-        Trees.tree_id, Trees.tree_title, Trees.tree_type_new,).join(
+        Trees.tree_id, Trees.tree_title).join(
         Study, Study.study_id == Trees.study_id).filter(
         trees).order_by(order_by)
     pagination = results.paginate(page=page, per_page=20)
