@@ -481,13 +481,8 @@ def submit_data(n):
 
 @app.route('/submit/cancel')
 def cancel_submit():
-    study = Study.query.get(session['study'])
     submit_ = Submit.query.get(session['submit_'])
-    for i in study, submit_:
-        db.session.delete(i)
-    db.session.commit()
-    flash(gettext('Cancel submit ok.'))
-    return f.redirect('/')
+    return f.redirect(f'/submit/remove/{submit_.submit_id}')
 
 
 @app.route('/submit/remove/<int:submit_id>')
