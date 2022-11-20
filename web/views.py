@@ -327,114 +327,127 @@ def get_matrix_from_treeid(tree_id):
     return
 
 
+def handle_submit(submit_form):
+    upload_date = date.isoformat(date.today())
+    tree = Trees()
+    treefile = Treefile()
+    study = Study()
+    matrix = Matrix()
+    for i in [tree, treefile, study, matrix]:
+        submit_form.populate_obj(i)
+    for j in [matrix, treefile, tree, study]:
+        j.upload_date = upload_date
+    tree.root = str(tree.root).strip()
+    tree.tree_type_new = str(tree.tree_type_new).capitalize()
+    # handle root id
+    taxon = NcbiName.query.filter_by(name_txt=tree.root).all()
+    # first or none
+    if len(taxon) == 0:
+        flash(gettext('Taxonomy name not found. '
+                      'Currently only support accepted name.'))
+        return f.render_template('submit_1.html', form=sf)
+        # return f.redirect('/submit')
+    else:
+        tree.root = taxon[0].tax_id
+
+    # handle matrix
+    if submit_form.matrix_file.data:
+        matrix_file_tmp = upload(submit_form.matrix_file.data)
+        with open(matrix_file_tmp, 'r') as _:
+            matrix.fasta = _.read()
+        matrix_file_tmp.unlink()
+        # dirty work
+    matrix.analysisstep_id = '20222022'
+    db.session.add(matrix)
+    db.session.commit()
+    # handle tree_text
+    treefile_tmp = upload(submit_form.tree_file.data)
+    try:
+        with open(treefile_tmp, 'r') as _:
+            line = _.readline()
+            if line.startswith('#NEXUS'):
+                schema = 'nexus'
+            else:
+                schema = 'newick'
+            tree_content = dendropy.Tree.get(path=treefile_tmp,
+                                             schema=schema)
+            # different from original nexus
+            # dendropy can handle abnormal nexus, biopython cannot
+            nexus = tree_content.as_string(schema='nexus')
+            newick = tree_content.as_string(schema='newick')
+            phyloxml = newick_to_phyloxml(newick)
+            treefile.nexus = nexus
+            treefile.newick = newick
+            treefile.phyloxml = phyloxml
+            # handle nodes
+            raw_nodes = tree_content.taxon_namespace
+            label_taxon = get_nodes(raw_nodes)
+            not_found = len(raw_nodes) - len(label_taxon)
+            if not_found > 0:
+                flash(gettext('%(not_found)s of %(total)s nodes have '
+                              'invalid name.',
+                              not_found=not_found, total=len(raw_nodes)))
+                flash(gettext('Node name in tree file should be '
+                              '"scientific name with other id" format '
+                              '(eg. Oryza sativa id9999'))
+        # dendropy error class is too long
+    except Exception:
+        flash(gettext('Bad tree file. The file should be UTF-8 encoding '
+                      'nexus or newick format.'))
+        return f.render_template('submit_1.html', form=sf)
+    finally:
+        treefile_tmp.unlink()
+    # old tree id end at 118270
+    db.session.add(tree)
+    # get tree_id
+    db.session.commit()
+    treefile.tree_id = tree.tree_id
+    for i in label_taxon:
+        new_node = Nodes(i, label_taxon[i], tree.tree_id)
+        db.session.add(new_node)
+        db.session.commit()
+    db.session.add(treefile)
+    db.session.add(study)
+    # get id
+    db.session.commit()
+    tree.study_id = study.study_id
+    db.session.commit()
+    if request.headers.getlist('X-Forwarded-For'):
+        ip = request.headers.getlist('X-Forwarded-For')[0]
+    else:
+        ip = request.remote_addr
+    submit_ = Submit(submit_form.email.data, ip, upload_date, session['user_id'],
+                     tree.tree_id, treefile.treefile_id, study.study_id,
+                     matrix.matrix_id, submit_form.news.data)
+    if submit_form.cover_img.data:
+        img_tmp_big = upload(submit_form.cover_img.data)
+        img_tmp = compress_photo(img_tmp_big)
+        submit_.cover_img_name = str(img_tmp.name)
+        with open(img_tmp, 'rb') as _:
+            submit_.cover_img = _.read()
+        img_tmp.unlink()
+    db.session.add(submit_)
+    db.session.commit()
+
+
 @app.route('/submit', methods=('POST', 'GET'))
-def submit():
-    # todo: convert id format
+def submit_info():
     sf = SubmitForm()
     if sf.validate_on_submit():
-        upload_date = date.isoformat(date.today())
-        tree = Trees()
-        treefile = Treefile()
-        study = Study()
-        matrix = Matrix()
-        for i in [tree, treefile, study, matrix]:
-            sf.populate_obj(i)
-        for j in [matrix, treefile, tree, study]:
-            j.upload_date = upload_date
-        tree.root = str(tree.root).strip()
-        tree.tree_type_new = str(tree.tree_type_new).capitalize()
-        # handle root id
-        taxon = NcbiName.query.filter_by(name_txt=tree.root).all()
-        # first or none
-        if len(taxon) == 0:
-            flash(gettext('Taxonomy name not found. '
-                          'Currently only support accepted name.'))
-            return f.render_template('submit.html', form=sf)
-            # return f.redirect('/submit')
-        else:
-            tree.root = taxon[0].tax_id
-
-        # handle matrix
-        if sf.matrix_file.data:
-            matrix_file_tmp = upload(sf.matrix_file.data)
-            with open(matrix_file_tmp, 'r') as _:
-                matrix.fasta = _.read()
-            matrix_file_tmp.unlink()
-            # dirty work
-        matrix.analysisstep_id = '20222022'
-        db.session.add(matrix)
-        db.session.commit()
-        # handle tree_text
-        treefile_tmp = upload(sf.tree_file.data)
-        try:
-            with open(treefile_tmp, 'r') as _:
-                line = _.readline()
-                if line.startswith('#NEXUS'):
-                    schema = 'nexus'
-                else:
-                    schema = 'newick'
-                tree_content = dendropy.Tree.get(path=treefile_tmp,
-                                                 schema=schema)
-                # different from original nexus
-                # dendropy can handle abnormal nexus, biopython cannot
-                nexus = tree_content.as_string(schema='nexus')
-                newick = tree_content.as_string(schema='newick')
-                phyloxml = newick_to_phyloxml(newick)
-                treefile.nexus = nexus
-                treefile.newick = newick
-                treefile.phyloxml = phyloxml
-                # handle nodes
-                raw_nodes = tree_content.taxon_namespace
-                label_taxon = get_nodes(raw_nodes)
-                not_found = len(raw_nodes) - len(label_taxon)
-                if not_found > 0:
-                    flash(gettext('%(not_found)s of %(total)s nodes have '
-                                  'invalid name.',
-                                  not_found=not_found, total=len(raw_nodes)))
-                    flash(gettext('Node name in tree file should be ' 
-                                  '"scientific name with other id" format '
-                                  '(eg. Oryza sativa id9999'))
-            # dendropy error class is too long
-        except Exception:
-            flash(gettext('Bad tree file. The file should be UTF-8 encoding '
-                          'nexus or newick format.'))
-            return f.render_template('submit.html', form=sf)
-        finally:
-            treefile_tmp.unlink()
-        # old tree id end at 118270
-        db.session.add(tree)
-        # get tree_id
-        db.session.commit()
-        treefile.tree_id = tree.tree_id
-        for i in label_taxon:
-            new_node = Nodes(i, label_taxon[i], tree.tree_id)
-            db.session.add(new_node)
-            db.session.commit()
-        db.session.add(treefile)
-        db.session.add(study)
-        # get id
-        db.session.commit()
-        tree.study_id = study.study_id
-        db.session.commit()
-        if request.headers.getlist('X-Forwarded-For'):
-            ip = request.headers.getlist('X-Forwarded-For')[0]
-        else:
-            ip = request.remote_addr
-        submit_ = Submit(sf.email.data, ip, upload_date, session['user_id'],
-                         tree.tree_id, treefile.treefile_id, study.study_id,
-                         matrix.matrix_id, sf.news.data)
-        if sf.cover_img.data:
-            img_tmp_big = upload(sf.cover_img.data)
-            img_tmp = compress_photo(img_tmp_big)
-            submit_.cover_img_name = str(img_tmp.name)
-            with open(img_tmp, 'rb') as _:
-                submit_.cover_img = _.read()
-            img_tmp.unlink()
-        db.session.add(submit_)
-        db.session.commit()
+        handle_submit(sf)
         flash(gettext('Submit ok.'))
         return f.redirect(f'/submit/list')
-    return f.render_template('submit.html', form=sf)
+    return f.render_template('submit_1.html', form=sf)
+
+
+@app.route('/submit/<int:n>', methods=('POST', 'GET'))
+def submit_data(n):
+    sf = SubmitForm()
+    if sf.validate_on_submit():
+        handle_submit(sf)
+        flash(gettext('Submit ok.'))
+        return f.redirect(f'/submit/list')
+    return f.render_template('submit_2.html', form=sf)
 
 
 @app.route('/submit/remove/<int:submit_id>')

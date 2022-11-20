@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-11-19 22:04+0800\n"
+"POT-Creation-Date: 2022-11-20 19:20+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,153 +17,159 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.11.0\n"
 
-#: form.py:14
+#: form.py:15
 msgid "Email"
 msgstr ""
 
-#: form.py:16 form.py:26
+#: form.py:17 form.py:27
 msgid "Password"
 msgstr ""
 
-#: form.py:18
+#: form.py:19
 msgid "Password again"
 msgstr ""
 
-#: form.py:20 form.py:28 form.py:56 form.py:140 templates/base.html:37
-#: templates/edit_tree.html:113 templates/index.html:8
+#: form.py:21 form.py:29 form.py:57 form.py:114 form.py:145
+#: templates/base.html:37 templates/edit_tree.html:113 templates/index.html:8
 #: templates/view_tree.html:28
 msgid "Submit"
 msgstr ""
 
-#: form.py:24
+#: form.py:25
 msgid "Username"
 msgstr ""
 
-#: form.py:33
+#: form.py:34
 msgid "Taxonomy"
 msgstr ""
 
-#: form.py:35
+#: form.py:36
 msgid "Species"
 msgstr ""
 
-#: form.py:37 templates/tree_list.html:12
+#: form.py:38 templates/tree_list.html:12
 msgid "Tree title"
 msgstr ""
 
-#: form.py:41 form.py:101
+#: form.py:42 form.py:93
 msgid "Tree type"
 msgstr ""
 
-#: form.py:41 form.py:101
+#: form.py:42
 msgid "Species Tree"
 msgstr ""
 
-#: form.py:42 form.py:102
+#: form.py:43 form.py:93 form.py:94
 msgid "Species tree"
 msgstr ""
 
-#: form.py:43 form.py:103
+#: form.py:44 form.py:95
 msgid "Gene tree"
 msgstr ""
 
-#: form.py:44 form.py:104
+#: form.py:45 form.py:96
 msgid "Dating tree"
 msgstr ""
 
-#: form.py:45 form.py:105 form.py:120
+#: form.py:46 form.py:97 form.py:112
 msgid "Other"
 msgstr ""
 
-#: form.py:47 form.py:125
+#: form.py:48 form.py:129
 msgid "Publish year"
 msgstr ""
 
-#: form.py:49 form.py:127
+#: form.py:50 form.py:131
 msgid "Author"
 msgstr ""
 
-#: form.py:51 templates/tree_list.html:14
+#: form.py:52 templates/tree_list.html:14
 msgid "Title"
 msgstr ""
 
-#: form.py:53 form.py:134
+#: form.py:54 form.py:138
 msgid "Keywords"
 msgstr ""
 
-#: form.py:54 form.py:136
+#: form.py:55 form.py:140
 msgid "DOI"
 msgstr ""
 
-#: form.py:64
+#: form.py:65
 msgid "Sort"
 msgstr ""
 
 #: form.py:89
-msgid "Email(*)"
+msgid "Tree title <span class=\"text-danger h5\">*</span>"
 msgstr ""
 
-#: form.py:92
-msgid "Taxonomy(*)"
+#: form.py:98
+msgid ""
+"Tree files (NEXUS or newick format) <span class=\"text-danger "
+"h5\">*</span>"
 msgstr ""
 
-#: form.py:94
-msgid "root node or lineage name"
-msgstr ""
-
-#: form.py:96
-msgid "Tree title(*)"
-msgstr ""
-
-#: form.py:107
-msgid "Tree files (NEXUS or newick format) (*)"
-msgstr ""
-
-#: form.py:110
+#: form.py:102
 msgid "Matrix title"
 msgstr ""
 
-#: form.py:115
+#: form.py:107
 msgid "Matrix type"
 msgstr ""
 
-#: form.py:115 form.py:116
+#: form.py:107
+msgid "Nucleic acid"
+msgstr ""
+
+#: form.py:108
 msgid "Nucleic Acid"
 msgstr ""
 
-#: form.py:117
+#: form.py:109
 msgid "Amino Acid"
 msgstr ""
 
-#: form.py:118
+#: form.py:110
 msgid "Morphological"
 msgstr ""
 
-#: form.py:119
+#: form.py:111
 msgid "Combination"
 msgstr ""
 
-#: form.py:121
+#: form.py:113
 msgid "Matrix file (fasta format)"
 msgstr ""
 
-#: form.py:123 templates/tree_list.html:15
+#: form.py:118
+msgid "Email <span class=\"text-danger h5\">*</span>"
+msgstr ""
+
+#: form.py:123
+msgid "Taxonomy <span class=\"text-danger h5\">*</span>"
+msgstr ""
+
+#: form.py:125
+msgid "root node or lineage name"
+msgstr ""
+
+#: form.py:127 templates/tree_list.html:15
 msgid "Journal"
 msgstr ""
 
-#: form.py:129
+#: form.py:133
 msgid "Article title"
 msgstr ""
 
-#: form.py:132 templates/index.html:24
+#: form.py:136 templates/index.html:24
 msgid "Abstract"
 msgstr ""
 
-#: form.py:138
+#: form.py:142
 msgid "Cover image (.jpg or .png)"
 msgstr ""
 
-#: form.py:139
+#: form.py:143
 msgid "Submit for news"
 msgstr ""
 
@@ -175,30 +181,30 @@ msgstr ""
 msgid "Treefile not found."
 msgstr ""
 
-#: views.py:344
+#: views.py:346
 msgid "Taxonomy name not found. Currently only support accepted name."
 msgstr ""
 
-#: views.py:387
+#: views.py:389
 #, python-format
 msgid "%(not_found)s of %(total)s nodes have invalid name."
 msgstr ""
 
-#: views.py:388
+#: views.py:390
 msgid ""
 "Node name in tree file should be \"scientific name with other id\" format"
 " (eg. Oryza sativa id9999"
 msgstr ""
 
-#: views.py:393
+#: views.py:395
 msgid "Bad tree file. The file should be UTF-8 encoding nexus or newick format."
 msgstr ""
 
-#: views.py:429
+#: views.py:438 views.py:448
 msgid "Submit ok."
 msgstr ""
 
-#: views.py:445
+#: views.py:464
 msgid "Remove ok."
 msgstr ""
 
