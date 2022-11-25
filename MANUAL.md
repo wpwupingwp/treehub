@@ -221,3 +221,11 @@ pg_restore -Fd -l db_bak2
 pg_restore -Fd -l db_bak
  #>
 ```
+204. Deploy
+```bash
+sudo apt install nginx gunicorn
+sudo cp nginx.txt /etc/nginx/site-enabled/treedb.conf
+nginx -t
+gunicorn -w 2 -b 127.0.0.1:2022 web:app
+cd 
+```
