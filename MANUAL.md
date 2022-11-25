@@ -216,10 +216,6 @@ pybabel compile -d translations
 #backup
  pg_dump -Fd -U root -j 5 -f db_bak2 postgres
  pg_dump -Fd -U root -j 5 -f db_bak treedb
-#restore
-pg_restore -Fd -l db_bak2
-pg_restore -Fd -l db_bak
- #>
 ```
 204. Deploy
 Install docker
@@ -254,8 +250,10 @@ pg_restore -Fd -d treedb db_bak -U postgres
 psql -U postgres -d treedb
 # create user
 create user root with password 'password';
-```
-```bash
+# node js
+# install nodejs 16 https://nodejs.org/en/blog/release/v16.16.0/
+~/docker/nodejs/nodejs/bin/node auspice.js  view --datasetDir ../plant_tree_db/web/tmp
+# gunicorn
 sudo apt install nginx gunicorn
 sudo cp nginx.txt /etc/nginx/sites-enabled/treedb.conf
 nginx -t
