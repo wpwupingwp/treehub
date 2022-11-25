@@ -222,10 +222,46 @@ pg_restore -Fd -l db_bak
  #>
 ```
 204. Deploy
+Install docker
+```bash
+sudo apt remove docker docker-engine docker.io containerd runc
+sudo apt update
+sudo apt install ca-certificates curl gnupg lsb-release
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+sudo apt update
+sudo apt install docker docker-ce docker-ce-cli containerd.io docker-compose-plugin
+sudo docker run hello-world
+```
+
+Install postgresql
+```bash
+# decompress
+p7zip -d db_bak.7z
+mkdir tmp_data
+mv db_bak tmp_data/
+mv db_bak2 tmp_data/
+# docker
+docker pull postgres:14
+docker run --name ps  -p 5432:5432 -e POSTGRES_PASSWORD=password -v data:/var/lib/postgresql/data -v /mnt/e/Linux/plant_tree_db/docker:/tmp -d postgres:14
+docker exec -it ps /bin/bash
+# run in container
+pg_restore -Fd -d treedb db_bak2 -U postgres
+pg_restore -Fd -d treedb db_bak -U postgres
+# test
+psql -U postgres -d treedb
+# create user
+create user root with password 'password';
+```
 ```bash
 sudo apt install nginx gunicorn
-sudo cp nginx.txt /etc/nginx/site-enabled/treedb.conf
+sudo cp nginx.txt /etc/nginx/sites-enabled/treedb.conf
 nginx -t
+sudo systemctl restart nginx
+sudo systemctl status nginx
+cd plant_tree_db
+pip install -r requirements.txt
 gunicorn -w 2 -b 127.0.0.1:2022 web:app
-cd 
 ```
