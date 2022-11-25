@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-11-20 23:26+0800\n"
+"POT-Creation-Date: 2022-11-22 11:42+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -181,52 +181,52 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: views.py:215
+#: views.py:216
 msgid "Tree not found."
 msgstr ""
 
-#: views.py:225 views.py:234 views.py:254
+#: views.py:226 views.py:235 views.py:255
 msgid "Treefile not found."
 msgstr ""
 
-#: views.py:335
+#: views.py:336
 msgid "Taxonomy name not found. Currently only support accepted name."
 msgstr ""
 
-#: views.py:409
+#: views.py:410
 #, python-format
 msgid "%(not_found)s of %(total)s nodes have invalid name."
 msgstr ""
 
-#: views.py:410
+#: views.py:411
 msgid ""
 "Node name in tree file should be \"scientific name with other id\" format"
 " (eg. Oryza sativa id9999"
 msgstr ""
 
-#: views.py:415
+#: views.py:416
 msgid "Bad tree file. The file should be UTF-8 encoding nexus or newick format."
 msgstr ""
 
-#: views.py:460
+#: views.py:461
 msgid "Submit info ok."
 msgstr ""
 
-#: views.py:471
+#: views.py:472
 #, python-format
 msgid "Submit No.%(n)s tree ok."
 msgstr ""
 
-#: views.py:476
+#: views.py:477
 #, python-format
 msgid "Submit No.%(n)s trees ok."
 msgstr ""
 
-#: views.py:492
+#: views.py:493
 msgid "Submit not found."
 msgstr ""
 
-#: views.py:517
+#: views.py:518
 msgid "Remove ok."
 msgstr ""
 
@@ -291,7 +291,7 @@ msgid "Demo"
 msgstr ""
 
 #: templates/index.html:29
-msgid "Phylogeny tree"
+msgid "Tree"
 msgstr ""
 
 #: templates/index.html:30 templates/tree_list.html:31

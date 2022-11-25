@@ -211,3 +211,13 @@ pybabel extract -F babel.cfg -o messages.pot .
 pybabel update -i messages.pot -d translations
 pybabel compile -d translations
 ```
+203. Backup and restore
+```powershell
+#backup
+ pg_dump -Fd -U root -j 5 -f db_bak2 postgres
+ pg_dump -Fd -U root -j 5 -f db_bak treedb
+#restore
+pg_restore -Fd -l db_bak2
+pg_restore -Fd -l db_bak
+ #>
+```
