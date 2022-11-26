@@ -30,7 +30,9 @@
             {% if tree.doi is not none %}
             <a href="https://doi.org/{{tree.doi}}">{{_('Article')}}</a>
             {% endif %}
+            {% if tree.upload_date is not none %}
             <a href="/matrix/from_tree/{{tree.tree_id}}">{{_('Matrix')}}</a>
+            {% endif %}
         </td>
         <td class="text-nowrap">
         </td>

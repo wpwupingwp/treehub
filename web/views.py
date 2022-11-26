@@ -200,10 +200,12 @@ def tree_result(page=1):
         filters.append(study_condition)
     trees = Trees.tree_id.in_(select(Trees.tree_id).where(*filters))
     x = Trees.query.filter(trees)
-    results = db.session.query(Study, Trees).with_entities(
+    results = db.session.query(Study, Trees, Submit, Matrix).with_entities(
         Study.title, Study.year, Study.journal, Study.doi,
-        Trees.tree_id, Trees.tree_title).join(
-        Study, Study.study_id == Trees.study_id).filter(
+        Trees.tree_id, Trees.tree_title, Matrix.upload_date).join(
+        Study, Study.study_id == Trees.study_id).join(
+        Submit, Submit.tree_id==Trees.tree_id, isouter=True).join(
+        Matrix, Matrix.matrix_id==Submit.matrix_id, isouter=True).filter(
         trees).order_by(order_by)
     pagination = results.paginate(page=page, per_page=20)
     return f.render_template(f'tree_list.html', pagination=pagination, form=sf)
@@ -377,7 +379,7 @@ def handle_tree_info(tree_form, final=False):
     matrix = Matrix()
     for i in [tree, treefile, matrix]:
         tree_form.populate_obj(i)
-    for j in [matrix, treefile, tree]:
+    for j in (treefile, tree):
         j.upload_date = upload_date
     tree.tree_type_new = str(tree.tree_type_new).capitalize()
     tree.root = session['root_id']
@@ -387,6 +389,7 @@ def handle_tree_info(tree_form, final=False):
         with open(matrix_file_tmp, 'r') as _:
             matrix.fasta = _.read()
         matrix_file_tmp.unlink()
+        matrix.upload_date = upload_date
         # dirty work
     matrix.analysisstep_id = '20222022'
     db.session.add(matrix)
