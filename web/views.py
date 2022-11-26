@@ -323,8 +323,19 @@ def newick_to_phyloxml(newick: str) -> str:
 
 @app.route('/matrix/from_tree/<int:tree_id>')
 def get_matrix_from_treeid(tree_id):
-    f.abort(404)
-    return
+    submit = Submit.query.filter(Submit.tree_id==tree_id).first_or_404()
+    matrix_id = submit.matrix_id
+    matrix = Matrix.query.filter(Matrix.matrix_id==matrix_id).first_or_404()
+    if matrix.fasta is None:
+        f.abort(404)
+    else:
+        tmp_folder= app.config.get('TMP_FOLDER')
+        fasta_file = tmp_folder / f'{matrix_id}.fasta'
+        with open(fasta_file, 'w') as _:
+            _.write(matrix.fasta)
+        # url = f.url_for('tmp_file', filename=fasta_file.name)
+        return f.send_file(fasta_file, mimetype='text/plain',
+                           as_attachment=True)
 
 
 def handle_submit_info(info_form):
