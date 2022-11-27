@@ -135,3 +135,4 @@ trees/
 *.csv
 *.nex
 treebasedmp.*
+docker/

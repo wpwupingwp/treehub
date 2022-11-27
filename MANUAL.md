@@ -214,8 +214,8 @@ pybabel compile -d translations
 203. Backup and restore
 ```powershell
 #backup
- pg_dump -Fd -U root -j 5 -f db_bak2 postgres
- pg_dump -Fd -U root -j 5 -f db_bak treedb
+# pg_dump -Fd -U root -j 5 -f db_bak2 postgres
+pg_dump -U postgres -j 8 -Fd -f db_bak treedb
 ```
 204. Deploy
 Install docker
@@ -234,22 +234,20 @@ sudo docker run hello-world
 
 Install postgresql
 ```bash
-# decompress
-p7zip -d db_bak.7z
-mkdir tmp_data
-mv db_bak tmp_data/
-mv db_bak2 tmp_data/
 # docker
 docker pull postgres:14
-docker run --name ps  -p 5432:5432 -e POSTGRES_PASSWORD=password -v data:/var/lib/postgresql/data -v /mnt/e/Linux/plant_tree_db/docker:/tmp -d postgres:14
+# build 
+docker build . -t ps_14
+docker run --name ps  -p 5432:5432 -v /mnt/e/Linux/plant_tree_db/docker:/tmp -d ps_14 
 docker exec -it ps /bin/bash
 # run in container
-pg_restore -Fd -d treedb db_bak2 -U postgres
-pg_restore -Fd -d treedb db_bak -U postgres
-# test
-psql -U postgres -d treedb
-# create user
-create user root with password 'password';
+createdb treedb -U postgres
+pg_restore -Fd -d treedb db_bak -U postgres -j 8
+# export
+docker export c7c920 -o ps_14.docker
+```
+Install nodejs and nginx
+```bash
 # node js
 # install nodejs 16 https://nodejs.org/en/blog/release/v16.16.0/
 ~/docker/nodejs/nodejs/bin/node auspice.js  view --datasetDir ../plant_tree_db/web/tmp
