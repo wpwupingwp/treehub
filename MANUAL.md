@@ -230,6 +230,14 @@ sudo chmod a+r /etc/apt/keyrings/docker.gpg
 sudo apt update
 sudo apt install docker docker-ce docker-ce-cli containerd.io docker-compose-plugin
 sudo docker run hello-world
+sudo cat > /etc/docker/daemon.json <<EOF
+{
+  "registry-mirrors": [
+    "https://hub-mirror.c.163.com",
+    "https://mirror.baidubce.com"
+  ]
+}
+EOF
 ```
 
 Install postgresql
