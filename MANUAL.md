@@ -267,5 +267,5 @@ sudo systemctl restart nginx
 sudo systemctl status nginx
 cd plant_tree_db
 pip install -r requirements.txt
-gunicorn -w 2 -b 0.0.0.0:2022 web:app
+gunicorn --worker-class gevent -b 0.0.0.0:9999 -w 4 web:app
 ```
