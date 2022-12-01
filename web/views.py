@@ -130,6 +130,7 @@ def tree_query():
 
 @app.route('/tree/query_api/<taxon>')
 def tree_query_api(taxon: str):
+    host = request.host_url
     results_list = [['Tree title', 'Year', 'Title', 'Journal', 'View', 'Edit',
                      'DOI', 'Matrix']]
     taxon_str = url_unquote_plus(taxon)
@@ -150,10 +151,11 @@ def tree_query_api(taxon: str):
         condition).order_by(Study.year.desc()).all()
     for r in results:
         record = [r.tree_title, r.year, r.title, r.journal,
-                  f'/tree/{r.tree_id}', f'/tree/edit/{r.tree_id}',
+                  f'{host}tree/{r.tree_id}',
+                  f'{host}tree/edit/{r.tree_id}',
                   f'https://doi.org/{r.doi}' if r.doi is not None else '',
-                  (f'/matrix/from_tree/{r.tree_id}' if r.upload_date
-                                                       is not None else '')]
+                  (f'{host}matrix/from_tree/{r.tree_id}'
+                   if r.upload_date is not None else '')]
         results_list.append(record)
     return f.jsonify(results_list)
 
