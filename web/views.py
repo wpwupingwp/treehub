@@ -13,6 +13,7 @@ from flask import flash
 from flask_babel import gettext
 from sqlalchemy import select, or_, and_
 from werkzeug.utils import secure_filename
+from werkzeug.urls import url_unquote_plus
 import dendropy
 from Bio import Phylo
 import flask as f
@@ -125,6 +126,36 @@ def tree_query():
         session['dict'] = data
         return f.redirect('/tree/list')
     return f.render_template('tree_query.html', form=qf)
+
+
+@app.route('/tree/query_api/<taxon>')
+def tree_query_api(taxon: str):
+    results_list = [['Tree title', 'Year', 'Title', 'Journal', 'View', 'Edit',
+                     'DOI', 'Matrix']]
+    taxon_str = url_unquote_plus(taxon)
+    if len(taxon_str) == 0:
+        return f.jsonify(results_list)
+    # species
+    if ' ' in taxon_str:
+        condition = Trees.tree_id.in_(select(Nodes.tree_id).where(
+            Nodes.node_label.like(taxon_str)))
+    else:
+        condition = query_taxonomy(taxon_str)
+    results = db.session.query(Study, Trees, Submit, Matrix).with_entities(
+        Study.title, Study.year, Study.journal, Study.doi,
+        Trees.tree_id, Trees.tree_title, Matrix.upload_date).join(
+        Study, Study.study_id == Trees.study_id).join(
+        Submit, Submit.tree_id==Trees.tree_id, isouter=True).join(
+        Matrix, Matrix.matrix_id==Submit.matrix_id, isouter=True).filter(
+        condition).order_by(Study.year.desc()).all()
+    for r in results:
+        record = [r.tree_title, r.year, r.title, r.journal,
+                  f'/tree/{r.tree_id}', f'/tree/edit/{r.tree_id}',
+                  f'https://doi.org/{r.doi}' if r.doi is not None else '',
+                  (f'/matrix/from_tree/{r.tree_id}' if r.upload_date
+                                                       is not None else '')]
+        results_list.append(record)
+    return f.jsonify(results_list)
 
 
 @lru_cache(maxsize=100)
