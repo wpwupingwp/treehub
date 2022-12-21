@@ -10,9 +10,8 @@
     {% else %}
         <title>Plant tree database</title>
     {% endif %}
-    {% block style %}
-        {{ bootstrap.load_css() }}
-    {% endblock %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
     {% from 'bootstrap4/nav.html' import render_breadcrumb_item %}
     {% from 'bootstrap4/utils.html' import render_messages, render_icon %}
     <style>
@@ -38,10 +37,10 @@
             {{ render_breadcrumb_item('tree_list', _('Tree list')) }}
             {{ render_breadcrumb_item('submit_list', _('Submit list')) }}
             {% if current_user.is_authenticated %}
-                {{ render_breadcrumb_item('/auth/tree/{{current_user.user_id}}}', _('My trees')) }}
-                {{ render_breadcrumb_item('/auth/logout', _('Logout')) }}
+                {{ render_breadcrumb_item('/treedb/auth/tree/{{current_user.user_id}}}', _('My trees')) }}
+                {{ render_breadcrumb_item('/treedb/auth/logout', _('Logout')) }}
                 {% if current_user.username=='admin' %}
-                    {{ render_breadcrumb_item('/admin', _('Admin')) }}
+                    {{ render_breadcrumb_item('/treedb/admin', _('Admin')) }}
                 {% endif %}
             {% else %}
             {% endif %}
@@ -51,9 +50,9 @@
             <button class="btn btn-secondary my-1 my-sm-0" type="submit" disabled>{{_('Search')}}</button>
         </form>
         {% if session['locale']=='en' %}
-            <a class="btn btn btn-danger mx-1" href="/locale/zh" role="button">中文</a>
+            <a class="btn btn btn-danger mx-1" href="/treedb/locale/zh" role="button">中文</a>
         {% else %}
-            <a class="btn btn btn-primary mx-1" href="/locale/en" role="button">English</a>
+            <a class="btn btn btn-primary mx-1" href="/treedb/locale/en" role="button">English</a>
         {% endif %}
     </nav>
 </div>
@@ -66,9 +65,6 @@
     {% endwith %}
     {% block content %}
 
-    {% endblock %}
-    {% block script %}
-        {{ bootstrap.load_js() }}
     {% endblock %}
 
 </div>

@@ -12,7 +12,7 @@ CSRF_ENABLED = True
 UPLOAD_FOLDER = root / 'upload'
 TMP_FOLDER = root / 'tmp'
 UPLOADED_FILE_DEST = UPLOAD_FOLDER / 'file'
-for d in UPLOADED_FILE_DEST, TMP_FOLDER:
+for d in UPLOAD_FOLDER, UPLOADED_FILE_DEST, TMP_FOLDER:
     if not d.exists():
         d.mkdir()
 # safe

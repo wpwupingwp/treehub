@@ -9,6 +9,8 @@
     {{ bootstrap.load_css() }}
     {% from 'bootstrap4/nav.html' import render_breadcrumb_item %}
     <link rel="stylesheet" href="{{ url_for('static', filename='jquery-ui.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='d3.js') }}"></script>
     <script src="{{ url_for('static', filename='jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='jquery-ui.js') }}"></script>
@@ -84,7 +86,7 @@
             settings.showSearchPropertiesButton = true;
             settings.showShortenNodeNamesButton = false;
             //let url = '/tree/newick/{{tree_id}}';
-            let url = '/tree/phyloxml/{{tree_id}}';
+            let url = '/treedb/tree/phyloxml/{{tree_id}}';
             fetch(url).then(r=>r.text()).then(data=>{
                 //console.log(data);
                 //let tree = archaeopteryx.parseNewHampshire(data);
@@ -115,10 +117,10 @@
             {{ render_breadcrumb_item('submit_list', _('Submit list')) }}
             {{ render_breadcrumb_item('view_tree', _('Back to View'), tree_id=tree_id) }}
             {% if current_user.is_authenticated %}
-                {{ render_breadcrumb_item('/auth/tree/{{current_user.user_id}}', _('My trees')) }}
-                {{ render_breadcrumb_item('/auth/logout', _('Logout')) }}
+                {{ render_breadcrumb_item('/treedb/auth/tree/{{current_user.user_id}}', _('My trees')) }}
+                {{ render_breadcrumb_item('/treedb/auth/logout', _('Logout')) }}
                 {% if current_user.username=='admin' %}
-                    {{ render_breadcrumb_item('/admin', _('Admin')) }}
+                    {{ render_breadcrumb_item('/treedb/admin', _('Admin')) }}
                 {% endif %}
             {% endif %}
         </ol>
