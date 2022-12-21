@@ -4,9 +4,9 @@
     <h1 class="h2">Plant tree database</h1><br>
     <h2 class="h3">{{_('Search, Visualize, Analyze and Submit')}}</h2><br>
     <div class="mx-auto">
-        <a class="btn btn-lg btn-success" href="/tree/query" role="button">{{_('Query')}}</a>
-        <a class="btn btn-lg btn-primary" href="/submit" role="button">{{_('Submit')}}</a>
-        <a class="btn btn-lg btn-dark" href="/tree/117900" role="button">{{_('Demo')}}</a>
+        <a class="btn btn-lg btn-success" href="/treedb/tree/query" role="button">{{_('Query')}}</a>
+        <a class="btn btn-lg btn-primary" href="/treedb/submit" role="button">{{_('Submit')}}</a>
+        <a class="btn btn-lg btn-dark" href="/treedb/tree/117900" role="button">{{_('Demo')}}</a>
     </div>
 </div>
 <div class="card-deck">
@@ -26,7 +26,7 @@
             <div class="collapse" id="x{{study.tree_id}}">
                 <div class="card card-body"> {{study.abstract}}</div>
             </div>
-            <a href="/tree/{{study.tree_id}}" class="btn btn-outline-primary" target="_blank">{{_('Tree')}}</a>
+            <a href="/treedb/tree/{{study.tree_id}}" class="btn btn-outline-primary" target="_blank">{{_('Tree')}}</a>
             <a href="https://doi.org/{{study.doi}}" class="btn btn-outline-success" target="_blank">{{_('Article')}}</a>
         </div>
         <div class="card-footer">
@@ -34,7 +34,7 @@
         </div>
     </div>
     {% endfor %}
-    <a href="/tree/list" class="btn btn-outline-secondary my-lg-auto">{{_('More...')}}</a>
+    <a href="/treedb/tree/list" class="btn btn-outline-secondary my-lg-auto">{{_('More...')}}</a>
 </div>
 
 

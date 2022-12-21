@@ -8,7 +8,6 @@ from flask_login import LoginManager
 
 from pathlib import Path
 
-
 app = Flask(__name__, static_folder='static', template_folder='templates')
 babel = Babel(app)
 bootstrap = Bootstrap4(app)

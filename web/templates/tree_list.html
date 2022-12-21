@@ -25,13 +25,13 @@
         <td>{{tree.title}}</td>
         <td>{{tree.journal}}</td>
         <td class="text-nowrap">
-            <a href="/tree/{{tree.tree_id}}">{{_('View')}}</a>
-            <a href="/tree/edit/{{tree.tree_id}}">{{_('Edit')}}</a>
+            <a href="/treedb/tree/{{tree.tree_id}}">{{_('View')}}</a>
+            <a href="/treedb/tree/edit/{{tree.tree_id}}">{{_('Edit')}}</a>
             {% if tree.doi is not none %}
             <a href="https://doi.org/{{tree.doi}}">{{_('Article')}}</a>
             {% endif %}
             {% if tree.upload_date is not none %}
-            <a href="/matrix/from_tree/{{tree.tree_id}}">{{_('Matrix')}}</a>
+            <a href="/treedb/matrix/from_tree/{{tree.tree_id}}">{{_('Matrix')}}</a>
             {% endif %}
         </td>
         <td class="text-nowrap">
