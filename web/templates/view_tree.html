@@ -6,10 +6,9 @@
     <meta name="description" content="web demo">
     <meta name="author" content="wp">
     <title>{{ title }}</title>
-    {{ bootstrap.load_css() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
     {% from 'bootstrap4/nav.html' import render_breadcrumb_item %}
-    <!--script src="{{ url_for('static', filename='auspice/auspice.chunk.core-vendors.bundle.0873421a4e383da06edc.js') }}"></script-->
-    <!--script src="{{ url_for('static', filename='auspice/auspice.bundle.b339ef8a5b392d0e38ee.js') }}"></script-->
 </head>
 <body class="container-fluid bg-gray">
 <div class="header sticky-top my-2">
