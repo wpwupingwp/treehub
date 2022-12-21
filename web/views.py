@@ -574,6 +574,11 @@ def submit_list(page=1):
     return f.render_template('submit_list.html', pagination=pagination)
 
 
+@app.route('/treedb/node/<int:tree_id>')
+def redirect_to_node(tree_id):
+    return f.redirect(f'http://localhost:4000/{tree_id}', code=302)
+
+
 @app.route('/treedb/')
 @app.route('/treedb/index')
 def index():
