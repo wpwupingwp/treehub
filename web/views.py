@@ -576,7 +576,7 @@ def submit_list(page=1):
 
 @app.route('/treedb/node/<int:tree_id>')
 def redirect_to_node(tree_id):
-    return f.redirect(f'http://localhost:4000/{tree_id}', code=302)
+    return f.redirect(f'/planttreenode/{tree_id}')
 
 
 @app.route('/')
