@@ -114,6 +114,7 @@ def upload(data) -> Path:
 def tree_list():
     session['dict'] = {}
     return f.redirect('/treedb/tree/list')
+    # return f.redirect('/planttree/treedb/tree/list')
 
 
 @app.route('/treedb/tree/query', methods=('POST', 'GET'))
