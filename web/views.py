@@ -40,7 +40,8 @@ def get_locale():
 @app.route('/treedb/locale/<loc>')
 def set_locale(loc):
     session['locale'] = loc
-    return f.redirect('/treedb/index')
+    return f.redirect('/planttree/treedb/index')
+    # return f.redirect('/treedb/index')
 
 
 @app.before_request
