@@ -37,11 +37,10 @@ def get_locale():
         return request.accept_languages.best_match(['zh', 'en'])
 
 
-@app.route('/treedb/locale/<loc>')
+@app.route('/planttree/locale/<loc>')
 def set_locale(loc):
     session['locale'] = loc
-    return f.redirect('/planttree/treedb/index')
-    # return f.redirect('/treedb/index')
+    return f.redirect('/planttree/index')
 
 
 @app.before_request
@@ -74,18 +73,18 @@ def login():
     pass
 
 
-@app.route('/treedb/favicon.ico')
+@app.route('/planttree/favicon.ico')
 def favicon():
     return f.send_from_directory(root/'static', 'favicon.ico',
                                  mimetype='image/vnd.microsoft.icon')
 
 
-@app.route('/treedb/uploads/<filename>')
+@app.route('/planttree/uploads/<filename>')
 def uploaded_file(filename):
     return f.send_from_directory(app.config['UPLOADED_FILE_DEST'], filename)
 
 
-@app.route('/treedb/tmp/<filename>')
+@app.route('/planttree/tmp/<filename>')
 def tmp_file(filename):
     return f.send_from_directory(app.config['TMP_FOLDER'], filename)
 
@@ -111,14 +110,14 @@ def upload(data) -> Path:
     return native_path
 
 
-@app.route('/treedb/tree/list_all')
+@app.route('/planttree/tree/list_all')
 def tree_list():
     session['dict'] = {}
-    return f.redirect('/treedb/tree/list')
-    # return f.redirect('/planttree/treedb/tree/list')
+    return f.redirect('/planttree/tree/list')
+    # return f.redirect('/planttree/planttree/tree/list')
 
 
-@app.route('/treedb/tree/query', methods=('POST', 'GET'))
+@app.route('/planttree/tree/query', methods=('POST', 'GET'))
 def tree_query():
     qf = QueryForm()
     if qf.validate_on_submit():
@@ -126,11 +125,11 @@ def tree_query():
         data.pop('submit')
         data.pop('csrf_token')
         session['dict'] = data
-        return f.redirect('/treedb/tree/list')
+        return f.redirect('/planttree/tree/list')
     return f.render_template('tree_query.html', form=qf)
 
 
-@app.route('/treedb/tree/query_api/<taxon>')
+@app.route('/planttree/tree/query_api/<taxon>')
 def tree_query_api(taxon: str):
     host = request.host_url
     results_list = [['Tree title', 'Year', 'Title', 'Journal', 'View', 'Edit',
@@ -181,8 +180,8 @@ def query_taxonomy(taxonomy: str):
     return node_condition
 
 
-@app.route('/treedb/tree/list', methods=('POST', 'GET'))
-@app.route('/treedb/tree/list/<int:page>', methods=('POST', 'GET'))
+@app.route('/planttree/tree/list', methods=('POST', 'GET'))
+@app.route('/planttree/tree/list/<int:page>', methods=('POST', 'GET'))
 def tree_result(page=1):
     name_to_field = {'ID': Trees.tree_id, 'Tree title': Trees.tree_title,
                      'Kind': Trees.tree_kind, 'Publish year': Study.year,
@@ -246,7 +245,7 @@ def tree_result(page=1):
     return f.render_template(f'tree_list.html', pagination=pagination, form=sf)
 
 
-@app.route('/treedb/tree/phyloxml/<int:tree_id>')
+@app.route('/planttree/tree/phyloxml/<int:tree_id>')
 def tree_phyloxml(tree_id):
     treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
     if treefile is None:
@@ -256,7 +255,7 @@ def tree_phyloxml(tree_id):
     return phyloxml
 
 
-@app.route('/treedb/tree/newick/<int:tree_id>')
+@app.route('/planttree/tree/newick/<int:tree_id>')
 def tree_newick(tree_id):
     treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
     if treefile is None:
@@ -265,7 +264,7 @@ def tree_newick(tree_id):
     return newick
 
 
-@app.route('/treedb/tree/newick_file/<int:tree_id>')
+@app.route('/planttree/tree/newick_file/<int:tree_id>')
 def tree_newick_file(tree_id):
     treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
     if treefile is None:
@@ -280,7 +279,7 @@ def tree_newick_file(tree_id):
     return f.url_for('tmp_file', filename=filename)
 
 
-@app.route('/treedb/tree/auspice_file/<int:tree_id>')
+@app.route('/planttree/tree/auspice_file/<int:tree_id>')
 def tree_auspice_file(tree_id):
     tmp_folder = app.config.get('TMP_FOLDER')
     json_file = tmp_folder / f'{tree_id}.json'
@@ -301,7 +300,7 @@ def tree_auspice_file(tree_id):
     return f.url_for('tmp_file', filename=json_file)
 
 
-@app.route('/treedb/tree/<int:tree_id>', methods=('POST', 'GET'))
+@app.route('/planttree/tree/<int:tree_id>', methods=('POST', 'GET'))
 def view_tree(tree_id):
     tree = Trees.query.get(tree_id)
     if tree is None:
@@ -312,7 +311,7 @@ def view_tree(tree_id):
                              title=title, tree_id=tree_id)
 
 
-@app.route('/treedb/tree/edit/<int:tree_id>', methods=('POST', 'GET'))
+@app.route('/planttree/tree/edit/<int:tree_id>', methods=('POST', 'GET'))
 def edit_tree(tree_id):
     tree = Trees.query.get(tree_id)
     title = tree.tree_title
@@ -358,7 +357,7 @@ def newick_to_phyloxml(newick: str) -> str:
     return phyloxml
 
 
-@app.route('/treedb/matrix/from_tree/<int:tree_id>')
+@app.route('/planttree/matrix/from_tree/<int:tree_id>')
 def get_matrix_from_treeid(tree_id):
     submit = Submit.query.filter(Submit.tree_id==tree_id).first_or_404()
     matrix_id = submit.matrix_id
@@ -501,18 +500,18 @@ def handle_tree_info(tree_form, final=False):
     return
 
 
-@app.route('/treedb/submit', methods=('POST', 'GET'))
+@app.route('/planttree/submit', methods=('POST', 'GET'))
 def submit_info():
     sf = SubmitForm()
     if sf.validate_on_submit():
         handle_submit_info(sf)
         session['tree_n'] = 1
         flash(gettext('Submit info ok.'))
-        return f.redirect(f'/treedb/submit/{session["tree_n"]}')
+        return f.redirect(f'/planttree/submit/{session["tree_n"]}')
     return f.render_template('submit_1.html', form=sf)
 
 
-@app.route('/treedb/submit/<int:n>', methods=('POST', 'GET'))
+@app.route('/planttree/submit/<int:n>', methods=('POST', 'GET'))
 def submit_data(n):
     tf = TreeMatrixForm()
     if tf.validate_on_submit():
@@ -524,17 +523,17 @@ def submit_data(n):
         if tf.submit.data:
             handle_tree_info(tf, final=True)
             flash(gettext('Submit No.%(n)s trees ok.', n=n))
-            return f.redirect(f'/treedb/submit/list')
+            return f.redirect(f'/planttree/submit/list')
     return f.render_template('submit_2.html', form=tf)
 
 
-@app.route('/treedb/submit/cancel')
+@app.route('/planttree/submit/cancel')
 def cancel_submit():
     submit_ = Submit.query.get(session['submit_'])
-    return f.redirect(f'/treedb/submit/remove/{submit_.submit_id}')
+    return f.redirect(f'/planttree/submit/remove/{submit_.submit_id}')
 
 
-@app.route('/treedb/submit/remove/<int:submit_id>')
+@app.route('/planttree/submit/remove/<int:submit_id>')
 def remove_submit(submit_id):
     # todo: how to remove clean
     submit = Submit.query.get(submit_id)
@@ -568,23 +567,23 @@ def remove_submit(submit_id):
     return f.redirect('/submit/list')
 
 
-@app.route('/treedb/submit/list')
-@app.route('/treedb/submit/list/<int:page>')
+@app.route('/planttree/submit/list')
+@app.route('/planttree/submit/list/<int:page>')
 def submit_list(page=1):
     pagination = Submit.query.order_by(Submit.date.desc()).paginate(page=page,
                                                                     per_page=10)
     return f.render_template('submit_list.html', pagination=pagination)
 
 
-@app.route('/treedb/node/<int:tree_id>')
+@app.route('/planttree/node/<int:tree_id>')
 def redirect_to_node(tree_id):
     return f.redirect(f'/planttreenode/{tree_id}')
     #return f.redirect(f'http://localhost:4000/{tree_id}')
 
 
 @app.route('/')
-@app.route('/treedb/')
-@app.route('/treedb/index')
+@app.route('/planttree/')
+@app.route('/planttree/index')
 def index():
     results = db.session.query(Submit, Study, Trees).with_entities(
         Submit.date, Submit.cover_img, Submit.cover_img_name,

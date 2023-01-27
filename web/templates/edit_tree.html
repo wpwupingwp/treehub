@@ -86,7 +86,7 @@
             settings.showSearchPropertiesButton = true;
             settings.showShortenNodeNamesButton = false;
             //let url = '/tree/newick/{{tree_id}}';
-            let url = '/treedb/tree/phyloxml/{{tree_id}}';
+            let url = '/planttree/tree/phyloxml/{{tree_id}}';
             fetch(url).then(r=>r.text()).then(data=>{
                 //console.log(data);
                 //let tree = archaeopteryx.parseNewHampshire(data);

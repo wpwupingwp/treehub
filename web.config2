@@ -7,6 +7,10 @@
                     <match url="^planttree/node/(.*)"/>
                     <action type="Rewrite" url="http://192.168.99.30:4000/{R:1}"/>
                 </rule>
+                <rule name="to30">
+                    <match url="^(.*)"/>
+                    <action type="Rewrite" url="http://192.168.99.30:2022/{R:1}"/>
+                </rule>
             </rules>
         </rewrite>
     </system.webServer>
