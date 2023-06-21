@@ -151,7 +151,8 @@ def tree_query_api(taxon: str):
         Matrix, Matrix.matrix_id==Submit.matrix_id, isouter=True).filter(
         condition).order_by(Study.year.desc()).all()
     for r in results:
-        record = [r.tree_title, r.year, r.title, r.journal,
+        record = [Trees.tid(r.tree_id), r.tree_title,
+                  r.year, r.title, r.journal,
                   f'{host}tree/{r.tree_id}',
                   f'{host}tree/edit/{r.tree_id}',
                   f'https://doi.org/{r.doi}' if r.doi is not None else '',
@@ -161,7 +162,7 @@ def tree_query_api(taxon: str):
     return f.jsonify(results_list)
 
 
-@lru_cache(maxsize=100)
+@lru_cache(maxsize=1000)
 def query_taxonomy(taxonomy: str):
     # speed up
     species_tax_id = NcbiName.query.filter(
