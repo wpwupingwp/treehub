@@ -186,14 +186,16 @@ class Trees(db.Model):
         # convert TreeID to database's serial id
         # test case
         base = 36
-        a = [1, 28, 200, 3000, 40000, 5000000, 5000001, 10000000,
+        # T ABC 00000
+        length = 9
+        _ = [1, 28, 200, 3000, 40000, 5000000, 5000001, 10000000,
              36 * 1000_00 - 1, 36 * 100_000,
              36 * 35 * 1000_00 - 1, 36 * 35 * 100_000, 36 ** 3 * 100000 - 1,
              36 ** 3 * 100_000, 36 ** 3 * 100_000 + 1,
              800000000038, 1000000000738]
-        if tid[0] != 'T' or len(tid) < 10:
+        if tid[0] != 'T' or len(tid) < length:
             return -1, 'Bad TreeID, a valid TreeID looks like "T03B123456"'
-        if len(tid) > 10:
+        if len(tid) > length:
             return int(tid[1:]), 'Big TreeID'
         letters = tid[1:4]
         numbers = tid[4:]
