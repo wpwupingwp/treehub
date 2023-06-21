@@ -517,6 +517,8 @@ def submit_info():
     if sf.validate_on_submit():
         handle_submit_info(sf)
         session['tree_n'] = 1
+        session['matrix_id_list'] = list()
+        session['tree_id_list'] = list()
         flash(gettext('Submit info ok.'))
         return f.redirect(f'/planttree/submit/{session["tree_n"]}')
     return f.render_template('submit_1.html', form=sf)
@@ -524,6 +526,7 @@ def submit_info():
 
 @app.route('/planttree/submit/<int:n>', methods=('POST', 'GET'))
 def submit_data(n):
+    # todo: test
     tf = TreeMatrixForm()
     if tf.validate_on_submit():
         if tf.next.data:
@@ -533,6 +536,7 @@ def submit_data(n):
             return f.redirect(f'/submit/{session["tree_n"]}')
         if tf.submit.data:
             handle_tree_info(tf, final=True)
+            print(session)
             flash(gettext('Submit No.%(n)s trees ok.', n=n))
             f.flash(gettext('Submit finished. Your study ID is %(study_id)s',
                             study_id=session['study']))
@@ -554,7 +558,7 @@ def remove_submit(submit_id):
     submit = Submit.query.get(submit_id)
     if submit is None:
         flash(gettext('Submit not found.'))
-        return f.redirect('/submit/list')
+        return f.redirect('/planttree/submit/list')
     submit_id_list = [submit.submit_id]
     study = Study.query.get(submit.study_id)
     other_submits = Submit.query.filter(Submit.study_id==study.study_id).all()
@@ -579,7 +583,7 @@ def remove_submit(submit_id):
     db.session.delete(study)
     db.session.commit()
     flash(gettext('Remove ok.'))
-    return f.redirect('/submit/list')
+    return f.redirect('/planttree/submit/list')
 
 
 @app.route('/planttree/submit/list')
