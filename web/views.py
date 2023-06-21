@@ -8,7 +8,7 @@ from uuid import uuid4
 import json
 import re
 
-from flask import g, request, session
+from flask import request, session
 from flask import flash
 from flask_babel import gettext
 from sqlalchemy import select, or_, and_
@@ -26,6 +26,8 @@ from web.auth import auth
 from web.form import QueryForm, SubmitForm, SortQueryForm, TreeMatrixForm
 from web.utils import nwk2auspice, compress_photo
 # from web.form import LoginForm, UserForm
+
+tid_func = Trees.tid
 
 
 @babel.localeselector
@@ -114,7 +116,6 @@ def upload(data) -> Path:
 def tree_list():
     session['dict'] = {}
     return f.redirect('/planttree/tree/list')
-    # return f.redirect('/planttree/planttree/tree/list')
 
 
 @app.route('/planttree/tree/query', methods=('POST', 'GET'))
@@ -243,11 +244,13 @@ def tree_result(page=1):
         Matrix, Matrix.matrix_id==Submit.matrix_id, isouter=True).filter(
         trees).order_by(order_by)
     pagination = results.paginate(page=page, per_page=20)
-    return f.render_template(f'tree_list.html', pagination=pagination, form=sf)
+    return f.render_template(f'tree_list.html', pagination=pagination, form=sf,
+                             tid_func=tid_func)
 
 
-@app.route('/planttree/tree/phyloxml/<int:tree_id>')
-def tree_phyloxml(tree_id):
+@app.route('/planttree/tree/phyloxml/<tid>')
+def tree_phyloxml(tid):
+    tree_id = Trees.tid2serial(tid)
     treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
     if treefile is None:
         flash(gettext('Tree not found.'))
@@ -256,8 +259,9 @@ def tree_phyloxml(tree_id):
     return phyloxml
 
 
-@app.route('/planttree/tree/newick/<int:tree_id>')
-def tree_newick(tree_id):
+@app.route('/planttree/tree/newick/<tid>')
+def tree_newick(tid):
+    tree_id = Trees.tid2serial(tid)
     treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
     if treefile is None:
         flash(gettext('Treefile not found.'))
@@ -265,8 +269,9 @@ def tree_newick(tree_id):
     return newick
 
 
-@app.route('/planttree/tree/newick_file/<int:tree_id>')
-def tree_newick_file(tree_id):
+@app.route('/planttree/tree/newick_file/<tid>')
+def tree_newick_file(tid):
+    tree_id = Trees.tid2serial(tid)
     treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
     if treefile is None:
         flash(gettext('Treefile not found.'))
@@ -280,8 +285,9 @@ def tree_newick_file(tree_id):
     return f.url_for('tmp_file', filename=filename)
 
 
-@app.route('/planttree/tree/auspice_file/<int:tree_id>')
-def tree_auspice_file(tree_id):
+@app.route('/planttree/tree/auspice_file/<tid>')
+def tree_auspice_file(tid):
+    tree_id = Trees.tid2serial(tid)
     tmp_folder = app.config.get('TMP_FOLDER')
     json_file = tmp_folder / f'{tree_id}.json'
     if json_file.exists():
@@ -301,23 +307,25 @@ def tree_auspice_file(tree_id):
     return f.url_for('tmp_file', filename=json_file)
 
 
-@app.route('/planttree/tree/<int:tree_id>', methods=('POST', 'GET'))
-def view_tree(tree_id):
+@app.route('/planttree/tree/<tid>', methods=('POST', 'GET'))
+def view_tree(tid):
+    tree_id = Trees.tid2serial(tid)
     tree = Trees.query.get(tree_id)
     if tree is None:
         return f.abort(404)
     title = tree.tree_title
-    tree_auspice_file(tree_id)
-    return f.render_template('view_tree.html',
-                             title=title, tree_id=tree_id)
+    tree_auspice_file(tid)
+    return f.render_template('view_tree.html', title=title, tree_id=tree_id,
+                             tid_func=tid_func)
 
 
-@app.route('/planttree/tree/edit/<int:tree_id>', methods=('POST', 'GET'))
-def edit_tree(tree_id):
+@app.route('/planttree/tree/edit/<tid>', methods=('POST', 'GET'))
+def edit_tree(tid):
+    tree_id = Trees.tid2serial(tid)
     tree = Trees.query.get(tree_id)
     title = tree.tree_title
-    return f.render_template('edit_tree.html',
-                             title=title, tree_id=tree_id)
+    return f.render_template('edit_tree.html', title=title, tree_id=tree_id,
+                             tid_func=tid_func)
 
 
 def get_nodes(raw_nodes: list) -> dict:
@@ -358,8 +366,9 @@ def newick_to_phyloxml(newick: str) -> str:
     return phyloxml
 
 
-@app.route('/planttree/matrix/from_tree/<int:tree_id>')
-def get_matrix_from_treeid(tree_id):
+@app.route('/planttree/matrix/from_tree/<tid>')
+def get_matrix_from_treeid(tid):
+    tree_id = Trees.tid2serial(tid)
     submit = Submit.query.filter(Submit.tree_id==tree_id).first_or_404()
     matrix_id = submit.matrix_id
     matrix = Matrix.query.filter(Matrix.matrix_id==matrix_id).first_or_404()
@@ -370,7 +379,6 @@ def get_matrix_from_treeid(tree_id):
         fasta_file = tmp_folder / f'{matrix_id}.fasta'
         with open(fasta_file, 'w') as _:
             _.write(matrix.fasta)
-        # url = f.url_for('tmp_file', filename=fasta_file.name)
         return f.send_file(fasta_file, mimetype='text/plain',
                            as_attachment=True)
 
@@ -576,24 +584,25 @@ def submit_list(page=1):
     return f.render_template('submit_list.html', pagination=pagination)
 
 
-@app.route('/planttree/node/<int:tree_id>')
-def redirect_to_node(tree_id):
+@app.route('/planttree/node/<tid>')
+def redirect_to_node(tid):
     # return f.redirect(f'/planttreenode/{tree_id}')
+    tree_id = Trees.tid2serial(tid)
     return f.redirect(f'http://localhost:4000/{tree_id}')
 
 
-@app.route('/planttree/tid/<tree_id>')
-def tid(tree_id: str):
-    serial_id = Trees.tid2serial(tree_id)
-    if serial_id == -1:
+@app.route('/planttree/tid/<tid>')
+def tid(tid: str):
+    tree_id = Trees.tid2serial(tid)
+    if tree_id == -1:
         error_msg = 'Bad TreeID, a valid TreeID looks like "T00118334"'
         return f.abort(404, description=error_msg)
-    tree_ = Trees.query.get(serial_id)
+    tree_ = Trees.query.get(tree_id)
     if tree_ is None:
         error_msg = 'TreeID not found'
         return f.abort(404, description=error_msg)
     else:
-        return f.redirect(f'/planttree/tree/edit/{serial_id}')
+        return f.redirect(f'/planttree/tree/edit/{tree_id}')
 
 
 @app.route('/')
@@ -622,7 +631,7 @@ def index():
         url = f.url_for('tmp_file', filename=r.cover_img_name)
         tmp_imgs.append(url)
     cards = list(zip(results, tmp_imgs))
-    return f.render_template('index.html', cards=cards)
+    return f.render_template('index.html', cards=cards, tid=tid_func)
 
 
 app.register_blueprint(auth, url_prefix='/auth')

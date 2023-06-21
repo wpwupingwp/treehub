@@ -8,7 +8,7 @@
 <table class="table table-hover table-responsive">
     <thead class="thead-dark">
     <tr>
-        <!--th>#</th-->
+        <th>TreeID</th>
         <th>{{_('Tree title')}}</th>
         <th>{{_('Year')}}</th>
         <th>{{_('Title')}}</th>
@@ -19,19 +19,19 @@
     <tbody>
     {% for tree in pagination.items %}
     <tr>
-        <!--td>{{tree.tree_id}}</td-->
+        <td>{{tid_func(tree.tree_id)}}</td>
         <td class="font-italic">{{tree.tree_title}}</td>
         <td>{{tree.year}}</td>
         <td>{{tree.title}}</td>
         <td>{{tree.journal}}</td>
         <td class="text-nowrap">
-            <a href="/planttree/tree/{{tree.tree_id}}">{{_('View')}}</a>
-            <a href="/planttree/tree/edit/{{tree.tree_id}}">{{_('Edit')}}</a>
+            <a href="/planttree/tree/{{tid_func(tree.tree_id)}}">{{_('View')}}</a>
+            <a href="/planttree/tree/edit/{{tid_func(tree.tree_id)}}">{{_('Edit')}}</a>
             {% if tree.doi is not none %}
             <a href="https://doi.org/{{tree.doi}}">{{_('Article')}}</a>
             {% endif %}
             {% if tree.upload_date is not none %}
-            <a href="/planttree/matrix/from_tree/{{tree.tree_id}}">{{_('Matrix')}}</a>
+            <a href="/planttree/matrix/from_tree/{{tid_func(tree.tree_id)}}">{{_('Matrix')}}</a>
             {% endif %}
         </td>
         <td class="text-nowrap">
