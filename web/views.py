@@ -415,7 +415,7 @@ def handle_submit_info(info_form):
     return study, submit_
 
 
-def handle_tree_info(tree_form, final=False):
+def handle_tree_info(tree_form, final=False) -> bool:
     upload_date = date.isoformat(date.today())
     tree = Trees()
     treefile = Treefile()
@@ -461,7 +461,6 @@ def handle_tree_info(tree_form, final=False):
             raw_nodes = tree_content.taxon_namespace
             label_taxon = get_nodes(raw_nodes)
             not_found = len(raw_nodes) - len(label_taxon)
-            print('tree', tree, 'file', treefile, 'matrix', matrix)
             if not_found > 0:
                 flash(gettext('%(not_found)s of %(total)s nodes have '
                               'invalid name.',
@@ -473,13 +472,14 @@ def handle_tree_info(tree_form, final=False):
     except Exception:
         flash(gettext('Bad tree file. The file should be UTF-8 encoding '
                       'nexus or newick format.'))
-        return f.render_template('submit_2.html', form=tree_form)
+        return False
     finally:
         treefile_tmp.unlink()
     # old tree id end at 118270
     db.session.add(tree)
     # get tree_id
     db.session.commit()
+    print(tree, tree.tree_id, tid_func(tree.tree_id))
     session['tree_id_list'].append(tid_func(tree.tree_id))
     treefile.tree_id = tree.tree_id
     for i in label_taxon:
@@ -508,7 +508,8 @@ def handle_tree_info(tree_form, final=False):
         db.session.add(next_submit)
         db.session.commit()
         session['submit_'] = next_submit.submit_id
-    return
+    print(tree, tree.tree_id, tid_func(tree.tree_id))
+    return True
 
 
 @app.route('/planttree/submit', methods=('POST', 'GET'))
@@ -530,12 +531,16 @@ def submit_data(n):
     tf = TreeMatrixForm()
     if tf.validate_on_submit():
         if tf.next.data:
-            handle_tree_info(tf)
+            ok = handle_tree_info(tf)
+            if not ok:
+                return f.redirect(f'/planttree/submit/{session["tree_n"]}')
             flash(gettext('Submit No.%(n)s tree ok.', n=n))
             session['tree_n'] += 1
             return f.redirect(f'/submit/{session["tree_n"]}')
         if tf.submit.data:
-            handle_tree_info(tf, final=True)
+            ok = handle_tree_info(tf, final=True)
+            if not ok:
+                return f.redirect(f'/planttree/submit/{session["tree_n"]}')
             print(session)
             flash(gettext('Submit No.%(n)s trees ok.', n=n))
             f.flash(gettext('Submit finished. Your study ID is %(study_id)s',
