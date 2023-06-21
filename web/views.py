@@ -437,6 +437,7 @@ def handle_tree_info(tree_form, final=False):
     matrix.analysisstep_id = '20222022'
     db.session.add(matrix)
     db.session.commit()
+    session['matrix_id_list'].append(matrix.matrix_id)
     # handle tree_text
     treefile_tmp = upload(tree_form.tree_file.data)
     try:
@@ -479,6 +480,7 @@ def handle_tree_info(tree_form, final=False):
     db.session.add(tree)
     # get tree_id
     db.session.commit()
+    session['tree_id_list'].append(tid_func(tree.tree_id))
     treefile.tree_id = tree.tree_id
     for i in label_taxon:
         new_node = Nodes(i, label_taxon[i], tree.tree_id)
@@ -532,6 +534,10 @@ def submit_data(n):
         if tf.submit.data:
             handle_tree_info(tf, final=True)
             flash(gettext('Submit No.%(n)s trees ok.', n=n))
+            f.flash(gettext('Submit finished. Your study ID is %(study_id)s',
+                            study_id=session['study']))
+            f.flash(gettext('Your TreeID are %(tree_id_list)s',
+                            tree_id_list=', '.join(session['tree_id_list'])))
             return f.redirect(f'/planttree/submit/list')
     return f.render_template('submit_2.html', form=tf)
 
