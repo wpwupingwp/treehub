@@ -581,6 +581,11 @@ def redirect_to_node(tree_id):
     return f.redirect(f'http://localhost:4000/{tree_id}')
 
 
+@app.route('/planttree/tid/<tree_id>')
+def tid(tree_id: str):
+    pass
+
+
 @app.route('/')
 @app.route('/planttree/')
 @app.route('/planttree/index')
