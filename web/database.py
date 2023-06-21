@@ -21,7 +21,6 @@ class User(db.Model, fl.UserMixin):
     # status
     failed_login = db.Column(db.Integer, default=0)
 
-
     def __init__(self, username, password, address=''):
         self.username = username
         self.password = password
@@ -181,6 +180,32 @@ class Trees(db.Model):
             else:
                 letters = chr(ord('A') + (digit - 10)) + letters
         return prefix + f'{letters:>03}' + f'{b:05d}'
+
+    @staticmethod
+    def tid2id(tid: str) -> (int, str):
+        # convert TreeID to database's serial id
+        # test case
+        base = 36
+        a = [1, 28, 200, 3000, 40000, 5000000, 5000001, 10000000,
+             36 * 1000_00 - 1, 36 * 100_000,
+             36 * 35 * 1000_00 - 1, 36 * 35 * 100_000, 36 ** 3 * 100000 - 1,
+             36 ** 3 * 100_000, 36 ** 3 * 100_000 + 1,
+             800000000038, 1000000000738]
+        if tid[0] != 'T' or len(tid) < 10:
+            return -1, 'Bad TreeID, a valid TreeID looks like "T03B123456"'
+        if len(tid) > 10:
+            return int(tid[1:]), 'Big TreeID'
+        letters = tid[1:4]
+        numbers = tid[4:]
+        big = 0
+        # bit start from 0
+        for bit, n in enumerate(reversed(letters)):
+            if n.isdigit():
+                big += int(n) * base**bit
+            else:
+                big += (ord(n) - ord('A') + 10) * base**bit
+        serial_id = big * 100_000 + int(numbers)
+        return serial_id, 'OK'
 
 
 class Treefile(db.Model):
