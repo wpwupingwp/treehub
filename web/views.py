@@ -583,7 +583,16 @@ def redirect_to_node(tree_id):
 
 @app.route('/planttree/tid/<tree_id>')
 def tid(tree_id: str):
-    pass
+    serial_id = Trees.tid2serial(tree_id)
+    if serial_id == -1:
+        error_msg = 'Bad TreeID, a valid TreeID looks like "T00118334"'
+        return f.abort(404, description=error_msg)
+    tree_ = Trees.query.get(serial_id)
+    if tree_ is None:
+        error_msg = 'TreeID not found'
+        return f.abort(404, description=error_msg)
+    else:
+        return f.redirect(f'/planttree/tree/edit/{serial_id}')
 
 
 @app.route('/')

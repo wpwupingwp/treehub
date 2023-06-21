@@ -182,8 +182,9 @@ class Trees(db.Model):
         return prefix + f'{letters:>03}' + f'{b:05d}'
 
     @staticmethod
-    def tid2id(tid: str) -> (int, str):
+    def tid2serial(tid: str) -> int:
         # convert TreeID to database's serial id
+        # return -1 for error
         # test case
         base = 36
         # T ABC 00000
@@ -194,9 +195,9 @@ class Trees(db.Model):
              36 ** 3 * 100_000, 36 ** 3 * 100_000 + 1,
              800000000038, 1000000000738]
         if tid[0] != 'T' or len(tid) < length:
-            return -1, 'Bad TreeID, a valid TreeID looks like "T03B123456"'
+            return -1
         if len(tid) > length:
-            return int(tid[1:]), 'Big TreeID'
+            return int(tid[1:])
         letters = tid[1:4]
         numbers = tid[4:]
         big = 0
@@ -207,7 +208,7 @@ class Trees(db.Model):
             else:
                 big += (ord(n) - ord('A') + 10) * base**bit
         serial_id = big * 100_000 + int(numbers)
-        return serial_id, 'OK'
+        return serial_id
 
 
 class Treefile(db.Model):
