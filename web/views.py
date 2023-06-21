@@ -592,7 +592,7 @@ def redirect_to_node(tid):
 
 
 @app.route('/planttree/tid/<tid>')
-def tid(tid: str):
+def goto_tid(tid: str):
     tree_id = Trees.tid2serial(tid)
     if tree_id == -1:
         error_msg = 'Bad TreeID, a valid TreeID looks like "T00118334"'
