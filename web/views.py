@@ -472,6 +472,9 @@ def handle_tree_info(tree_form, final=False) -> bool:
     except Exception:
         flash(gettext('Bad tree file. The file should be UTF-8 encoding '
                       'nexus or newick format.'))
+        session['matrix_id_list'].pop()
+        db.session.delete(matrix)
+        db.session.commit()
         return False
     finally:
         treefile_tmp.unlink()
@@ -508,7 +511,6 @@ def handle_tree_info(tree_form, final=False) -> bool:
         db.session.add(next_submit)
         db.session.commit()
         session['submit_'] = next_submit.submit_id
-    print(tree, tree.tree_id, tid_func(tree.tree_id))
     return True
 
 
