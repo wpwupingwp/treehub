@@ -538,7 +538,7 @@ def submit_data(n):
                 return f.redirect(f'/planttree/submit/{session["tree_n"]}')
             flash(gettext('Submit No.%(n)s tree ok.', n=n))
             session['tree_n'] += 1
-            return f.redirect(f'/submit/{session["tree_n"]}')
+            return f.redirect(f'/planttree/submit/{session["tree_n"]}')
         if tf.submit.data:
             ok = handle_tree_info(tf, final=True)
             if not ok:
