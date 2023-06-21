@@ -148,6 +148,40 @@ class Trees(db.Model):
     def __str__(self):
         return f'{self.tree_id} {self.root} {self.tree_title}'
 
+    @staticmethod
+    def tid(tree_id: int) -> str:
+        """
+        Generate TreeID from tree_id in database
+        Since postgresql serial is 4*8 bit, if id is too big,
+        alter table and return raw number.
+        TID format: 'T00A100000'
+            first letter, 'T'
+            2-4, digit or capital letter, 0-9 and A-Z
+            5-10, digit
+        Args:
+            tree_id: tree_id, postgresql serial number
+
+        Returns:
+            tid: str
+        """
+        max_n = min(36 ** 3 * 100_000, 2 ** (8 * 4 - 1))
+        prefix = 'T'
+        n = 1_000_00
+        if tree_id >= max_n:
+            return 'T' + str(tree_id)
+        # 0-9 and A-Z
+        base = 26 + 10
+
+        a, b = divmod(tree_id, n)
+        letters = ''
+        while a > 0:
+            a, digit = divmod(a, base)
+            if digit < 10:
+                letters = str(digit) + letters
+            else:
+                letters = chr(ord('A') + (digit - 10)) + letters
+        return prefix + f'{letters:>03}' + f'{b:05d}'
+
 
 class Treefile(db.Model):
     __tablename__ = 'treefile'

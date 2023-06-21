@@ -577,8 +577,8 @@ def submit_list(page=1):
 
 @app.route('/planttree/node/<int:tree_id>')
 def redirect_to_node(tree_id):
-    return f.redirect(f'/planttreenode/{tree_id}')
-    #return f.redirect(f'http://localhost:4000/{tree_id}')
+    # return f.redirect(f'/planttreenode/{tree_id}')
+    return f.redirect(f'http://localhost:4000/{tree_id}')
 
 
 @app.route('/')
