@@ -23,7 +23,8 @@ from web import app, babel, lm, root
 from web.database import Trees, Treefile, Study, Submit, Matrix, NcbiName
 from web.database import Nodes, Visit, db
 from web.auth import auth
-from web.form import QueryForm, SubmitForm, SortQueryForm, TreeMatrixForm
+from web.form import QueryForm, SubmitForm, TreeMatrixForm
+from web.form import SubscribeForm, SortQueryForm
 from web.utils import nwk2auspice, compress_photo
 # from web.form import LoginForm, UserForm
 
@@ -622,6 +623,15 @@ def goto_tid(tid: str):
         return f.abort(404, description=error_msg)
     else:
         return f.redirect(f'/planttree/tree/edit/{tree_id}')
+
+
+@app.route('/planttree/subscribe')
+def subscribe():
+    sf = SubscribeForm()
+    if sf.validate_on_submit():
+        # todo: subscribe and notice by email
+        flash(gettext('Subscribe ok.'))
+    return f.render_template('subscribe.html', form=sf)
 
 
 @app.route('/')

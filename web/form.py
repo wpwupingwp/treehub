@@ -147,3 +147,15 @@ class SubmitForm(FlaskForm):
     doi = m.StringField(gettext('DOI'), validators=[v.length(max=100)],
                         render_kw={'placeholder': 'eg. 10.9999/1234567890'})
     submit = m.SubmitField(gettext('Next'))
+
+
+class SubscribeForm(FlaskForm):
+    email = m.StringField(gettext(
+        'Email <span class="text-danger h5">*</span>'),
+        validators=[v.email(), v.input_required()],
+        render_kw={'placeholder': 'eg. alex@example.org'})
+    lineage = m.StringField(gettext(
+        'Lineage <span class="text-danger h5">*</span>'),
+        validators=[v.email(), v.input_required()],
+        render_kw={'placeholder': 'eg. Zea mays, Pinus or Rosacese'})
+    submit = m.SubmitField(gettext('Submit'))

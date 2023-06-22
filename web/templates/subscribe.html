@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container col-md-7 shadow my-4">
+    {% from 'bootstrap4/form.html' import render_form, render_field, render_hidden_errors %}
+    {% for error in form.errors.items() %}
+    <div class="invalid-feedback">{{error}}</div>
+    {% endfor %}
+    {{ render_form(form, form_type='horizontal') }}
+</div>
+{% endblock %}
