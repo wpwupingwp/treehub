@@ -208,6 +208,10 @@ def tree_result(page=1):
     query = session['dict']
     study_filters = []
     filters = []
+    if query.get('tree_id'):
+        id_list_raw = query.get('tree_id').split(',')
+        id_list = [Trees.tid2serial(i.strip()) for i in id_list_raw]
+        filters.append(Trees.tree_id.in_(id_list))
     if query.get('taxonomy') and not query.get('species'):
         node_condition = query_taxonomy(query.get('taxonomy'))
         filters.append(node_condition)
@@ -235,7 +239,7 @@ def tree_result(page=1):
             select(Study.study_id).where(*study_filters))
         filters.append(study_condition)
     trees = Trees.tree_id.in_(select(Trees.tree_id).where(*filters))
-    x = Trees.query.filter(trees)
+    # x = Trees.query.filter(trees)
     results = db.session.query(Study, Trees, Submit, Matrix).with_entities(
         Study.title, Study.year, Study.journal, Study.doi,
         Trees.tree_id, Trees.tree_title, Matrix.upload_date).join(
@@ -482,7 +486,6 @@ def handle_tree_info(tree_form, final=False) -> bool:
     db.session.add(tree)
     # get tree_id
     db.session.commit()
-    print(tree, tree.tree_id, tid_func(tree.tree_id))
     session['tree_id_list'].append(tid_func(tree.tree_id))
     treefile.tree_id = tree.tree_id
     for i in label_taxon:
@@ -543,7 +546,6 @@ def submit_data(n):
             ok = handle_tree_info(tf, final=True)
             if not ok:
                 return f.redirect(f'/planttree/submit/{session["tree_n"]}')
-            print(session)
             flash(gettext('Submit No.%(n)s trees ok.', n=n))
             f.flash(gettext('Submit finished. Your study ID is %(study_id)s',
                             study_id=session['study']))

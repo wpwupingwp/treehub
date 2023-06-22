@@ -31,6 +31,8 @@ class LoginForm(FlaskForm):
 
 class QueryForm(FlaskForm):
     # tree
+    tree_id = m.StringField(gettext('Tree ID'), render_kw={
+        'placeholder': 'Separated by comma, eg. T0AB12345,T00066666'})
     taxonomy = m.StringField(gettext('Taxonomy'), render_kw={
         'placeholder': 'eg. Rosales, Fabaceae, Zea'})
     species = m.StringField(gettext('Species'),
