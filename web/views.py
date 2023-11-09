@@ -342,7 +342,8 @@ def get_nodes(raw_nodes: list) -> dict:
         label_taxon[i.node_label] = i.designated_tax_id
     not_found = [i for i in name_list if i not in label_taxon]
     new_names = {}
-    pattern = re.compile(r'.*([A-Z][a-z]+)(_| )([a-z]+).*')
+    # todo: test
+    pattern = re.compile(r'.*([A-Z][a-z]+)([_ ])([a-z]+)[_ ].*')
     for i in not_found:
         x = re.search(pattern, i)
         if x is not None:
