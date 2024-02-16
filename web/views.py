@@ -258,7 +258,7 @@ def tree_phyloxml(tid):
     tree_id = Trees.tid2serial(tid)
     treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
     if treefile is None:
-        flash(gettext('Tree not found.'))
+        flash(gettext('Tree not found.'), 'error')
     phyloxml = treefile.phyloxml.rstrip()
     phyloxml = phyloxml.replace('""', '"').replace("''", "'")
     return phyloxml
@@ -269,7 +269,7 @@ def tree_newick(tid):
     tree_id = Trees.tid2serial(tid)
     treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
     if treefile is None:
-        flash(gettext('Treefile not found.'))
+        flash(gettext('Treefile not found.'), 'error')
     newick = treefile.newick.rstrip()
     return newick
 
@@ -279,7 +279,7 @@ def tree_newick_file(tid):
     tree_id = Trees.tid2serial(tid)
     treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
     if treefile is None:
-        flash(gettext('Treefile not found.'))
+        flash(gettext('Treefile not found.'), 'error')
     newick = treefile.newick.rstrip()
     tmp_folder = app.config.get('TMP_FOLDER')
     filename = f'{tree_id}.nwk'
@@ -300,7 +300,7 @@ def tree_auspice_file(tid):
     tree = Trees.query.get(tree_id)
     treefile = Treefile.query.filter_by(tree_id=tree_id).one_or_none()
     if treefile is None:
-        flash(gettext('Treefile not found.'))
+        flash(gettext('Treefile not found.'), 'error')
     newick = treefile.newick
     meta_file = root / 'static' / 'auspice_tree_meta.json'
     with open(meta_file, 'r', encoding='utf-8') as _:
@@ -471,14 +471,14 @@ def handle_tree_info(tree_form, final=False) -> bool:
             if not_found > 0:
                 flash(gettext('%(not_found)s of %(total)s nodes have '
                               'invalid name.',
-                              not_found=not_found, total=len(raw_nodes)), 'danger')
+                              not_found=not_found, total=len(raw_nodes)), 'error')
                 flash(gettext('Node name in tree file should be '
                               '"scientific name with other id" format '
                               '(eg. Oryza sativa id9999'))
         # dendropy error class is too long
     except Exception:
         flash(gettext('Bad tree file. The file should be UTF-8 encoding '
-                      'nexus or newick format.'), 'danger')
+                      'nexus or newick format.'), 'error')
         session['matrix_id_list'].pop()
         db.session.delete(matrix)
         db.session.commit()
@@ -570,7 +570,7 @@ def remove_submit(submit_id):
     # todo: how to remove clean
     submit = Submit.query.get(submit_id)
     if submit is None:
-        flash(gettext('Submit not found.'))
+        flash(gettext('Submit not found.'), 'error')
         return f.redirect('/planttree/submit/list')
     submit_id_list = [submit.submit_id]
     study = Study.query.get(submit.study_id)
