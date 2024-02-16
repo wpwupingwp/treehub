@@ -11,14 +11,21 @@ MERGE_JSON = Path(r'R:\submit\merge.json')
 TREE_FOLDER = Path(r'R:\submit\trees')
 
 
+def print_err(text):
+    i = text.find('invalid-feedback')
+    print(text[i:i+500])
+    return
+
 
 def submit(record: dict, trees: list, session: requests.Session):
     pprint(len(trees))
     submit_form1 = record
     submit_form1['email'] = 'admin@example.org'
+    pprint(submit_form1)
     r1 = session.post(URL1, data=submit_form1)
     if not r1.ok:
         raise Exception(r1.status_code)
+    print_err(r1.text)
     for n, tree in enumerate(trees[:-1], start=1):
         submit_form2 = tree
         submit_form2['tree_file'] = submit_form2['tree_file'].read_bytes()
@@ -26,10 +33,11 @@ def submit(record: dict, trees: list, session: requests.Session):
         if not r2.ok:
             print(r2.status_code)
             pprint(submit_form2)
-            print(r2.text)
+            print_err(r2.text)
             raise Exception
         else:
             print(submit_form2['tree_title'], 'ok')
+        print(r2.text)
     submit_form3 = trees[-1]
     submit_form3['tree_file'] = submit_form3['tree_file'].read_bytes()
     submit_form3['submit'] = True
@@ -40,7 +48,7 @@ def submit(record: dict, trees: list, session: requests.Session):
     else:
         pprint(r3.headers)
         pprint(submit_form3)
-        print(r3.text)
+    print_err(r3.text)
 
 
 def main():
