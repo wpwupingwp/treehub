@@ -21,6 +21,7 @@ def submit(record: dict, trees: list, session: requests.Session):
     pprint(len(trees))
     submit_form1 = record
     submit_form1['email'] = 'admin@example.org'
+    submit_form1['root'] = submit_form1['lineage']
     pprint(submit_form1)
     r1 = session.post(URL1, data=submit_form1)
     if not r1.ok:

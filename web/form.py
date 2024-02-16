@@ -141,7 +141,7 @@ class SubmitForm(FlaskForm):
                           validators=[v.length(max=200)],
                           render_kw={'placeholder': 'Article title'})
     abstract = m.TextAreaField(gettext('Abstract'),
-                               validators=[v.length(max=2020)])
+                               validators=[v.length(max=10000)])
     keywords = m.StringField(gettext('Keywords'), validators=[v.length(max=50)],
                              render_kw={'placeholder': 'Article keywords'})
     doi = m.StringField(gettext('DOI'), validators=[v.length(max=100)],
