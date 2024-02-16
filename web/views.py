@@ -389,15 +389,15 @@ def get_matrix_from_treeid(tid):
                            as_attachment=True)
 
 
-def handle_submit_info(info_form):
+def handle_submit_info(info_form) -> bool:
     root = str(info_form.root.data).strip()
     # handle root id
     taxon = NcbiName.query.filter_by(name_txt=root).all()
     # first or none
     if len(taxon) == 0:
         flash(gettext('Taxonomy name not found. '
-                      'Currently only support accepted name.'))
-        return f.render_template('submit_1.html', form=info_form)
+                      'Currently only support accepted name.'), 'error')
+        return False
     else:
         root_id = taxon[0].tax_id
         session['root_id'] = root_id
@@ -418,6 +418,7 @@ def handle_submit_info(info_form):
     db.session.commit()
     session['study'] = study.study_id
     session['submit_'] = submit_.submit_id
+    return True
     return study, submit_
 
 
@@ -470,14 +471,14 @@ def handle_tree_info(tree_form, final=False) -> bool:
             if not_found > 0:
                 flash(gettext('%(not_found)s of %(total)s nodes have '
                               'invalid name.',
-                              not_found=not_found, total=len(raw_nodes)))
+                              not_found=not_found, total=len(raw_nodes)), 'danger')
                 flash(gettext('Node name in tree file should be '
                               '"scientific name with other id" format '
                               '(eg. Oryza sativa id9999'))
         # dendropy error class is too long
     except Exception:
         flash(gettext('Bad tree file. The file should be UTF-8 encoding '
-                      'nexus or newick format.'))
+                      'nexus or newick format.'), 'danger')
         session['matrix_id_list'].pop()
         db.session.delete(matrix)
         db.session.commit()
@@ -523,7 +524,8 @@ def handle_tree_info(tree_form, final=False) -> bool:
 def submit_info():
     sf = SubmitForm()
     if sf.validate_on_submit():
-        handle_submit_info(sf)
+        if not handle_submit_info(sf):
+            return f.redirect('/planttree/submit')
         session['tree_n'] = 1
         session['matrix_id_list'] = list()
         session['tree_id_list'] = list()
@@ -549,9 +551,9 @@ def submit_data(n):
             if not ok:
                 return f.redirect(f'/planttree/submit/{session["tree_n"]}')
             flash(gettext('Submit No.%(n)s trees ok.', n=n))
-            f.flash(gettext('Submit finished. Your study ID is %(study_id)s',
+            flash(gettext('Submit finished. Your study ID is %(study_id)s',
                             study_id=session['study']))
-            f.flash(gettext('Your TreeID are %(tree_id_list)s',
+            flash(gettext('Your TreeID are %(tree_id_list)s',
                             tree_id_list=', '.join(session['tree_id_list'])))
             return f.redirect(f'/planttree/submit/list')
     return f.render_template('submit_2.html', form=tf)
