@@ -95,8 +95,8 @@ class TreeMatrixForm(FlaskForm):
     tree_file = m.FileField(gettext('Tree files (NEXUS or newick format) '
                                     '<span class="text-danger h5">*</span>'),
                             validators=[v.data_required()])
-    tree_type_new = m.SelectField(
-        gettext('Tree type'), default=gettext('Species tree'),
+    tree_type = m.SelectField(
+        gettext('Tree type'), default=gettext('Other'),
         choices=[('Species tree', gettext('Species tree')),
                  ('Gene tree', gettext('Gene tree')),
                  ('Dating tree', gettext('Dating tree')),
