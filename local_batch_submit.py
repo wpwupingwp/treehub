@@ -12,24 +12,34 @@ TREE_FOLDER = Path(r'R:\submit\trees')
 
 
 
-def submit(record: dict, trees:dict, session: requests.Session):
+def submit(record: dict, trees: list, session: requests.Session):
+    pprint(len(trees))
     submit_form1 = record
-    pprint(submit_form1)
+    submit_form1['email'] = 'admin@example.org'
     r1 = session.post(URL1, data=submit_form1)
-    if r1.status_code != 200:
-        pprint(r1.raw)
+    if not r1.ok:
         raise Exception(r1.status_code)
-    for n, tree in enumerate(trees[:-1]):
+    for n, tree in enumerate(trees[:-1], start=1):
         submit_form2 = tree
         submit_form2['tree_file'] = submit_form2['tree_file'].read_bytes()
         r2 = session.post(f'{URL2}{n}', data=submit_form2)
-        if r2.ok:
-            pass
+        if not r2.ok:
+            print(r2.status_code)
+            pprint(submit_form2)
+            print(r2.text)
+            raise Exception
+        else:
+            print(submit_form2['tree_title'], 'ok')
     submit_form3 = trees[-1]
     submit_form3['tree_file'] = submit_form3['tree_file'].read_bytes()
     submit_form3['submit'] = True
-    r3 = session.post(f'{URL2}{n}', data=submit_form3)
+    r3 = session.post(f'{URL2}{n+1}', data=submit_form3)
     if r3.ok:
+        print(submit_form3['tree_title'], 'ok')
+        pass
+    else:
+        pprint(r3.headers)
+        pprint(submit_form3)
         print(r3.text)
 
 

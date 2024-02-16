@@ -419,7 +419,7 @@ def handle_submit_info(info_form) -> bool:
     session['study'] = study.study_id
     session['submit_'] = submit_.submit_id
     return True
-    return study, submit_
+    # return study, submit_
 
 
 def handle_tree_info(tree_form, final=False) -> bool:
