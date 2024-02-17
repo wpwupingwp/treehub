@@ -266,7 +266,25 @@ sudo cp nginx.txt /etc/nginx/sites-enabled/treedb.conf
 nginx -t
 sudo systemctl restart nginx
 sudo systemctl status nginx
+```
+Run python
+```bash
 cd plant_tree_db
 pip install -r requirements.txt
 gunicorn --worker-class gevent -b 0.0.0.0:9999 -w 4 web:app
+# for windows
+waitress-serve --listen=127.0.0.1:2022 web:app
+```
+Backup and restore database
+```bash
+# edit postgresql.conf
+cat << EOF
+wal_level = minimal  # requires a restart
+maintenance_work_mem = 2GB
+max_wal_size = 20GB  # as big as you want
+EOF 
+# backup
+pg_dump -U postgres -F c -f 20240217.sql.bak treedb
+# restore
+pg_restore -j 8 -U postgres -d treedb .\20240217.sql.bak
 ```
