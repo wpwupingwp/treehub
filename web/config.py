@@ -2,6 +2,10 @@
 
 from web import root
 
+# session
+SESSION_TYPE = 'filesystem'
+SESSION_FILE_DIR = r'R:\temp\session'
+SESSION_FILE_THRESHOLD = 5000
 # database
 SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg://postgres:password@localhost:5432/treedb'
 SQLALCHEMY_TRACK_MODIFICATIONS = False

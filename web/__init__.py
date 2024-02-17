@@ -5,6 +5,8 @@ from flask_admin import Admin
 from flask_bootstrap import Bootstrap4
 from flask_babel import Babel
 from flask_login import LoginManager
+from flask_session import Session
+from flask_sqlalchemy import SQLAlchemy
 
 from pathlib import Path
 
@@ -27,6 +29,8 @@ lm.init_app(app)
 admin = Admin(app, template_mode='bootstrap4')
 root = Path(app.root_path)
 app.config.from_pyfile('config.py')
+db = SQLAlchemy(app)
+session_ = Session(app)
 
 from web import config
 from web import views

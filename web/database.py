@@ -6,9 +6,8 @@ from flask_admin.contrib.sqla import ModelView
 from flask_sqlalchemy import SQLAlchemy
 import flask_login as fl
 
-from web import app, admin
+from web import db, admin
 
-db = SQLAlchemy(app)
 
 
 class User(db.Model, fl.UserMixin):

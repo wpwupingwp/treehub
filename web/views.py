@@ -389,10 +389,16 @@ def handle_submit_info(info_form) -> bool:
     if len(taxon) == 0:
         flash(gettext('Taxonomy name not found. '
                       'Currently only support accepted name.'), 'error')
-        return False
+        # danger
+        # for batch submit only
+        # todo
+        root = 'root'
+        root_id = 1
+        session['root_id'] = root_id
+        # return False
     else:
         root_id = taxon[0].tax_id
-        session['root_id'] = root_id
+    session['root_id'] = root_id
     upload_date = date.isoformat(date.today())
     study = Study()
     info_form.populate_obj(study)
@@ -411,7 +417,6 @@ def handle_submit_info(info_form) -> bool:
     session['study'] = study.study_id
     session['submit_'] = submit_.submit_id
     return True
-    # return study, submit_
 
 
 def handle_tree_info(tree_form, final=False) -> bool:
@@ -594,8 +599,8 @@ def remove_submit(submit_id):
 @app.route('/planttree/submit/list')
 @app.route('/planttree/submit/list/<int:page>')
 def submit_list(page=1):
-    pagination = Submit.query.order_by(Submit.date.desc()).paginate(page=page,
-                                                                    per_page=10)
+    pagination = Submit.query.order_by(Submit.submit_id.desc()).paginate(
+        page=page, per_page=10)
     return f.render_template('submit_list.html', pagination=pagination)
 
 
