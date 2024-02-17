@@ -135,14 +135,15 @@ class SubmitForm(FlaskForm):
                             render_kw={'placeholder': 'eg. JSE'})
     year = m.IntegerField(gettext('Publish year'), default=2022)
     author = m.StringField(
-        gettext('Author'), validators=[v.length(max=100)],
+        gettext('Author'), validators=[v.length(max=1000)],
         render_kw={'placeholder': 'eg. Carl Linnaeus, Charles Robert Darwin'})
     title = m.StringField(gettext('Article title'),
-                          validators=[v.length(max=200)],
+                          validators=[v.length(max=2000)],
                           render_kw={'placeholder': 'Article title'})
     abstract = m.TextAreaField(gettext('Abstract'),
                                validators=[v.length(max=10000)])
-    keywords = m.StringField(gettext('Keywords'), validators=[v.length(max=50)],
+    keywords = m.StringField(gettext('Keywords'),
+                             validators=[v.length(max=255)],
                              render_kw={'placeholder': 'Article keywords'})
     doi = m.StringField(gettext('DOI'), validators=[v.length(max=100)],
                         render_kw={'placeholder': 'eg. 10.9999/1234567890'})
