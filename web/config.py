@@ -3,7 +3,7 @@
 from web import root
 
 # database
-SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:password@localhost:5432/treedb'
+SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg://postgres:password@localhost:5432/treedb'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 # upload
 # max filesize 100 mb

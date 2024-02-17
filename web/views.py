@@ -13,7 +13,8 @@ from flask import flash
 from flask_babel import gettext
 from sqlalchemy import select, or_, and_
 from werkzeug.utils import secure_filename
-from werkzeug.urls import url_unquote_plus
+from urllib.parse import quote as url_quote
+# from werkzeug.urls import url_unquote_plus
 import dendropy
 from Bio import Phylo
 import flask as f
@@ -29,15 +30,6 @@ from web.utils import nwk2auspice, compress_photo
 # from web.form import LoginForm, UserForm
 
 tid_func = Trees.tid
-
-
-@babel.localeselector
-def get_locale():
-    stored_local = session.get('locale', False)
-    if stored_local:
-        return stored_local
-    else:
-        return request.accept_languages.best_match(['zh', 'en'])
 
 
 @app.route('/planttree/locale/<loc>')
