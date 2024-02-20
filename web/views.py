@@ -105,10 +105,46 @@ def upload(data) -> Path:
     return native_path
 
 
-@app.route('/planttree/tree/list_all')
-def tree_list():
+@app.route('/planttree/tree/list_all', methods=('POST', 'GET'))
+@app.route('/planttree/tree/list_all/<int:page>', methods=('POST', 'GET'))
+def tree_list(page=1):
     session['dict'] = {}
-    return f.redirect('/planttree/tree/list')
+    name_to_field = {'ID': Trees.tree_id, 'Tree title': Trees.tree_title,
+                     'Kind': Trees.tree_kind, 'Publish year': Study.year,
+                     'Article title': Study.title, 'Journal': Study.journal,
+                     'DOI': Study.doi}
+    item = session.get('item', 'ID')
+    order = session.get('order', 'Descend')
+    sf = SortQueryForm()
+    sf.item.choices = SortQueryForm.new_item_choices(item)
+    sf.order.choices = SortQueryForm.new_order_choices(order)
+    if sf.validate_on_submit():
+        item = sf.item.data
+        order = sf.order.data
+        session['item'] = item
+        session['order'] = order
+        page = 1
+    field = name_to_field[item]
+    if order == 'Descend':
+        order_by = field.desc()
+    else:
+        order_by = field.asc()
+    query = session['dict']
+    # x = Trees.query.filter(trees)
+    trees = Trees.tree_id.in_(select(Trees.tree_id).distinct(
+        Trees.study_id ).group_by(Trees.study_id, Trees.tree_id))
+    results = db.session.query(Study, Trees, Submit, Matrix).with_entities(
+        Study.title, Study.year, Study.journal, Study.doi,
+        Trees.tree_id, Trees.tree_title, Matrix.upload_date).join(
+        Study, Study.study_id == Trees.study_id).join(
+        Submit, Submit.tree_id == Trees.tree_id, isouter=True).join(
+        Matrix, Matrix.matrix_id == Submit.matrix_id, isouter=True).filter(
+        trees).order_by(order_by)
+    pagination = results.paginate(page=page, per_page=20)
+    return f.render_template(f'tree_list.html', pagination=pagination,
+                             form=sf,
+                             tid_func=tid_func)
+
 
 
 @app.route('/planttree/tree/query', methods=('POST', 'GET'))
