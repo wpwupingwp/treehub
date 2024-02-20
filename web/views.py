@@ -423,11 +423,10 @@ def handle_submit_info(info_form) -> bool:
     taxon = NcbiName.query.filter_by(name_txt=root).all()
     # first or none
     if len(taxon) == 0:
-        flash(gettext('Taxonomy name not found. '
-                      'Currently only support accepted name.'), 'error')
         # danger
         # for batch submit only
         # todo
+        return False
         root = 'root'
         root_id = 1
         session['root_id'] = root_id
@@ -558,6 +557,8 @@ def submit_info():
     sf = SubmitForm()
     if sf.validate_on_submit():
         if not handle_submit_info(sf):
+            flash(gettext('Taxonomy name not found. '
+                          'Currently only support accepted name.'), 'error')
             return f.redirect('/planttree/submit')
         session['tree_n'] = 1
         session['matrix_id_list'] = list()

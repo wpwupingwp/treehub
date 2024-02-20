@@ -15,7 +15,9 @@ TREE_FOLDER = Path(r'R:\submit\trees')
 
 def print_err(text):
     i = text.find('invalid-feedback')
-    print(text[i:i+500].strip())
+    err = text[i:i+500].strip()
+    if err:
+        print(err)
     return
 
 def prepare_form(old, csrf_token, with_tree=False) -> (dict, dict):
@@ -29,7 +31,7 @@ def prepare_form(old, csrf_token, with_tree=False) -> (dict, dict):
 
 
 def submit(record: dict, trees: list, session: requests.Session):
-    pprint(len(trees))
+    print(record['doi'], len(trees))
     csrf_token = get_csrf_token(session)
     submit_form1 = record
     submit_form1['email'] = 'admin@example.org'
@@ -72,11 +74,12 @@ def get_csrf_token(session):
 
 
 def remove_old_submit(session):
-    start = 3800
-    end = 4000
+    start = 91
+    end = 100
     for i in range(start, end+1):
         r = session.get(f'{URL1}/remove/{i}')
         print(r.status_code)
+    # raise Exception
     return
 
 
@@ -90,7 +93,7 @@ def main():
     data = json.load(open(MERGE_JSON, 'r'))
     with requests.Session() as session:
         remove_old_submit(session)
-    with ThreadPoolExecutor(max_workers=8) as pool:
+    with ThreadPoolExecutor(max_workers=16) as pool:
         # raise SystemExit()
         for key in data.keys():
             record = data[key]

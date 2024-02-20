@@ -21,6 +21,7 @@ for d in UPLOAD_FOLDER, UPLOADED_FILE_DEST, TMP_FOLDER:
         d.mkdir()
 # safe
 SECRET_KEY = '2022'
+WTF_CSRF_TIME_LIMIT = 3600 * 100
 # bootstrap
 BOOTSTRAP_SERVE_LOCAL = True
 # login
