@@ -1,0 +1,41 @@
+[project]
+name = "plant-tree-db"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "Ping Wu", email = "wpwupingwp@outlook.com" }
+]
+dependencies = [
+    "Bootstrap-Flask==2.4.0",
+    "Flask==3.0.3",
+    "Flask-Admin==1.6.1",
+    "Flask-Login==0.6.3",
+    "Flask-SQLAlchemy==3.1.1",
+    "Flask-WTF==1.2.1",
+    "Pillow==10.4.0",
+    "dendropy==5.0.1",
+    "email-validator==2.2.0",
+    "flask-babel==4.0.0",
+    "psycopg==3.2.1",
+    "requests>=2.31.0",
+    "waitress==3.0.0",
+    "flask-session==0.6.0",
+    "biopython==1.84",
+    "numpy==2.0.1",
+]
+readme = "README.md"
+requires-python = ">= 3.10"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = []
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/plant_tree_db"]
