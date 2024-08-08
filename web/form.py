@@ -4,7 +4,6 @@ from flask_babel import lazy_gettext as gettext
 from flask_wtf import FlaskForm
 from wtforms import validators as v
 import wtforms as m
-from wtforms.validators import StopValidation
 
 # cannot use flask_upload, _uploads.uploaded_file is broken
 # that photos.url() cannot be used, use flask instead

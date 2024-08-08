@@ -3,7 +3,6 @@
 from datetime import datetime
 from flask import redirect
 from flask_admin.contrib.sqla import ModelView
-from flask_sqlalchemy import SQLAlchemy
 import flask_login as fl
 
 from web import db, admin

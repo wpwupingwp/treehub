@@ -4,7 +4,6 @@ from web import root
 
 # session
 SESSION_TYPE = 'filesystem'
-SESSION_FILE_DIR = r'R:\temp\session'
 SESSION_FILE_THRESHOLD = 5000
 # database
 SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg://postgres:password@localhost:5432/treedb'
@@ -15,8 +14,9 @@ MAX_CONTENT_LENGTH = 100 * 1024 * 1024
 CSRF_ENABLED = True
 UPLOAD_FOLDER = root / 'upload'
 TMP_FOLDER = root / 'tmp'
+SESSION_FILE_DIR = TMP_FOLDER / 'session'
 UPLOADED_FILE_DEST = UPLOAD_FOLDER / 'file'
-for d in UPLOAD_FOLDER, UPLOADED_FILE_DEST, TMP_FOLDER:
+for d in UPLOAD_FOLDER, UPLOADED_FILE_DEST, TMP_FOLDER, SESSION_FILE_DIR:
     if not d.exists():
         d.mkdir()
 # safe
