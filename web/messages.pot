@@ -1,284 +1,310 @@
 # Translations template for PROJECT.
-# Copyright (C) 2022 ORGANIZATION
+# Copyright (C) 2024 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-11-22 11:42+0800\n"
+"POT-Creation-Date: 2024-08-08 19:34+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.11.0\n"
+"Generated-By: Babel 2.14.0\n"
 
-#: form.py:15
+#: form.py:14
 msgid "Email"
 msgstr ""
 
-#: form.py:17 form.py:27
+#: form.py:16 form.py:26
 msgid "Password"
 msgstr ""
 
-#: form.py:19
+#: form.py:18
 msgid "Password again"
 msgstr ""
 
-#: form.py:21 form.py:29 form.py:58 templates/base.html:37
-#: templates/edit_tree.html:113 templates/index.html:8
-#: templates/view_tree.html:28
+#: form.py:20 form.py:28 form.py:59 form.py:161 templates/base.html:37
+#: templates/edit_tree.html:115 templates/index.html:8
+#: templates/view_tree.html:30
 msgid "Submit"
 msgstr ""
 
-#: form.py:25
+#: form.py:24
 msgid "Username"
 msgstr ""
 
-#: form.py:34
+#: form.py:33 templates/submit_list.html:11
+msgid "Tree ID"
+msgstr ""
+
+#: form.py:35
 msgid "Taxonomy"
 msgstr ""
 
-#: form.py:36
+#: form.py:37
 msgid "Species"
 msgstr ""
 
-#: form.py:38 templates/tree_list.html:12
+#: form.py:39 templates/tree_list.html:12
 msgid "Tree title"
 msgstr ""
 
-#: form.py:42 form.py:97
+#: form.py:43 form.py:98
 msgid "Tree type"
 msgstr ""
 
-#: form.py:42 form.py:43
+#: form.py:43 form.py:44
 msgid "Any"
 msgstr ""
 
-#: form.py:44 form.py:97 form.py:98
+#: form.py:45 form.py:99
 msgid "Species tree"
 msgstr ""
 
-#: form.py:45 form.py:99
+#: form.py:46 form.py:100
 msgid "Gene tree"
 msgstr ""
 
-#: form.py:46 form.py:100
+#: form.py:47 form.py:101
 msgid "Dating tree"
 msgstr ""
 
-#: form.py:47 form.py:101 form.py:114
+#: form.py:48 form.py:98 form.py:102 form.py:115
 msgid "Other"
 msgstr ""
 
-#: form.py:49 form.py:134
+#: form.py:50 form.py:135
 msgid "Publish year"
 msgstr ""
 
-#: form.py:51 form.py:136
+#: form.py:52 form.py:137
 msgid "Author"
 msgstr ""
 
-#: form.py:53 templates/tree_list.html:14
+#: form.py:54 templates/tree_list.html:14
 msgid "Title"
 msgstr ""
 
-#: form.py:55 form.py:143
+#: form.py:56 form.py:144
 msgid "Keywords"
 msgstr ""
 
-#: form.py:56 form.py:145
+#: form.py:57 form.py:147
 msgid "DOI"
 msgstr ""
 
-#: form.py:66
+#: form.py:67
 msgid "Sort"
 msgstr ""
 
-#: form.py:90
+#: form.py:91
 msgid "Tree title <span class=\"text-danger h5\">*</span>"
 msgstr ""
 
-#: form.py:93
+#: form.py:94
 msgid ""
 "Tree files (NEXUS or newick format) <span class=\"text-danger "
 "h5\">*</span>"
 msgstr ""
 
-#: form.py:103
+#: form.py:104
 msgid "Matrix title"
 msgstr ""
 
-#: form.py:107
+#: form.py:108
 msgid "Matrix file (fasta format)"
 msgstr ""
 
-#: form.py:109
+#: form.py:110
 msgid "Matrix type"
 msgstr ""
 
-#: form.py:109 form.py:110
+#: form.py:110 form.py:111
 msgid "Nucleic acid"
 msgstr ""
 
-#: form.py:111
+#: form.py:112
 msgid "Amino acid"
 msgstr ""
 
-#: form.py:112
+#: form.py:113
 msgid "Morphological"
 msgstr ""
 
-#: form.py:113
+#: form.py:114
 msgid "Combination"
 msgstr ""
 
-#: form.py:115
+#: form.py:116
 msgid "Cover image (.jpg or .png)"
 msgstr ""
 
-#: form.py:116
+#: form.py:117
 msgid "Submit for news"
 msgstr ""
 
-#: form.py:117
+#: form.py:118
 msgid "Add more"
 msgstr ""
 
-#: form.py:119
+#: form.py:120
 msgid "Finish submit"
 msgstr ""
 
-#: form.py:123
+#: form.py:124 form.py:153
 msgid "Email <span class=\"text-danger h5\">*</span>"
 msgstr ""
 
-#: form.py:128
+#: form.py:129
 msgid "Taxonomy <span class=\"text-danger h5\">*</span>"
 msgstr ""
 
-#: form.py:130
+#: form.py:131
 msgid "root node or lineage name"
 msgstr ""
 
-#: form.py:132 templates/tree_list.html:15
+#: form.py:133 templates/tree_list.html:15
 msgid "Journal"
 msgstr ""
 
-#: form.py:138
+#: form.py:139
 msgid "Article title"
 msgstr ""
 
-#: form.py:141 templates/index.html:24
+#: form.py:142 templates/index.html:24
 msgid "Abstract"
 msgstr ""
 
-#: form.py:147
+#: form.py:149
 msgid "Next"
 msgstr ""
 
-#: views.py:216
+#: form.py:157
+msgid "Lineage <span class=\"text-danger h5\">*</span>"
+msgstr ""
+
+#: views.py:289
 msgid "Tree not found."
 msgstr ""
 
-#: views.py:226 views.py:235 views.py:255
+#: views.py:300 views.py:310 views.py:331
 msgid "Treefile not found."
 msgstr ""
 
-#: views.py:336
-msgid "Taxonomy name not found. Currently only support accepted name."
-msgstr ""
-
-#: views.py:410
+#: views.py:506
 #, python-format
 msgid "%(not_found)s of %(total)s nodes have invalid name."
 msgstr ""
 
-#: views.py:411
+#: views.py:507
 msgid ""
 "Node name in tree file should be \"scientific name with other id\" format"
 " (eg. Oryza sativa id9999"
 msgstr ""
 
-#: views.py:416
+#: views.py:512
 msgid "Bad tree file. The file should be UTF-8 encoding nexus or newick format."
 msgstr ""
 
-#: views.py:461
+#: views.py:560
+msgid "Taxonomy name not found. Currently only support accepted name."
+msgstr ""
+
+#: views.py:566
 msgid "Submit info ok."
 msgstr ""
 
-#: views.py:472
+#: views.py:580
 #, python-format
 msgid "Submit No.%(n)s tree ok."
 msgstr ""
 
-#: views.py:477
+#: views.py:587
 #, python-format
 msgid "Submit No.%(n)s trees ok."
 msgstr ""
 
-#: views.py:493
+#: views.py:588
+#, python-format
+msgid "Submit finished. Your study ID is %(study_id)s"
+msgstr ""
+
+#: views.py:591
+#, python-format
+msgid "Your TreeID are %(tree_id_list)s"
+msgstr ""
+
+#: views.py:607
 msgid "Submit not found."
 msgstr ""
 
-#: views.py:518
+#: views.py:632
 msgid "Remove ok."
 msgstr ""
 
-#: templates/base.html:35 templates/edit_tree.html:111
-#: templates/view_tree.html:26
+#: views.py:670
+msgid "Subscribe ok."
+msgstr ""
+
+#: templates/base.html:35 templates/edit_tree.html:113
+#: templates/view_tree.html:28
 msgid "Home"
 msgstr ""
 
-#: templates/base.html:36 templates/edit_tree.html:112 templates/index.html:7
-#: templates/view_tree.html:27
+#: templates/base.html:36 templates/edit_tree.html:114 templates/index.html:7
+#: templates/view_tree.html:29
 msgid "Query"
 msgstr ""
 
-#: templates/base.html:38 templates/edit_tree.html:114
-#: templates/view_tree.html:29
+#: templates/base.html:38 templates/edit_tree.html:116
+#: templates/view_tree.html:31
 msgid "Tree list"
 msgstr ""
 
-#: templates/base.html:39 templates/edit_tree.html:115
-#: templates/view_tree.html:30
+#: templates/base.html:39 templates/edit_tree.html:117
+#: templates/view_tree.html:32
 msgid "Submit list"
 msgstr ""
 
-#: templates/base.html:41 templates/edit_tree.html:118
-#: templates/view_tree.html:33
+#: templates/base.html:40
+msgid "Subscribe"
+msgstr ""
+
+#: templates/base.html:42 templates/edit_tree.html:120
+#: templates/view_tree.html:35
 msgid "My trees"
 msgstr ""
 
-#: templates/base.html:42 templates/edit_tree.html:119
-#: templates/view_tree.html:34
+#: templates/base.html:43 templates/edit_tree.html:121
+#: templates/view_tree.html:36
 msgid "Logout"
 msgstr ""
 
-#: templates/base.html:44 templates/edit_tree.html:121
-#: templates/view_tree.html:36
+#: templates/base.html:45 templates/edit_tree.html:123
+#: templates/view_tree.html:38
 msgid "Admin"
 msgstr ""
 
-#: templates/base.html:51 templates/edit_tree.html:130
-#: templates/view_tree.html:45
+#: templates/base.html:52 templates/edit_tree.html:132
+#: templates/view_tree.html:47
 msgid "Search"
 msgstr ""
 
-#: templates/base.html:80 templates/view_tree.html:67
-msgid "Power by Flask 2.2.2 and Bootstrap 4 "
+#: templates/base.html:78
+msgid "Plant Science Data Center of CAS"
 msgstr ""
 
-#: templates/base.html:81 templates/view_tree.html:68
+#: templates/base.html:79 templates/view_tree.html:70
 msgid "Copyright 2022"
 msgstr ""
 
-#: templates/edit_tree.html:116
+#: templates/edit_tree.html:118
 msgid "Back to View"
 msgstr ""
 
@@ -318,10 +344,6 @@ msgstr ""
 msgid "date"
 msgstr ""
 
-#: templates/submit_list.html:11
-msgid "Tree ID"
-msgstr ""
-
 #: templates/submit_list.html:12
 msgid "Tree file ID"
 msgstr ""
@@ -354,11 +376,15 @@ msgstr ""
 msgid "View"
 msgstr ""
 
-#: templates/tree_list.html:29 templates/view_tree.html:31
+#: templates/tree_list.html:29 templates/view_tree.html:33
 msgid "Edit"
 msgstr ""
 
-#: templates/tree_list.html:33
+#: templates/tree_list.html:34
 msgid "Matrix"
+msgstr ""
+
+#: templates/view_tree.html:69
+msgid "Power by Flask 2.2.2 and Bootstrap 4 "
 msgstr ""
 
