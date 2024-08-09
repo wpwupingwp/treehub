@@ -5,12 +5,14 @@ from flask_admin import Admin
 from flask_bootstrap import Bootstrap4
 from flask_babel import Babel
 from flask_login import LoginManager
+from flask_restful import Resource, Api
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 
 from pathlib import Path
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
+
 
 def get_locale():
     stored_local = session.get('locale', False)
@@ -20,6 +22,7 @@ def get_locale():
         return request.accept_languages.best_match(['zh', 'en'])
 
 
+api = Api(app,)
 babel = Babel(app)
 babel.init_app(app, locale_selector=get_locale)
 bootstrap = Bootstrap4(app)

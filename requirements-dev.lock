@@ -9,6 +9,8 @@
 #   generate-hashes: false
 
 -e file:.
+aniso8601==9.0.1
+    # via flask-restful
 babel==2.15.0
     # via flask-babel
 biopython==1.84
@@ -38,6 +40,7 @@ flask==3.0.3
     # via flask-admin
     # via flask-babel
     # via flask-login
+    # via flask-restful
     # via flask-session
     # via flask-sqlalchemy
     # via flask-wtf
@@ -47,6 +50,8 @@ flask-admin==1.6.1
 flask-babel==4.0.0
     # via plant-tree-db
 flask-login==0.6.3
+    # via plant-tree-db
+flask-restful==0.3.10
     # via plant-tree-db
 flask-session==0.6.0
     # via plant-tree-db
@@ -78,10 +83,13 @@ psycopg==3.2.1
     # via plant-tree-db
 pytz==2024.1
     # via flask-babel
+    # via flask-restful
 requests==2.32.3
     # via plant-tree-db
 setuptools==72.1.0
     # via dendropy
+six==1.16.0
+    # via flask-restful
 sqlalchemy==2.0.32
     # via flask-sqlalchemy
 typing-extensions==4.12.2

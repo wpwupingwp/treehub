@@ -1,12 +1,14 @@
 #!/usr/bin/python3
 
-from datetime import datetime
-from flask import redirect
+import datetime
+from dataclasses import dataclass
+
+from flask import redirect, jsonify
 from flask_admin.contrib.sqla import ModelView
+from flask_restful import Resource
 import flask_login as fl
 
-from web import db, admin
-
+from web import db, admin, api
 
 
 class User(db.Model, fl.UserMixin):
@@ -22,7 +24,7 @@ class User(db.Model, fl.UserMixin):
     def __init__(self, username, password, address=''):
         self.username = username
         self.password = password
-        self.register_date = datetime.utcnow()
+        self.register_date = datetime.datetime.now(datetime.UTC)
         self.address = address
 
     def __repr__(self):
@@ -30,6 +32,7 @@ class User(db.Model, fl.UserMixin):
 
     def get_id(self):
         return str(self.user_id)
+
 
 
 class Visit(db.Model):
@@ -127,7 +130,7 @@ class Study(db.Model):
     upload_date = db.Column(db.Date)
 
 
-class Trees(db.Model):
+class Trees(db.Model, Resource):
     __tablename__ = 'trees'
     tree_id = db.Column(db.Integer, primary_key=True)
     legacy_id = db.Column(db.String(255))
@@ -208,6 +211,14 @@ class Trees(db.Model):
         serial_id = big * 100_000 + int(numbers)
         return serial_id
 
+    @staticmethod
+    def get(tree_id: str):
+        tree_id = int(tree_id)
+        x = Trees.query.filter_by(tree_id=tree_id).first()
+        return dict(tree_id=x.tree_id, root=x.root, tree_label=x.tree_label,
+                    tree_title=x.tree_title, tree_type=x.tree_type,
+                    study_id=x.study_id, upload_date=x.upload_date,)
+
 
 class Treefile(db.Model):
     __tablename__ = 'treefile'
@@ -261,3 +272,5 @@ class MyModelView(ModelView):
 # for m in [User, Goods, Bid, Message]:
 for m in [User, Matrix, NcbiName, Nodes, Study, Trees, Treefile, Visit]:
     admin.add_view(MyModelView(m, db.session))
+
+api.add_resource(Trees, '/treehub/api/tree/<tree_id>')
