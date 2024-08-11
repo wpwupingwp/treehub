@@ -81,17 +81,24 @@ pillow==10.4.0
     # via plant-tree-db
 psycopg==3.2.1
     # via plant-tree-db
+psycopg2-binary==2.9.9
+    # via sqlalchemy-serializer
 pytz==2024.1
     # via flask-babel
     # via flask-restful
+    # via sqlalchemy-serializer
 requests==2.32.3
     # via plant-tree-db
-setuptools==72.1.0
+setuptools==70.3.0
     # via dendropy
+    # via sqlalchemy-serializer
 six==1.16.0
     # via flask-restful
-sqlalchemy==2.0.32
+sqlalchemy==2.0.29
     # via flask-sqlalchemy
+    # via sqlalchemy-serializer
+sqlalchemy-serializer==1.4.22
+    # via plant-tree-db
 typing-extensions==4.12.2
     # via psycopg
     # via sqlalchemy

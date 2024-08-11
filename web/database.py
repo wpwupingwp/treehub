@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
 import datetime
-from dataclasses import dataclass
 
-from flask import redirect, jsonify
+from sqlalchemy_serializer import SerializerMixin
+from flask import redirect
 from flask_admin.contrib.sqla import ModelView
 from flask_restful import Resource
 import flask_login as fl
@@ -32,7 +32,6 @@ class User(db.Model, fl.UserMixin):
 
     def get_id(self):
         return str(self.user_id)
-
 
 
 class Visit(db.Model):
@@ -77,7 +76,7 @@ class Nodes(db.Model):
         self.left_id = self.right_id = self.taxon_variant_id = self.ncbi_map = 0
 
 
-class Matrix(db.Model):
+class Matrix(db.Model, Resource, SerializerMixin):
     __tablename__ = 'matrix'
     # is primary?
     matrix_id = db.Column(db.Integer, primary_key=True)
@@ -92,6 +91,12 @@ class Matrix(db.Model):
     fasta = db.Column(db.String())
     upload_date = db.Column(db.Date)
 
+    @staticmethod
+    def get(matrix_id: str):
+        matrix_id = int(matrix_id)
+        x = Matrix.query.filter_by(matrix_id=matrix_id).first()
+        return x.to_dict()
+
 
 class NcbiName(db.Model):
     __tablename__ = 'ncbi_names'
@@ -105,7 +110,7 @@ class NcbiName(db.Model):
     order_id = db.Column(db.Integer)
 
 
-class Study(db.Model):
+class Study(db.Model, Resource, SerializerMixin):
     __tablename__ = 'study'
     # is primary?
     study_id = db.Column(db.Integer, primary_key=True)
@@ -129,8 +134,14 @@ class Study(db.Model):
     doi = db.Column(db.String(100))
     upload_date = db.Column(db.Date)
 
+    @staticmethod
+    def get(study_id: str):
+        study_id = int(study_id)
+        x = Study.query.filter_by(study_id=study_id).first()
+        return x.to_dict()
 
-class Trees(db.Model, Resource):
+
+class Trees(db.Model, Resource, SerializerMixin):
     __tablename__ = 'trees'
     tree_id = db.Column(db.Integer, primary_key=True)
     legacy_id = db.Column(db.String(255))
@@ -215,12 +226,13 @@ class Trees(db.Model, Resource):
     def get(tree_id: str):
         tree_id = int(tree_id)
         x = Trees.query.filter_by(tree_id=tree_id).first()
-        return dict(tree_id=x.tree_id, root=x.root, tree_label=x.tree_label,
-                    tree_title=x.tree_title, tree_type=x.tree_type,
-                    study_id=x.study_id, upload_date=x.upload_date,)
+        # return dict(tree_id=x.tree_id, root=x.root, tree_label=x.tree_label,
+        #             tree_title=x.tree_title, tree_type=x.tree_type,
+        #             study_id=x.study_id, upload_date=x.upload_date,)
+        return x.to_dict()
 
 
-class Treefile(db.Model):
+class Treefile(db.Model, Resource, SerializerMixin):
     __tablename__ = 'treefile'
     treefile_id = db.Column(db.Integer, primary_key=True)
     tree_id = db.Column(db.Integer, db.ForeignKey('trees.tree_id'))
@@ -233,8 +245,14 @@ class Treefile(db.Model):
     def __str__(self):
         return f'{self.treefile_id} {self.tree_id}'
 
+    @staticmethod
+    def get(treefile_id: str):
+        treefile_id = int(treefile_id)
+        x = Treefile.query.filter_by(treefile_id=treefile_id).first()
+        return x.to_dict()
 
-class Submit(db.Model):
+
+class Submit(db.Model, Resource, SerializerMixin):
     __tablename__ = 'submit'
     submit_id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255))
@@ -256,6 +274,12 @@ class Submit(db.Model):
         self.user_id = user_id
         self.study_id = study_id
 
+    @staticmethod
+    def get(submit_id: str):
+        submit_id = int(submit_id)
+        x = Submit.query.filter_by(submit_id=submit_id).first()
+        return x.to_dict()
+
 
 class MyModelView(ModelView):
     def __init__(self, *args, **kargs):
@@ -274,3 +298,7 @@ for m in [User, Matrix, NcbiName, Nodes, Study, Trees, Treefile, Visit]:
     admin.add_view(MyModelView(m, db.session))
 
 api.add_resource(Trees, '/treehub/api/tree/<tree_id>')
+api.add_resource(Matrix, '/treehub/api/matrix/<matrix_id>')
+api.add_resource(Treefile, '/treehub/api/treefile/<treefile_id>')
+api.add_resource(Study, '/treehub/api/study/<study_id>')
+api.add_resource(Submit, '/treehub/api/submit/<submit_id>')
