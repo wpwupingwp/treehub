@@ -94,7 +94,7 @@ class Matrix(db.Model, Resource, SerializerMixin):
     @staticmethod
     def get(matrix_id: str):
         matrix_id = int(matrix_id)
-        x = Matrix.query.filter_by(matrix_id=matrix_id).first()
+        x = Matrix.query.filter_by(matrix_id=matrix_id).first_or_404()
         return x.to_dict()
 
 
@@ -137,7 +137,7 @@ class Study(db.Model, Resource, SerializerMixin):
     @staticmethod
     def get(study_id: str):
         study_id = int(study_id)
-        x = Study.query.filter_by(study_id=study_id).first()
+        x = Study.query.filter_by(study_id=study_id).first_or_404()
         return x.to_dict()
 
 
@@ -225,7 +225,7 @@ class Trees(db.Model, Resource, SerializerMixin):
     @staticmethod
     def get(tree_id: str):
         tree_id = int(tree_id)
-        x = Trees.query.filter_by(tree_id=tree_id).first()
+        x = Trees.query.filter_by(tree_id=tree_id).first_or_404()
         # return dict(tree_id=x.tree_id, root=x.root, tree_label=x.tree_label,
         #             tree_title=x.tree_title, tree_type=x.tree_type,
         #             study_id=x.study_id, upload_date=x.upload_date,)
@@ -248,7 +248,7 @@ class Treefile(db.Model, Resource, SerializerMixin):
     @staticmethod
     def get(treefile_id: str):
         treefile_id = int(treefile_id)
-        x = Treefile.query.filter_by(treefile_id=treefile_id).first()
+        x = Treefile.query.filter_by(treefile_id=treefile_id).first_or_404()
         return x.to_dict()
 
 
@@ -277,7 +277,7 @@ class Submit(db.Model, Resource, SerializerMixin):
     @staticmethod
     def get(submit_id: str):
         submit_id = int(submit_id)
-        x = Submit.query.filter_by(submit_id=submit_id).first()
+        x = Submit.query.filter_by(submit_id=submit_id).first_or_404()
         return x.to_dict()
 
 
