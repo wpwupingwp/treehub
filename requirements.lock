@@ -39,6 +39,7 @@ flask==3.0.3
     # via bootstrap-flask
     # via flask-admin
     # via flask-babel
+    # via flask-cors
     # via flask-login
     # via flask-restful
     # via flask-session
@@ -49,9 +50,13 @@ flask-admin==1.6.1
     # via plant-tree-db
 flask-babel==4.0.0
     # via plant-tree-db
+flask-cors==4.0.1
+    # via flask-restful-swagger-3
 flask-login==0.6.3
     # via plant-tree-db
 flask-restful==0.3.10
+    # via flask-restful-swagger-3
+flask-restful-swagger-3==0.5.1
     # via plant-tree-db
 flask-session==0.6.0
     # via plant-tree-db

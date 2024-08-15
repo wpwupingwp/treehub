@@ -5,7 +5,7 @@ import datetime
 from sqlalchemy_serializer import SerializerMixin
 from flask import redirect
 from flask_admin.contrib.sqla import ModelView
-from flask_restful import Resource
+from flask_restful_swagger_3 import Resource
 import flask_login as fl
 
 from web import db, admin, api
@@ -226,14 +226,7 @@ class Trees(db.Model, Resource, SerializerMixin):
     def get(tree_id: str):
         tree_id = int(tree_id)
         x = Trees.query.filter_by(tree_id=tree_id).first_or_404()
-        print(x)
-        # return dict(tree_id=x.tree_id, root=x.root, tree_label=x.tree_label,
-        #             tree_title=x.tree_title, tree_type=x.tree_type,
-        #             study_id=x.study_id, upload_date=x.upload_date,)
-        try:
-            return x.to_dict()
-        except Exception as e:
-            raise ValueError
+        return x.to_dict()
 
 
 class Treefile(db.Model, Resource, SerializerMixin):
