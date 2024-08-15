@@ -5,7 +5,7 @@ from flask_admin import Admin
 from flask_bootstrap import Bootstrap4
 from flask_babel import Babel
 from flask_login import LoginManager
-from flask_restful_swagger_3 import Api
+from flask_restful import Api
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 

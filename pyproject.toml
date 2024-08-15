@@ -24,6 +24,7 @@ dependencies = [
     "waitress==3.0.0",
     "sqlalchemy-serializer>=1.4.22",
     "flask-restful-swagger-3>=0.5.1",
+    "flask-restful>=0.3.10",
 ]
 readme = "README.md"
 requires-python = ">= 3.10"

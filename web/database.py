@@ -5,7 +5,7 @@ import datetime
 from sqlalchemy_serializer import SerializerMixin
 from flask import redirect
 from flask_admin.contrib.sqla import ModelView
-from flask_restful_swagger_3 import Resource
+from flask_restful import Resource
 import flask_login as fl
 
 from web import db, admin, api
