@@ -224,6 +224,29 @@ class Trees(db.Model, Resource, SerializerMixin):
 
     @staticmethod
     def get(tree_id: str):
+        """
+        for swagger
+        ---
+        parameters:
+            - in: path
+              name: tree_id
+              type: integer
+              required: true
+        responses:
+            200:
+                description: a Tree record
+                schema:
+                    id: Trees
+                    properties:
+                        tree_id:
+                            type: integer
+                            description: tree id
+                            default: 0
+                        tree_title:
+                            type: string
+                            description: tree title
+                            default: ''
+        """
         tree_id = int(tree_id)
         x = Trees.query.filter_by(tree_id=tree_id).first_or_404()
         return x.to_dict()
@@ -295,8 +318,8 @@ class MyModelView(ModelView):
 for m in [User, Matrix, NcbiName, Nodes, Study, Trees, Treefile, Visit]:
     admin.add_view(MyModelView(m, db.session))
 
-api.add_resource(Trees, '/treehub/api/tree/<tree_id>')
-api.add_resource(Matrix, '/treehub/api/matrix/<matrix_id>')
-api.add_resource(Treefile, '/treehub/api/treefile/<treefile_id>')
-api.add_resource(Study, '/treehub/api/study/<study_id>')
-api.add_resource(Submit, '/treehub/api/submit/<submit_id>')
+api.add_resource(Trees, '/treehub/api/tree/get/<tree_id>')
+api.add_resource(Matrix, '/treehub/api/matrix/get/<matrix_id>')
+api.add_resource(Treefile, '/treehub/api/treefile/get/<treefile_id>')
+api.add_resource(Study, '/treehub/api/study/get/<study_id>')
+api.add_resource(Submit, '/treehub/api/submit/get/<submit_id>')

@@ -8,6 +8,7 @@ from flask_login import LoginManager
 from flask_restful import Api
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
+from flasgger import Swagger
 
 from pathlib import Path
 
@@ -23,6 +24,7 @@ def get_locale():
 
 
 api = Api(app,)
+swagger = Swagger(app)
 babel = Babel(app)
 babel.init_app(app, locale_selector=get_locale)
 bootstrap = Bootstrap4(app)

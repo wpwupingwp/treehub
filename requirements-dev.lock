@@ -12,6 +12,9 @@
 -e file:.
 aniso8601==9.0.1
     # via flask-restful
+attrs==24.2.0
+    # via jsonschema
+    # via referencing
 babel==2.15.0
     # via flask-babel
 biopython==1.84
@@ -34,11 +37,13 @@ dnspython==2.6.1
     # via email-validator
 email-validator==2.2.0
     # via plant-tree-db
+flasgger==0.9.7.1
+    # via plant-tree-db
 flask==3.0.3
     # via bootstrap-flask
+    # via flasgger
     # via flask-admin
     # via flask-babel
-    # via flask-cors
     # via flask-login
     # via flask-restful
     # via flask-session
@@ -49,14 +54,9 @@ flask-admin==1.6.1
     # via plant-tree-db
 flask-babel==4.0.0
     # via plant-tree-db
-flask-cors==4.0.1
-    # via flask-restful-swagger-3
 flask-login==0.6.3
     # via plant-tree-db
 flask-restful==0.3.10
-    # via flask-restful-swagger-3
-    # via plant-tree-db
-flask-restful-swagger-3==0.5.1
     # via plant-tree-db
 flask-session==0.6.0
     # via plant-tree-db
@@ -73,13 +73,21 @@ itsdangerous==2.2.0
 jinja2==3.1.4
     # via flask
     # via flask-babel
+jsonschema==4.23.0
+    # via flasgger
+jsonschema-specifications==2023.12.1
+    # via jsonschema
 markupsafe==2.1.5
     # via jinja2
     # via werkzeug
     # via wtforms
+mistune==3.0.2
+    # via flasgger
 numpy==2.0.1
     # via biopython
     # via plant-tree-db
+packaging==24.1
+    # via flasgger
 pillow==10.4.0
     # via plant-tree-db
 psycopg==3.2.1
@@ -92,12 +100,21 @@ pytz==2024.1
     # via flask-babel
     # via flask-restful
     # via sqlalchemy-serializer
+pyyaml==6.0.2
+    # via flasgger
+referencing==0.35.1
+    # via jsonschema
+    # via jsonschema-specifications
 requests==2.32.3
     # via plant-tree-db
+rpds-py==0.20.0
+    # via jsonschema
+    # via referencing
 setuptools==70.3.0
     # via dendropy
     # via sqlalchemy-serializer
 six==1.16.0
+    # via flasgger
     # via flask-restful
 sqlalchemy==2.0.29
     # via flask-sqlalchemy
