@@ -240,12 +240,39 @@ class Trees(db.Model, Resource, SerializerMixin):
                     properties:
                         tree_id:
                             type: integer
-                            description: tree id
-                            default: 0
+                            description: The ID of the tree
+                        legacy_id:
+                            type: string
+                            description: The legacy ID of the tree
+                        root:
+                            type: integer
+                            description: The root of the tree
+                        tree_label:
+                            type: string
+                            description: The label of the tree
                         tree_title:
                             type: string
-                            description: tree title
-                            default: ''
+                            description: The title of the tree
+                        tree_type:
+                            type: string
+                            description: The type of the tree
+                        tree_type_new:
+                            type: string
+                            description: The new type of the tree
+                        tree_kind:
+                            type: string
+                            description: The kind of the tree
+                        tree_quality:
+                            type: string
+                            description: The quality of the tree
+                        study_id:
+                            type: integer
+                            description: The ID of the study
+                        upload_date:
+                            type: string
+                            format: date
+                            description: The upload date of the tree
+
         """
         tree_id = int(tree_id)
         x = Trees.query.filter_by(tree_id=tree_id).first_or_404()
