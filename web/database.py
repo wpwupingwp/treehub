@@ -49,7 +49,7 @@ class Visit(db.Model):
         self.ip = ip
         self.url = url
         self.useragent = useragent
-        self.date = datetime.now()
+        self.date = datetime.datetime.now(datetime.UTC)
 
     def __str__(self):
         return (f'{self.date}:\t{self.user}\t{self.ip}'
