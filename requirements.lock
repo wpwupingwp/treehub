@@ -7,7 +7,6 @@
 #   all-features: false
 #   with-sources: false
 #   generate-hashes: false
-#   universal: false
 
 -e file:.
 aniso8601==9.0.1
@@ -31,6 +30,8 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via flask
+colorama==0.4.6
+    # via click
 dendropy==5.0.1
     # via plant-tree-db
 dnspython==2.6.1
@@ -64,6 +65,8 @@ flask-sqlalchemy==3.1.1
     # via plant-tree-db
 flask-wtf==1.2.1
     # via plant-tree-db
+greenlet==3.0.3
+    # via sqlalchemy
 idna==3.7
     # via email-validator
     # via requests
@@ -124,6 +127,8 @@ sqlalchemy-serializer==1.4.22
 typing-extensions==4.12.2
     # via psycopg
     # via sqlalchemy
+tzdata==2024.1
+    # via psycopg
 urllib3==2.2.2
     # via requests
 waitress==3.0.0

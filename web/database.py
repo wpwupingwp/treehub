@@ -93,6 +93,52 @@ class Matrix(db.Model, Resource, SerializerMixin):
 
     @staticmethod
     def get(matrix_id: str):
+        """
+        for swagger
+        ---
+        parameters:
+            - in: path
+              name: matrix_id
+              type: integer
+              required: true
+        responses:
+            200:
+                description: A single matrix item
+                schema:
+                    id: Matrix
+                    properties:
+                        matrix_id:
+                            type: integer
+                            description: The ID of the matrix
+                        title:
+                            type: string
+                            description: The title of the matrix
+                        nchar:
+                            type: integer
+                            description: The number of characters in the matrix
+                        ntax:
+                            type: integer
+                            description: The number of taxa in the matrix
+                        analysisstep_id:
+                            type: integer
+                            description: The ID of the analysis step associated with the matrix
+                        legacy_id:
+                            type: string
+                            description: The legacy ID of the matrix
+                        description:
+                            type: string
+                            description: The description of the matrix
+                        input:
+                            type: boolean
+                            description: Whether the matrix is an input to an analysis step
+                        fasta:
+                            type: string
+                            description: The FASTA format of the matrix
+                        upload_date:
+                            type: string
+                            format: date
+                            description: The upload date of the matrix
+        """
         matrix_id = int(matrix_id)
         x = Matrix.query.filter_by(matrix_id=matrix_id).first_or_404()
         return x.to_dict()
@@ -136,6 +182,82 @@ class Study(db.Model, Resource, SerializerMixin):
 
     @staticmethod
     def get(study_id: str):
+        """
+        for swagger
+        ---
+        parameters:
+            - in: path
+              name: study_id
+              type: integer
+              required: true
+        responses:
+            200:
+                description: A single study item
+                schema:
+                    id: Study
+                    properties:
+                        study_id:
+                            type: integer
+                            description: The ID of the study
+                        pub_type:
+                            type: string
+                            description: The publication type of the study
+                        author:
+                            type: string
+                            description: The author of the study
+                        year:
+                            type: integer
+                            description: The year of publication of the study
+                        title:
+                            type: string
+                            description: The title of the study
+                        journal:
+                            type: string
+                            description: The journal in which the study was published
+                        s_author:
+                            type: string
+                            description: The second author of the study
+                        s_title:
+                            type: string
+                            description: The second title of the study
+                        place_pub:
+                            type: string
+                            description: The place of publication of the study
+                        publisher:
+                            type: string
+                            description: The publisher of the study
+                        volume:
+                            type: string
+                            description: The volume of the publication containing the study
+                        number:
+                            type: string
+                            description: The number of the issue containing the study
+                        pages:
+                            type: string
+                            description: The page numbers of the study in the publication
+                        isbn:
+                            type: string
+                            description: The ISBN of the publication containing the study
+                        keywords:
+                            type: string
+                            description: The keywords associated with the study
+                        abstract:
+                            type: string
+                            description: The abstract of the study
+                        legacy_id:
+                            type: string
+                            description: The legacy ID of the study
+                        url:
+                            type: string
+                            description: The URL of the study
+                        doi:
+                            type: string
+                            description: The DOI of the study
+                        upload_date:
+                            type: string
+                            format: date
+                            description: The upload date of the study
+        """
         study_id = int(study_id)
         x = Study.query.filter_by(study_id=study_id).first_or_404()
         return x.to_dict()
@@ -295,6 +417,41 @@ class Treefile(db.Model, Resource, SerializerMixin):
 
     @staticmethod
     def get(treefile_id: str):
+        """
+        for swagger
+        ---
+        parameters:
+            - in: path
+              name: treefile_id
+              type: integer
+              required: true
+              description: ID of the treefile
+        responses:
+            200:
+                description: A single treefile item
+                schema:
+                    id: Treefile
+            properties:
+                treefile_id:
+                    type: integer
+                    description: The ID of the treefile
+                tree_id:
+                    type: integer
+                    description: The ID of the tree associated with the treefile
+                nexus:
+                    type: string
+                    description: The nexus format of the treefile
+                newick:
+                    type: string
+                    description: The newick format of the treefile
+                phyloxml:
+                    type: string
+                    description: The phyloxml format of the treefile
+                upload_date:
+                    type: string
+                    format: date
+                    description: The upload date of the treefile
+        """
         treefile_id = int(treefile_id)
         x = Treefile.query.filter_by(treefile_id=treefile_id).first_or_404()
         return x.to_dict()
@@ -324,6 +481,59 @@ class Submit(db.Model, Resource, SerializerMixin):
 
     @staticmethod
     def get(submit_id: str):
+        """
+        for swagger
+        ---
+        parameters:
+            - in: path
+              name: submit_id
+              type: integer
+              required: true
+        responses:
+            200:
+                description: A single submit item
+                schema:
+                    id: Submit
+                    properties:
+                        submit_id:
+                            type: integer
+                            description: The ID of the submit
+                        email:
+                            type: string
+                            description: The email of the submitter
+                        ip:
+                            type: string
+                            description: The IP address of the submitter
+                        date:
+                            type: string
+                            format: date-time
+                            description: The date and time of the submission
+                        user_id:
+                            type: integer
+                            description: The ID of the user who submitted the data
+                        tree_id:
+                            type: integer
+                            description: The ID of the tree associated with the submission
+                        treefile_id:
+                            type: integer
+                            description: The ID of the treefile associated with the submission
+                        study_id:
+                            type: integer
+                            description: The ID of the study associated with the submission
+                        matrix_id:
+                            type: integer
+                            description: The ID of the matrix associated with the submission
+                        cover_img:
+                            type: string
+                            format: binary
+                            description: The cover image associated with the submission
+                        cover_img_name:
+                            type: string
+                            description: The name of the cover image associated with the submission
+                        news:
+                            type: boolean
+                            description: Whether or not the submission is news
+        """
         submit_id = int(submit_id)
         x = Submit.query.filter_by(submit_id=submit_id).first_or_404()
         return x.to_dict()
