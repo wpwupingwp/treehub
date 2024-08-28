@@ -1,14 +1,18 @@
 #!/usr/bin/python3
 
 import datetime
+from functools import lru_cache
+from urllib.parse import unquote_plus as url_unquote_plus
 
-from sqlalchemy_serializer import SerializerMixin
-from flask import redirect
+import flask_login as fl
+from flask import jsonify, redirect, request
 from flask_admin.contrib.sqla import ModelView
 from flask_restful import Resource
-import flask_login as fl
+from sqlalchemy import or_, select
+from sqlalchemy_serializer import SerializerMixin
 
-from web import db, admin, api
+from web import admin, db
+from web import api as Api
 
 
 class User(db.Model, fl.UserMixin):
@@ -349,60 +353,122 @@ class Trees(db.Model, Resource, SerializerMixin):
         """
         for swagger
         ---
-        parameters:
-            - in: path
-              name: tree_id
-              type: integer
-              required: true
-        responses:
-            200:
-                description: a Tree record
-                schema:
-                    id: Trees
-                    properties:
-                        tree_id:
-                            type: integer
-                            description: The ID of the tree
-                        legacy_id:
-                            type: string
-                            description: The legacy ID of the tree
-                        root:
-                            type: integer
-                            description: The root of the tree
-                        tree_label:
-                            type: string
-                            description: The label of the tree
-                        tree_title:
-                            type: string
-                            description: The title of the tree
-                        tree_type:
-                            type: string
-                            description: The type of the tree
-                        tree_type_new:
-                            type: string
-                            description: The new type of the tree
-                        tree_kind:
-                            type: string
-                            description: The kind of the tree
-                        tree_quality:
-                            type: string
-                            description: The quality of the tree
-                        study_id:
-                            type: integer
-                            description: The ID of the study
-                        upload_date:
-                            type: string
-                            format: date
-                            description: The upload date of the tree
-
+        paths:
+            /treehub/api/tree/get/{tree_id}:
+            get:
+                summary: get
+                parameters:
+                    - in: path
+                      name: tree_id
+                      type: integer
+                      required: true
+                responses:
+                    200:
+                        description: a Tree record
+                        schema:
+                            id: Trees
+                            properties:
+                                tree_id:
+                                    type: integer
+                                    description: The ID of the tree
+                                legacy_id:
+                                    type: string
+                                    description: The legacy ID of the tree
+                                root:
+                                    type: integer
+                                    description: The root of the tree
+                                tree_label:
+                                    type: string
+                                    description: The label of the tree
+                                tree_title:
+                                    type: string
+                                    description: The title of the tree
+                                tree_type:
+                                    type: string
+                                    description: The type of the tree
+                                tree_type_new:
+                                    type: string
+                                    description: The new type of the tree
+                                tree_kind:
+                                    type: string
+                                    description: The kind of the tree
+                                tree_quality:
+                                    type: string
+                                    description: The quality of the tree
+                                study_id:
+                                    type: integer
+                                    description: The ID of the study
+                                upload_date:
+                                    type: string
+                                    format: date
+                                    description: The upload date of the tree
         """
         tree_id = int(tree_id)
         x = Trees.query.filter_by(tree_id=tree_id).first_or_404()
         return x.to_dict()
 
     @staticmethod
-    def query2():
-        pass
+    def query_api(taxon: str):
+        """
+        paths:
+            /treehub/api/tree/query/{tree_id}:
+            get:
+                summary: get
+                parameters:
+                    - name: taxon
+                      in: path
+                      type: string
+                      required: true
+                      default: Poa
+                responses:
+                    200:
+                        description: A list of tree records
+                        schema:
+                        type: array
+                        items:
+                            - type: string
+                            - type: string
+                            - type: string
+                            - type: string
+                            - type: string
+                            - type: string
+                            - type: string
+                            - type: string
+                            - type: string
+                        examples:
+                            - ['Tree title', 'Year', 'Title', 'Journal', 'View', 'Edit',
+                                 'DOI', 'Matrix']
+        """
+        host = request.host_url
+        results_list = [
+            ['Tree title', 'Year', 'Title', 'Journal', 'View', 'Edit',
+             'DOI', 'Matrix']]
+        taxon_str = url_unquote_plus(taxon)
+        if len(taxon_str) == 0:
+            return jsonify(results_list)
+        # species
+        if ' ' in taxon_str:
+            condition = Trees.tree_id.in_(select(Nodes.tree_id).where(
+                Nodes.node_label.like(taxon_str)))
+        else:
+            condition = query_taxonomy(taxon_str)
+        results = db.session.query(Study, Trees, Submit, Matrix).with_entities(
+            Study.title, Study.year, Study.journal, Study.doi,
+            Trees.tree_id, Trees.tree_title, Matrix.upload_date).join(
+            Study, Study.study_id == Trees.study_id).join(
+            Submit, Submit.tree_id == Trees.tree_id, isouter=True).join(
+            Matrix, Matrix.matrix_id == Submit.matrix_id, isouter=True).filter(
+            condition).order_by(Study.year.desc()).all()
+        for r in results:
+            record = [Trees.tid(r.tree_id), r.tree_title,
+                      r.year, r.title, r.journal,
+                      f'{host}treehub/tree/{r.tree_id}',
+                      f'{host}treehub/tree/edit/{r.tree_id}',
+                      f'https://doi.org/{r.doi}' if r.doi is not None else '',
+                      (f'{host}treehub/matrix/from_tree/{r.tree_id}'
+                       if r.upload_date is not None else '')]
+            results_list.append(record)
+        return jsonify(results_list)
 
 
 class Treefile(db.Model, Resource, SerializerMixin):
@@ -555,12 +621,33 @@ class MyModelView(ModelView):
         return redirect('/')
 
 
+@lru_cache(maxsize=1000)
+def query_taxonomy(taxonomy: str):
+    # speed up
+    species_tax_id = NcbiName.query.filter(
+        NcbiName.name_txt==taxonomy).with_entities(NcbiName.tax_id).all()
+    species_tax_id = [i[0] for i in species_tax_id]
+    combine = NcbiName.query.filter(
+        or_(NcbiName.genus_id.in_(species_tax_id),
+            NcbiName.family_id.in_(species_tax_id),
+            NcbiName.order_id.in_(species_tax_id))).with_entities(
+        NcbiName.tax_id).all()
+    combine = [i[0] for i in combine]
+    tree_id = Nodes.query.filter(Nodes.designated_tax_id.in_(
+        combine)).with_entities(Nodes.tree_id).all()
+    tree_id = [i[0] for i in tree_id]
+    node_condition = Trees.tree_id.in_(tree_id)
+    return node_condition
+
+
 # for m in [User, Goods, Bid, Message]:
 for m in [User, Matrix, NcbiName, Nodes, Study, Trees, Treefile, Visit]:
     admin.add_view(MyModelView(m, db.session))
 
-api.add_resource(Trees, '/treehub/api/tree/get/<tree_id>')
-api.add_resource(Matrix, '/treehub/api/matrix/get/<matrix_id>')
-api.add_resource(Treefile, '/treehub/api/treefile/get/<treefile_id>')
-api.add_resource(Study, '/treehub/api/study/get/<study_id>')
-api.add_resource(Submit, '/treehub/api/submit/get/<submit_id>')
+
+Api.add_resource(Trees, '/treehub/api/tree/get/<tree_id>',
+                 '/treehub/api/tree/query_api/<taxon>')
+Api.add_resource(Matrix, '/treehub/api/matrix/get/<matrix_id>')
+Api.add_resource(Treefile, '/treehub/api/treefile/get/<treefile_id>')
+Api.add_resource(Study, '/treehub/api/study/get/<study_id>')
+Api.add_resource(Submit, '/treehub/api/submit/get/<submit_id>')

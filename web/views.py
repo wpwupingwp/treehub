@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 from datetime import date
-from functools import lru_cache
 from io import StringIO
 from pathlib import Path
 from uuid import uuid4
@@ -22,7 +21,7 @@ import flask_login as fl
 
 from web import app, babel, lm, root
 from web.database import Trees, Treefile, Study, Submit, Matrix, NcbiName
-from web.database import Nodes, Visit, db
+from web.database import Nodes, Visit, db, query_taxonomy
 from web.auth import auth
 from web.form import QueryForm, SubmitForm, TreeMatrixForm
 from web.form import SubscribeForm, SortQueryForm
@@ -158,24 +157,6 @@ def tree_query():
         return f.redirect('/treehub/tree/list')
     return f.render_template('tree_query.html', form=qf)
 
-
-@lru_cache(maxsize=1000)
-def query_taxonomy(taxonomy: str):
-    # speed up
-    species_tax_id = NcbiName.query.filter(
-        NcbiName.name_txt==taxonomy).with_entities(NcbiName.tax_id).all()
-    species_tax_id = [i[0] for i in species_tax_id]
-    combine = NcbiName.query.filter(
-        or_(NcbiName.genus_id.in_(species_tax_id),
-            NcbiName.family_id.in_(species_tax_id),
-            NcbiName.order_id.in_(species_tax_id))).with_entities(
-        NcbiName.tax_id).all()
-    combine = [i[0] for i in combine]
-    tree_id = Nodes.query.filter(Nodes.designated_tax_id.in_(
-        combine)).with_entities(Nodes.tree_id).all()
-    tree_id = [i[0] for i in tree_id]
-    node_condition = Trees.tree_id.in_(tree_id)
-    return node_condition
 
 
 @app.route('/treehub/tree/list', methods=('POST', 'GET'))
