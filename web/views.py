@@ -12,7 +12,6 @@ from flask import flash
 from flask_babel import gettext
 from sqlalchemy import select, or_, and_
 from werkzeug.utils import secure_filename
-from urllib.parse import quote as url_quote
 # from werkzeug.urls import url_unquote_plus
 import dendropy
 from Bio import Phylo

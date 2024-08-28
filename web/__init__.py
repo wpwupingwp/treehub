@@ -23,8 +23,20 @@ def get_locale():
         return request.accept_languages.best_match(['zh', 'en'])
 
 
+swagger_config = {
+    'headers': [],
+    'specs':
+        [
+            {'endpoint': 'apispec_1',
+             'route': '/treehub/apispec_1.json'}],
+    'static_url_path': '/treehub/flasgger_static',
+    # 'static_folder': 'static',
+    'swagger_ui': True,
+    'specs_route': '/treehub/apidocs/',
+}
 api = Api(app,)
-swagger = Swagger(app)
+swagger = Swagger(app, config=swagger_config)
+# swagger = Swagger(app)
 babel = Babel(app)
 babel.init_app(app, locale_selector=get_locale)
 bootstrap = Bootstrap4(app)
