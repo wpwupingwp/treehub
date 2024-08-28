@@ -400,6 +400,10 @@ class Trees(db.Model, Resource, SerializerMixin):
         x = Trees.query.filter_by(tree_id=tree_id).first_or_404()
         return x.to_dict()
 
+    @staticmethod
+    def query2():
+        pass
+
 
 class Treefile(db.Model, Resource, SerializerMixin):
     __tablename__ = 'treefile'

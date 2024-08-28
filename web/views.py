@@ -159,39 +159,6 @@ def tree_query():
     return f.render_template('tree_query.html', form=qf)
 
 
-@app.route('/treehub/tree/query_api/<taxon>')
-def tree_query_api(taxon: str):
-    host = request.host_url
-    results_list = [['Tree title', 'Year', 'Title', 'Journal', 'View', 'Edit',
-                     'DOI', 'Matrix']]
-    taxon_str = url_unquote_plus(taxon)
-    if len(taxon_str) == 0:
-        return f.jsonify(results_list)
-    # species
-    if ' ' in taxon_str:
-        condition = Trees.tree_id.in_(select(Nodes.tree_id).where(
-            Nodes.node_label.like(taxon_str)))
-    else:
-        condition = query_taxonomy(taxon_str)
-    results = db.session.query(Study, Trees, Submit, Matrix).with_entities(
-        Study.title, Study.year, Study.journal, Study.doi,
-        Trees.tree_id, Trees.tree_title, Matrix.upload_date).join(
-        Study, Study.study_id == Trees.study_id).join(
-        Submit, Submit.tree_id==Trees.tree_id, isouter=True).join(
-        Matrix, Matrix.matrix_id==Submit.matrix_id, isouter=True).filter(
-        condition).order_by(Study.year.desc()).all()
-    for r in results:
-        record = [Trees.tid(r.tree_id), r.tree_title,
-                  r.year, r.title, r.journal,
-                  f'{host}tree/{r.tree_id}',
-                  f'{host}tree/edit/{r.tree_id}',
-                  f'https://doi.org/{r.doi}' if r.doi is not None else '',
-                  (f'{host}matrix/from_tree/{r.tree_id}'
-                   if r.upload_date is not None else '')]
-        results_list.append(record)
-    return f.jsonify(results_list)
-
-
 @lru_cache(maxsize=1000)
 def query_taxonomy(taxonomy: str):
     # speed up
@@ -343,10 +310,10 @@ def tree_auspice_file(tid):
 @app.route('/treehub/tree/<tid>', methods=('POST', 'GET'))
 def view_tree(tid):
     tree_id = Trees.tid2serial(tid)
-    tree = Trees.query.get(tree_id)
+    tree = Trees.get(tree_id)
     if tree is None:
         return f.abort(404)
-    title = tree.tree_title
+    title = tree['tree_title']
     tree_auspice_file(tid)
     return f.render_template('view_tree.html', title=title, tree_id=tree_id,
                              tid_func=tid_func)
