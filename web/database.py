@@ -148,6 +148,7 @@ class Trees(db.Model, SerializerMixin):
     upload_date = db.Column(db.Date)
     serialize_rules = ('-file.tree',)
     file = db.relationship('Treefile', back_populates='tree')
+
     def __str__(self):
         return f'{self.tree_id} {self.root} {self.tree_title}'
 
@@ -208,9 +209,9 @@ class Trees(db.Model, SerializerMixin):
         # bit start from 0
         for bit, n in enumerate(reversed(letters)):
             if n.isdigit():
-                big += int(n) * base**bit
+                big += int(n) * base ** bit
             else:
-                big += (ord(n) - ord('A') + 10) * base**bit
+                big += (ord(n) - ord('A') + 10) * base ** bit
         serial_id = big * 100_000 + int(numbers)
         return serial_id
 
@@ -259,7 +260,7 @@ class MyModelView(ModelView):
 
     def is_accessible(self):
         return (fl.current_user.is_authenticated and
-                fl.current_user.username=='admin')
+                fl.current_user.username == 'admin')
 
     def is_accessible_callback(self):
         return redirect('/')
@@ -269,7 +270,7 @@ class MyModelView(ModelView):
 def query_taxonomy(taxonomy: str):
     # speed up
     species_tax_id = NcbiName.query.filter(
-        NcbiName.name_txt==taxonomy).with_entities(NcbiName.tax_id).all()
+        NcbiName.name_txt == taxonomy).with_entities(NcbiName.tax_id).all()
     species_tax_id = [i[0] for i in species_tax_id]
     combine = NcbiName.query.filter(
         or_(NcbiName.genus_id.in_(species_tax_id),
@@ -282,11 +283,6 @@ def query_taxonomy(taxonomy: str):
     tree_id = [i[0] for i in tree_id]
     node_condition = Trees.tree_id.in_(tree_id)
     return node_condition
-
-
-# for m in [User, Goods, Bid, Message]:
-for m in [User, Matrix, NcbiName, Nodes, Study, Trees, Treefile, Visit]:
-    admin.add_view(MyModelView(m, db.session))
 
 
 class MatrixGet(Resource):
@@ -621,26 +617,33 @@ class SubmitGet(Resource):
                             description: The date and time of the submission
                         user_id:
                             type: integer
-                            description: The ID of the user who submitted the data
+                            description: The ID of the user who submitted the
+                                data
                         tree_id:
                             type: integer
-                            description: The ID of the tree associated with the submission
+                            description: The ID of the tree associated with the
+                                submission
                         treefile_id:
                             type: integer
-                            description: The ID of the treefile associated with the submission
+                            description: The ID of the treefile associated with
+                                the submission
                         study_id:
                             type: integer
-                            description: The ID of the study associated with the submission
+                            description: The ID of the study associated with the
+                                submission
                         matrix_id:
                             type: integer
-                            description: The ID of the matrix associated with the submission
+                            description: The ID of the matrix associated with
+                                the submission
                         cover_img:
                             type: string
                             format: binary
-                            description: The cover image associated with the submission
+                            description: The cover image associated with the
+                                submission
                         cover_img_name:
                             type: string
-                            description: The name of the cover image associated with the submission
+                            description: The name of the cover image associated
+                                with the submission
                         news:
                             type: boolean
                             description: Whether or not the submission is news
@@ -656,3 +659,10 @@ Api.add_resource(MatrixGet, '/treehub/api/matrix/get/<matrix_id>')
 Api.add_resource(TreefileGet, '/treehub/api/treefile/get/<treefile_id>')
 Api.add_resource(StudyGet, '/treehub/api/study/get/<study_id>')
 Api.add_resource(SubmitGet, '/treehub/api/submit/get/<submit_id>')
+
+# for m in [User, Goods, Bid, Message]:
+for m in [User, Matrix, NcbiName, Nodes, Study, Trees, Treefile, Visit]:
+    admin.add_view(MyModelView(m, db.session))
+
+
+
