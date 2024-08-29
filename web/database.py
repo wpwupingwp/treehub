@@ -559,26 +559,27 @@ class TreefileGet(Resource):
                 description: A single treefile item
                 schema:
                     id: Treefile
-            properties:
-                treefile_id:
-                    type: integer
-                    description: The ID of the treefile
-                tree_id:
-                    type: integer
-                    description: The ID of the tree associated with the treefile
-                nexus:
-                    type: string
-                    description: The nexus format of the treefile
-                newick:
-                    type: string
-                    description: The newick format of the treefile
-                phyloxml:
-                    type: string
-                    description: The phyloxml format of the treefile
-                upload_date:
-                    type: string
-                    format: date
-                    description: The upload date of the treefile
+                    properties:
+                        treefile_id:
+                            type: integer
+                            description: The ID of the treefile
+                        tree_id:
+                            type: integer
+                            description: The ID of the tree associated with the
+                                treefile
+                        nexus:
+                            type: string
+                            description: The nexus format of the treefile
+                        newick:
+                            type: string
+                            description: The newick format of the treefile
+                        phyloxml:
+                            type: string
+                            description: The phyloxml format of the treefile
+                        upload_date:
+                            type: string
+                            format: date
+                            description: The upload date of the treefile
         """
         treefile_id = int(treefile_id)
         x = Treefile.query.filter_by(treefile_id=treefile_id).first_or_404()
