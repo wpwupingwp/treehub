@@ -289,7 +289,7 @@ class MatrixGet(Resource):
     @staticmethod
     def get(matrix_id: str):
         """
-        for swagger
+        get matrix record
         ---
         parameters:
             - in: path
@@ -343,7 +343,7 @@ class StudyGet(Resource):
     @staticmethod
     def get(study_id: str):
         """
-        for swagger
+        get study record
         ---
         parameters:
             - in: path
@@ -426,7 +426,7 @@ class StudyGet(Resource):
 class TreesGet(Resource):
     def get(self, tree_id: str):
         """
-        for swagger
+        get tree record
         ---
         parameters:
             - in: path
@@ -546,7 +546,7 @@ class TreefileGet(Resource):
     @staticmethod
     def get(treefile_id: str):
         """
-        for swagger
+        get treefile record
         ---
         parameters:
             - in: path
@@ -590,7 +590,7 @@ class SubmitGet(Resource):
     @staticmethod
     def get(submit_id: str):
         """
-        for swagger
+        get submit record
         ---
         parameters:
             - in: path
