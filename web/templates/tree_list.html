@@ -2,9 +2,11 @@
 {% block content %}
 {% from 'bootstrap4/form.html' import render_form, render_field %}
 <style>
-    .myField {display: inline-block;}
+    .myField {
+        display: inline-block;
+    }
 </style>
-<div class="myField float-right"> {{ render_form(form, form_type='inline')}} </div>
+<div class="myField float-right"> {{ render_form(form, form_type='inline')}}</div>
 <table class="table table-hover table-responsive">
     <thead class="thead-dark">
     <tr>
@@ -12,7 +14,7 @@
         <th>Taxonomy</th>
         <th>{{_('Tree title')}}</th>
         <th>{{_('Year')}}</th>
-        <th>{{_('Title')}}</th>
+        <th>{{_('Article')}}</th>
         <th>{{_('Journal')}}</th>
         <th class="text-nowrap">{{_('Action')}}</th>
     </tr>
@@ -21,7 +23,9 @@
     {% for tree in pagination.items %}
     <tr>
         <td>{{tid_func(tree.tree_id)}}</td>
-        <td>{{tree.name_txt}}</td>
+        <td>
+            <a href="https://www.gbif.org/species/search?q={{tree.name_txt}}">
+                {{tree.name_txt}}</a></td>
         <td class="font-italic">{{tree.tree_title}}</td>
         <td>{{tree.year}}</td>
         <td>{{tree.title}}</td>
