@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from datetime import date
+from functools import lru_cache
 from io import StringIO
 from pathlib import Path
 from uuid import uuid4
@@ -25,6 +26,7 @@ from web.auth import auth
 from web.form import QueryForm, SubmitForm, TreeMatrixForm
 from web.form import SubscribeForm, SortQueryForm
 from web.utils import nwk2auspice, compress_photo
+
 # from web.form import LoginForm, UserForm
 
 tid_func = Trees.tid
@@ -68,7 +70,7 @@ def login():
 
 @app.route('/treehub/favicon.ico')
 def favicon():
-    return f.send_from_directory(root/'static', 'favicon.ico',
+    return f.send_from_directory(root / 'static', 'favicon.ico',
                                  mimetype='image/vnd.microsoft.icon')
 
 
@@ -130,19 +132,28 @@ def tree_list(page=1):
     query = session['dict']
     # x = Trees.query.filter(trees)
     trees = Trees.tree_id.in_(select(Trees.tree_id).distinct(
-        Trees.study_id ).group_by(Trees.study_id, Trees.tree_id))
-    results = db.session.query(Study, Trees, Submit, Matrix).with_entities(
+        Trees.study_id).group_by(Trees.study_id, Trees.tree_id))
+    results = db.session.query(Study, Trees, Submit, Matrix, NcbiName).with_entities(
         Study.title, Study.year, Study.journal, Study.doi,
-        Trees.tree_id, Trees.tree_title, Matrix.upload_date).join(
+        Trees.tree_id, NcbiName.name_txt, Trees.tree_title, Matrix.upload_date).join(
         Study, Study.study_id == Trees.study_id).join(
         Submit, Submit.tree_id == Trees.tree_id, isouter=True).join(
-        Matrix, Matrix.matrix_id == Submit.matrix_id, isouter=True).filter(
+        Matrix, Matrix.matrix_id == Submit.matrix_id, isouter=True).join(
+        NcbiName, NcbiName.tax_id == Trees.root).filter(
         trees).order_by(order_by)
     pagination = results.paginate(page=page, per_page=20)
     return f.render_template(f'tree_list.html', pagination=pagination,
                              form=sf,
                              tid_func=tid_func)
 
+
+@lru_cache()
+def root_id_to_name(root_id: int) -> str:
+    record = NcbiName.get(root_id).first_or_none()
+    if record is not None:
+        return record.name_txt
+    else:
+        return 'Unknown'
 
 
 @app.route('/treehub/tree/query', methods=('POST', 'GET'))
@@ -155,7 +166,6 @@ def tree_query():
         session['dict'] = data
         return f.redirect('/treehub/tree/list')
     return f.render_template('tree_query.html', form=qf)
-
 
 
 @app.route('/treehub/tree/list', methods=('POST', 'GET'))
@@ -220,8 +230,8 @@ def tree_result(page=1):
         Study.title, Study.year, Study.journal, Study.doi,
         Trees.tree_id, Trees.tree_title, Matrix.upload_date).join(
         Study, Study.study_id == Trees.study_id).join(
-        Submit, Submit.tree_id==Trees.tree_id, isouter=True).join(
-        Matrix, Matrix.matrix_id==Submit.matrix_id, isouter=True).filter(
+        Submit, Submit.tree_id == Trees.tree_id, isouter=True).join(
+        Matrix, Matrix.matrix_id == Submit.matrix_id, isouter=True).filter(
         trees).order_by(order_by)
     pagination = results.paginate(page=page, per_page=20)
     return f.render_template(f'tree_list.html', pagination=pagination, form=sf,
@@ -325,7 +335,7 @@ def get_nodes(raw_nodes: list) -> dict:
             species = x.group(1) + ' ' + x.group(3)
             new_names[i] = species
     new_found = NcbiName.query.filter(and_(
-        NcbiName.name_class=='scientific name',
+        NcbiName.name_class == 'scientific name',
         NcbiName.name_txt.in_(new_names.values()))).all()
     new_found_dict = {k.name_txt: k.tax_id for k in new_found}
     for j in new_names:
@@ -350,13 +360,13 @@ def newick_to_phyloxml(newick: str) -> str:
 @app.route('/treehub/matrix/from_tree/<tid>')
 def get_matrix_from_treeid(tid):
     tree_id = Trees.tid2serial(tid)
-    submit = Submit.query.filter(Submit.tree_id==tree_id).first_or_404()
+    submit = Submit.query.filter(Submit.tree_id == tree_id).first_or_404()
     matrix_id = submit.matrix_id
-    matrix = Matrix.query.filter(Matrix.matrix_id==matrix_id).first_or_404()
+    matrix = Matrix.query.filter(Matrix.matrix_id == matrix_id).first_or_404()
     if matrix.fasta is None:
         f.abort(404)
     else:
-        tmp_folder= app.config.get('TMP_FOLDER')
+        tmp_folder = app.config.get('TMP_FOLDER')
         fasta_file = tmp_folder / f'{matrix_id}.fasta'
         with open(fasta_file, 'w') as _:
             _.write(matrix.fasta)
@@ -450,7 +460,8 @@ def handle_tree_info(tree_form, final=False) -> bool:
             if not_found > 0:
                 flash(gettext('%(not_found)s of %(total)s nodes have '
                               'invalid name.',
-                              not_found=not_found, total=len(raw_nodes)), 'error')
+                              not_found=not_found, total=len(raw_nodes)),
+                      'error')
                 flash(gettext('Node name in tree file should be '
                               '"scientific name with other id" format '
                               '(eg. Oryza sativa id9999'))
@@ -533,9 +544,9 @@ def submit_data(n):
                 return f.redirect(f'/treehub/submit/{session["tree_n"]}')
             flash(gettext('Submit No.%(n)s trees ok.', n=n))
             flash(gettext('Submit finished. Your study ID is %(study_id)s',
-                            study_id=session['study']))
+                          study_id=session['study']))
             flash(gettext('Your TreeID are %(tree_id_list)s',
-                            tree_id_list=', '.join(session['tree_id_list'])))
+                          tree_id_list=', '.join(session['tree_id_list'])))
             return f.redirect(f'/treehub/submit/list')
     return f.render_template('submit_2.html', form=tf)
 
@@ -555,10 +566,10 @@ def remove_submit(submit_id):
         return f.redirect('/treehub/submit/list')
     submit_id_list = [submit.submit_id]
     study = Study.query.get(submit.study_id)
-    other_submits = Submit.query.filter(Submit.study_id==study.study_id).all()
+    other_submits = Submit.query.filter(Submit.study_id == study.study_id).all()
     for i in other_submits:
         submit_id_list.append(i.submit_id)
-    tree = Trees.query.filter(Trees.study_id==study.study_id).all()
+    tree = Trees.query.filter(Trees.study_id == study.study_id).all()
     tree_id_list = [i.tree_id for i in tree]
     treefile = Treefile.query.filter(Treefile.tree_id.in_(tree_id_list))
     matrix_id_list = [i.matrix_id for i in other_submits]
@@ -626,9 +637,9 @@ def index():
         Submit.date, Submit.cover_img, Submit.cover_img_name,
         Study.upload_date, Study.title, Study.abstract, Study.doi,
         Trees.tree_title, Trees.tree_id).join(
-        Submit, Submit.study_id==Study.study_id).join(
-        Trees, Submit.tree_id==Trees.tree_id).filter(
-        Submit.news==True).order_by(Submit.date.desc()).limit(3)
+        Submit, Submit.study_id == Study.study_id).join(
+        Trees, Submit.tree_id == Trees.tree_id).filter(
+        Submit.news == True).order_by(Submit.date.desc()).limit(3)
     tmp_imgs = []
     tmp_folder = app.config.get('TMP_FOLDER')
     for r in results:

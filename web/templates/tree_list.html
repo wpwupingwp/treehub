@@ -9,6 +9,7 @@
     <thead class="thead-dark">
     <tr>
         <th>TreeID</th>
+        <th>Taxonomy</th>
         <th>{{_('Tree title')}}</th>
         <th>{{_('Year')}}</th>
         <th>{{_('Title')}}</th>
@@ -20,6 +21,7 @@
     {% for tree in pagination.items %}
     <tr>
         <td>{{tid_func(tree.tree_id)}}</td>
+        <td>{{tree.name_txt}}</td>
         <td class="font-italic">{{tree.tree_title}}</td>
         <td>{{tree.year}}</td>
         <td>{{tree.title}}</td>
