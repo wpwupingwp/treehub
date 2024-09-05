@@ -25,7 +25,8 @@ def main():
         tree_node_list = Path(argv[1])
         folder = Path(argv[2])
     except IndexError:
-        print('Usage: python3 export_tree.py tree_node.list out_folder')
+        print('Usage: python3 export_tree_from_treebasedmp.py tree_node.list '
+              'out_folder')
         raise SystemExit(-1)
     if not folder.exists():
         folder.mkdir()

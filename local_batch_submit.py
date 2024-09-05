@@ -7,8 +7,10 @@ from time import sleep
 import requests
 
 # should clean bad submit before
-URL1 = 'http://localhost:2022/planttree/submit'
-URL2 = 'http://localhost:2022/planttree/submit/' # +n
+URL1 = 'http://localhost:2022/treehub/submit'
+# +n
+URL2 = 'http://localhost:2022/treehub/submit/'
+# result of tree cralwer
 MERGE_JSON = Path(r'R:\submit\merge.json')
 TREE_FOLDER = Path(r'R:\submit\trees')
 
@@ -19,6 +21,7 @@ def print_err(text):
     if err:
         print(err)
     return
+
 
 def prepare_form(old, csrf_token, with_tree=False) -> (dict, dict):
     new = dict(old)
