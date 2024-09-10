@@ -11,8 +11,9 @@ URL1 = 'http://localhost:2022/treehub/submit'
 # +n
 URL2 = 'http://localhost:2022/treehub/submit/'
 # result of tree cralwer
-MERGE_JSON = Path(r'R:\submit\merge.json')
-TREE_FOLDER = Path(r'R:\submit\trees')
+MERGE_JSON = Path(r'R:\out\merge.json')
+# TREE_FOLDER = Path(r'R:\submit\trees')
+TREE_FOLDER = Path(r'R:\out')
 
 
 def print_err(text):
