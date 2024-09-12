@@ -131,16 +131,20 @@ def tree_list(page=1):
         order_by = field.asc()
     query = session['dict']
     # x = Trees.query.filter(trees)
-    trees = Trees.tree_id.in_(select(Trees.tree_id).distinct(
-        Trees.study_id).group_by(Trees.study_id, Trees.tree_id))
-    results = db.session.query(Study, Trees, Submit, Matrix, NcbiName).with_entities(
+    # trees = Trees.tree_id.in_(select(Trees.tree_id).distinct(
+    #     Trees.study_id).group_by(Trees.study_id, Trees.tree_id))
+    results = db.session.query(
+        Study, Trees, Submit, Matrix, NcbiName).with_entities(
         Study.title, Study.year, Study.journal, Study.doi,
-        Trees.tree_id, NcbiName.name_txt, Trees.tree_title, Matrix.upload_date).join(
-        Study, Study.study_id == Trees.study_id).join(
+        Trees.tree_id, NcbiName.name_txt, Trees.tree_title,
+        Matrix.upload_date).join(
+        Study, Study.study_id == Trees.study_id, isouter=True).join(
         Submit, Submit.tree_id == Trees.tree_id, isouter=True).join(
         Matrix, Matrix.matrix_id == Submit.matrix_id, isouter=True).join(
-        NcbiName, NcbiName.tax_id == Trees.root).filter(
-        trees).order_by(order_by)
+        NcbiName, NcbiName.tax_id == Trees.root, isouter=True).filter(
+        and_(NcbiName.name_class == 'scientific name',
+             Study.year > 0)).order_by(
+        order_by)
     pagination = results.paginate(page=page, per_page=20)
     return f.render_template(f'tree_list.html', pagination=pagination,
                              form=sf,
@@ -300,10 +304,10 @@ def tree_auspice_file(tid):
 @app.route('/treehub/tree/<tid>', methods=('POST', 'GET'))
 def view_tree(tid):
     tree_id = Trees.tid2serial(tid)
-    tree = Trees.get(tree_id)
+    tree = Trees.query.get(tree_id)
     if tree is None:
         return f.abort(404)
-    title = tree['tree_title']
+    title = tree.tree_title
     tree_auspice_file(tid)
     return f.render_template('view_tree.html', title=title, tree_id=tree_id,
                              tid_func=tid_func)
