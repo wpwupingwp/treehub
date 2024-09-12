@@ -230,13 +230,24 @@ def tree_result(page=1):
         filters.append(study_condition)
     trees = Trees.tree_id.in_(select(Trees.tree_id).where(*filters))
     # x = Trees.query.filter(trees)
-    results = db.session.query(Study, Trees, Submit, Matrix).with_entities(
+    # results = db.session.query(Study, Trees, Submit, Matrix).with_entities(
+    #     Study.title, Study.year, Study.journal, Study.doi,
+    #     Trees.tree_id, Trees.tree_title, Matrix.upload_date).join(
+    #     Study, Study.study_id == Trees.study_id).join(
+    #     Submit, Submit.tree_id == Trees.tree_id, isouter=True).join(
+    #     Matrix, Matrix.matrix_id == Submit.matrix_id, isouter=True).filter(
+    #     trees).order_by(order_by)
+    results = db.session.query(
+        Study, Trees, Submit, Matrix, NcbiName).with_entities(
         Study.title, Study.year, Study.journal, Study.doi,
-        Trees.tree_id, Trees.tree_title, Matrix.upload_date).join(
-        Study, Study.study_id == Trees.study_id).join(
+        Trees.tree_id, NcbiName.name_txt, Trees.tree_title,
+        Matrix.upload_date).join(
+        Study, Study.study_id == Trees.study_id, isouter=True).join(
         Submit, Submit.tree_id == Trees.tree_id, isouter=True).join(
-        Matrix, Matrix.matrix_id == Submit.matrix_id, isouter=True).filter(
-        trees).order_by(order_by)
+        Matrix, Matrix.matrix_id == Submit.matrix_id, isouter=True).join(
+        NcbiName, NcbiName.tax_id == Trees.root, isouter=True).filter(
+        and_(NcbiName.name_class == 'scientific name', trees)).order_by(
+        order_by)
     pagination = results.paginate(page=page, per_page=20)
     return f.render_template(f'tree_list.html', pagination=pagination, form=sf,
                              tid_func=tid_func)
