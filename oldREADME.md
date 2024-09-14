@@ -1,4 +1,4 @@
-# plant_tree_db
+# treehub
 Plant phylogenetic tree database
 
 植物系统发育树数据库
