@@ -616,9 +616,8 @@ def submit_list(page=1):
 
 @app.route('/treehub/node/<tid>')
 def redirect_to_node(tid):
-    return f.redirect(f'/planttreenode/{tid}')
-    # return f.redirect(f'/treehub/{tree_id}')
-    # tree_id = Trees.tid2serial(tid)
+    tree_id = Trees.tid2serial(tid)
+    return f.redirect(f'/planttreenode/{tree_id}')
     # return f.redirect(f'http://localhost:4000/{tree_id}')
 
 
