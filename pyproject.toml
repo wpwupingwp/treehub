@@ -21,7 +21,7 @@ dependencies = [
     "numpy==2.0.1",
     "psycopg[binary]>=3.2.1",
     "requests>=2.31.0",
-    "waitress==3.0.0",
+    "waitress==3.0.1",
     "sqlalchemy-serializer>=1.4.22",
     "flask-restful>=0.3.10",
     "flasgger>=0.9.7.1",
