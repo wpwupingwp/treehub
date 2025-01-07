@@ -37,7 +37,6 @@
             {{ render_breadcrumb_item('submit_info', _('Submit')) }}
             {{ render_breadcrumb_item('tree_list', _('Tree list')) }}
             {{ render_breadcrumb_item('submit_list', _('Submit list')) }}
-            {{ render_breadcrumb_item('subscribe', _('Subscribe')) }}
             {% if current_user.is_authenticated %}
                 {{ render_breadcrumb_item('/treehub/auth/tree/{{current_user.user_id}}}', _('My trees')) }}
                 {{ render_breadcrumb_item('/treehub/auth/logout', _('Logout')) }}
