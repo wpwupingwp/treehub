@@ -572,7 +572,8 @@ def cancel_submit():
     return f.redirect(f'/treehub/submit/remove/{submit_.submit_id}')
 
 
-@app.route('/treehub/submit/remove/<int:submit_id>')
+# hide remove url
+# @app.route('/treehub/submit/remove/<int:submit_id>')
 def remove_submit(submit_id):
     # todo: how to remove clean
     submit = Submit.query.get(submit_id)
