@@ -6,7 +6,7 @@ from web import root
 SESSION_TYPE = 'filesystem'
 SESSION_FILE_THRESHOLD = 5000
 # database
-SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg://postgres:password@localhost:5432/treedb'
+SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg://postgres:planttree@localhost:5432/treedb'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 # upload
 # max filesize 100 mb
