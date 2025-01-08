@@ -4,6 +4,7 @@ from flask import Flask, session, request
 from flask_admin import Admin
 from flask_bootstrap import Bootstrap4
 from flask_babel import Babel
+from flask_compress import Compress
 from flask_login import LoginManager
 from flask_restful import Api
 from flask_session import Session
@@ -34,6 +35,7 @@ swagger_config = {
     'swagger_ui': True,
     'specs_route': '/treehub/apidocs/',
 }
+Compress(app)
 api = Api(app,)
 swagger = Swagger(app, config=swagger_config)
 # swagger = Swagger(app)
