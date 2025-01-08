@@ -534,6 +534,7 @@ def handle_tree_info(tree_form, final=False) -> bool:
         img_tmp_big = upload(tree_form.cover_img.data)
         img_tmp = compress_photo(img_tmp_big)
         submit_.cover_img_name = str(img_tmp.name)
+        submit_.new = bool(tree_form.news)
         with open(img_tmp, 'rb') as _:
             submit_.cover_img = _.read()
         img_tmp.unlink()
