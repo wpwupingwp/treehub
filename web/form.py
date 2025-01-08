@@ -64,6 +64,7 @@ class SortQueryForm(FlaskForm):
                          choices=['ID', 'Tree title', 'Kind', 'Publish year',
                                   'Article title', 'Journal', 'DOI'])
     order = m.SelectField('Order', choices=['Descend', 'Ascend'])
+    distinct = m.SelectField('Distinct', choices=['ID', 'Article title', 'Tree title', 'Publish year', 'Journal'])
     submit = m.SubmitField(gettext('Sort'))
 
     @staticmethod
@@ -81,6 +82,14 @@ class SortQueryForm(FlaskForm):
     def new_order_choices(key=None):
         old = ['Descend', 'Ascend']
         if key is None or key == 'Descend':
+            return old
+        else:
+            return list(reversed(old))
+
+    @staticmethod
+    def new_distinct_choices(key=None):
+        old = ['ID', 'Article title', 'Tree title', 'Publish year', 'Journal']
+        if key is None or key == 'ID':
             return old
         else:
             return list(reversed(old))

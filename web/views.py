@@ -115,20 +115,31 @@ def tree_list(page=1):
                      'DOI': Study.doi}
     item = session.get('item', 'ID')
     order = session.get('order', 'Descend')
+    distinct = session.get('unique', 'Article title')
     sf = SortQueryForm()
     sf.item.choices = SortQueryForm.new_item_choices(item)
     sf.order.choices = SortQueryForm.new_order_choices(order)
+    sf.distinct.choices = SortQueryForm.new_distinct_choices(distinct)
     if sf.validate_on_submit():
         item = sf.item.data
         order = sf.order.data
+        distinct = sf.distinct.data
         session['item'] = item
         session['order'] = order
         page = 1
     field = name_to_field[item]
-    if order == 'Descend':
-        order_by = field.desc()
+    distinct_field = name_to_field[distinct]
+    if field == Trees.tree_id and distinct_field != Trees.tree_id:
+        distinct_by = [Study.year, name_to_field[distinct]]
+        field = Study.year
     else:
-        order_by = field.asc()
+        distinct_by = [field, name_to_field[distinct]]
+    # posgres requires same fields for order_by and distinct_by
+    order_by = list(distinct_by)
+    if order == 'Descend':
+        order_by = [i.desc() for i in order_by]
+    else:
+        order_by = [i.asc() for i in order_by]
     query = session['dict']
     # x = Trees.query.filter(trees)
     # trees = Trees.tree_id.in_(select(Trees.tree_id).distinct(
@@ -137,14 +148,15 @@ def tree_list(page=1):
         Study, Trees, Submit, Matrix, NcbiName).with_entities(
         Study.title, Study.year, Study.journal, Study.doi,
         Trees.tree_id, NcbiName.name_txt, Trees.tree_title,
-        Matrix.upload_date).join(
+        Matrix.upload_date).distinct(
+                *distinct_by).join(
         Study, Study.study_id == Trees.study_id, isouter=True).join(
         Submit, Submit.tree_id == Trees.tree_id, isouter=True).join(
         Matrix, Matrix.matrix_id == Submit.matrix_id, isouter=True).join(
         NcbiName, NcbiName.tax_id == Trees.root, isouter=True).filter(
         and_(NcbiName.name_class == 'scientific name',
              Study.year > 0)).order_by(
-        order_by)
+        *order_by)
     pagination = results.paginate(page=page, per_page=20)
     return f.render_template(f'tree_list.html', pagination=pagination,
                              form=sf,
