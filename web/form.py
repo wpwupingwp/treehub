@@ -124,7 +124,7 @@ class TreeMatrixForm(FlaskForm):
                  ('Other', gettext('Other'))])
     cover_img = m.FileField(gettext('Cover image (.jpg or .png)'))
     news = m.BooleanField(gettext('Submit for news'), default=False)
-    next = m.SubmitField(gettext('Add more'),
+    next_ = m.SubmitField(gettext('Add more'),
                          render_kw={'class': 'btn-success'})
     submit = m.SubmitField(gettext('Finish submit'))
 

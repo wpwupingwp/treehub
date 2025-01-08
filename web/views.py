@@ -568,7 +568,7 @@ def submit_data(n):
     # todo: test
     tf = TreeMatrixForm()
     if tf.validate_on_submit():
-        if tf.next.data:
+        if tf.next_.data:
             ok = handle_tree_info(tf)
             if not ok:
                 return f.redirect(f'/treehub/submit/{session["tree_n"]}')
