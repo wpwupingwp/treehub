@@ -64,7 +64,7 @@ class SortQueryForm(FlaskForm):
                          choices=['ID', 'Tree title', 'Kind', 'Publish year',
                                   'Article title', 'Journal', 'DOI'])
     order = m.SelectField('Order', choices=['Descend', 'Ascend'])
-    distinct = m.SelectField('Distinct', choices=['ID', 'Article title', 'Tree title', 'Publish year', 'Journal'])
+    distinct = m.SelectField('Distinct by', choices=['ID', 'Article title', 'Tree title', 'Publish year', 'Journal'])
     submit = m.SubmitField(gettext('Sort'))
 
     @staticmethod

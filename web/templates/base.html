@@ -21,9 +21,9 @@
         }
     </style>
 </head>
-<body class="container-fluid bg-gray">
+<body class="container-fluid bg-gray col-md-10">
 <div class="header sticky-top my-2">
-    <nav class="navbar navbar-expand-lg navbar-light col-md-11 mx-auto" style="background-color: #009a3b">
+    <nav class="navbar navbar-expand-lg navbar-light col-md-10 mx-auto" style="background-color: #009a3b">
         <a class="navbar-brand h5 text-light mt-2" href="#">TreeHub</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse"
                 data-target="#navbarText" aria-controls="navbarText" aria-expanded="false"
@@ -58,7 +58,7 @@
     </nav>
 </div>
 
-<div class="container-fluid col-md-11 my-2">
+<div class="container-fluid col-md-10 my-2">
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             {{render_messages(dismissible=True, dismiss_animate=True)}}
