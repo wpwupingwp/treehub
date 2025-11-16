@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -47,8 +47,8 @@
             {% endif %}
         </ol>
         <form class="form-inline my-2">
-            <!--input class="form-control mr-sm-2" type="search" placeholder="Search">
-            <button class="btn btn-secondary my-1 my-sm-0" type="submit" disabled>{{_('Search')}}</button--!>
+            <!--<input class="form-control mr-sm-2" type="search" placeholder="Search">
+            <button class="btn btn-secondary my-1 my-sm-0" type="submit" disabled>{{_('Search')}}</button>-->
         </form>
         {% if session['locale']=='en' %}
             <a class="btn btn btn-primary mx-1" href="/treehub/locale/zh" role="button">中文</a>
@@ -73,9 +73,19 @@
 {% block footer %}
 <footer class="footer h5 font-weight-bolder text-muted text-center">
     <div class="h6 text-primary text-center">
-    <p>
-        {{_('Plant Science Data Center of Chinese Academy of Sciences')}}<br/>
-        <span>{{gettext('Copyright 2024')}}</span>
+   <!-- <p>
+        {{_('Plant Science Data Center of CAS')}}<br/>
+        <span>{{'京ICP备16067583号-44'}}</span><br/>
+        <span>{{gettext('Plantplus© 2020-2022 copyright')}}</span><br/>
+        <span>{{gettext('Institute of Botany, Chinese Academy of Sciences')}}</span>
+
+    </p>-->
+ <p>
+        {{_('中国科学院植物科学数据中心')}}<br/>
+        <span>{{'京ICP备16067583号-44'}}</span><br/>
+        <span>{{gettext('中国植物＋© 2020-2025 版权所有')}}</span><br/>
+        <span>{{gettext('中国科学院植物研究所')}}</span>
+
     </p>
     </div>
 </footer>

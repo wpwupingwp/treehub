@@ -54,7 +54,7 @@ def track():
             ip = request.headers.getlist('X-Forwarded-For')[0]
         else:
             ip = request.remote_addr
-        visit = Visit(user_id, ip, request.url, request.user_agent.string)
+        visit = Visit(user_id, ip, request.url, request.user_agent.string[:100])
         db.session.add(visit)
         db.session.commit()
         session['visit_id'] = visit.visit_id
@@ -157,7 +157,7 @@ def tree_list(page=1):
         and_(NcbiName.name_class == 'scientific name',
              Study.year > 0)).order_by(
         *order_by)
-    pagination = results.paginate(page=page, per_page=20)
+    pagination = results.paginate(page=page, per_page=15)
     return f.render_template(f'tree_list.html', pagination=pagination,
                              form=sf,
                              tid_func=tid_func)
@@ -216,6 +216,8 @@ def tree_result(page=1):
         order_by = [i.desc() for i in order_by]
     else:
         order_by = [i.asc() for i in order_by]
+    if 'dict' not in session:
+        session['dict'] = dict()
     query = session['dict']
     study_filters = []
     filters = []
@@ -534,7 +536,7 @@ def handle_tree_info(tree_form, final=False) -> bool:
         img_tmp_big = upload(tree_form.cover_img.data)
         img_tmp = compress_photo(img_tmp_big)
         submit_.cover_img_name = str(img_tmp.name)
-        submit_.new = bool(tree_form.news)
+        submit_.news = bool(tree_form.news)
         with open(img_tmp, 'rb') as _:
             submit_.cover_img = _.read()
         img_tmp.unlink()
@@ -596,7 +598,7 @@ def cancel_submit():
 
 
 # hide remove url
-# @app.route('/treehub/submit/remove/<int:submit_id>')
+@app.route('/treehub/submit/remove/<int:submit_id>')
 def remove_submit(submit_id):
     # todo: how to remove clean
     submit = Submit.query.get(submit_id)
@@ -679,6 +681,7 @@ def index():
         Submit, Submit.study_id == Study.study_id).join(
         Trees, Submit.tree_id == Trees.tree_id).filter(
         Submit.news == True).order_by(Submit.date.desc()).limit(3)
+    print(list(results))
     tmp_imgs = []
     tmp_folder = app.config.get('TMP_FOLDER')
     for r in results:
