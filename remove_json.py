@@ -22,3 +22,4 @@ while True:
             _.unlink()
         except Exception:
             pass
+    sleep(60)
