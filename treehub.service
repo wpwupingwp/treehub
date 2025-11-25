@@ -1,0 +1,6 @@
+[Unit]
+Description="Run treehub script"
+
+[Service]
+Type=forking
+ExecStart=/home/vms240301/plant_tree_db/run_per_day.sh
