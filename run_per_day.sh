@@ -1,5 +1,5 @@
 pkill node
 pkill hypercorn
-nohup python3 ./plant_tree_db/remove_json.py &
-nohup bash run1.sh &
-nohup bash run2.sh &
+python3 /home/vms240301/plant_tree_db/remove_json.py
+nohup bash /home/vms240301/run1.sh &
+nohup bash /home/vms240301/run2.sh &
