@@ -550,6 +550,13 @@ def handle_tree_info(tree_form, final=False) -> bool:
     return True
 
 
+def check_submit_doi(doi: str):
+    if not doi:
+        return True
+    test = Study.query.filtery_by(doi=doi).one_or_none()
+    return (test is None)
+
+
 @app.route('/treehub/submit', methods=('POST', 'GET'))
 def submit_info():
     sf = SubmitForm()
@@ -557,6 +564,9 @@ def submit_info():
         if not handle_submit_info(sf):
             flash(gettext('Taxonomy name not found. '
                           'Currently only support accepted name.'), 'error')
+            return f.redirect('/treehub/submit')
+        if not check_submit_doi(sf.doi.data):
+            flash(gettext('DOI exists.'))
             return f.redirect('/treehub/submit')
         session['tree_n'] = 1
         session['matrix_id_list'] = list()
