@@ -46,10 +46,11 @@ lm = LoginManager()
 lm.login_view = 'admin.login'
 lm.init_app(app)
 admin = Admin(app, template_mode='bootstrap4')
-#root = Path(app.root_path)
-root = Path('/dev/shm/treehub')
+root = Path(app.root_path)
+# root = Path('/dev/shm/treehub')
 if not root.exists():
     root.mkdir()
+print('root', root)
 app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 session_ = Session(app)

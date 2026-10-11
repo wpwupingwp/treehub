@@ -421,8 +421,8 @@ def handle_submit_info(info_form) -> bool:
     if len(taxon) == 0:
         # danger
         # for batch submit only
-        # todo
         return False
+        # todo: modify for batch submit
         root = 'root'
         root_id = 1
         session['root_id'] = root_id
@@ -472,6 +472,9 @@ def handle_tree_info(tree_form, final=False) -> bool:
     matrix.analysisstep_id = '20222022'
     db.session.add(matrix)
     db.session.commit()
+    if 'matrix_id_list' not in session:
+        print('patch matrix_id_list')
+        session['matrix_id_list'] = []
     session['matrix_id_list'].append(matrix.matrix_id)
     # handle tree_text
     treefile_tmp = upload(tree_form.tree_file.data)
@@ -553,7 +556,7 @@ def handle_tree_info(tree_form, final=False) -> bool:
 def check_submit_doi(doi: str):
     if not doi:
         return True
-    test = Study.query.filtery_by(doi=doi).one_or_none()
+    test = Study.query.filter(Study.doi==doi).first()
     return (test is None)
 
 
@@ -561,13 +564,18 @@ def check_submit_doi(doi: str):
 def submit_info():
     sf = SubmitForm()
     if sf.validate_on_submit():
+        if not check_submit_doi(sf.doi.data):
+            print('DOI exists')
+            flash(gettext('DOI exists.'), 'error')
+            # todo: modify for batch submit
+            return f.redirect('/treehub/submit')
+            # return f.abort(403)
         if not handle_submit_info(sf):
             flash(gettext('Taxonomy name not found. '
                           'Currently only support accepted name.'), 'error')
+            # todo: modify for batch submit
             return f.redirect('/treehub/submit')
-        if not check_submit_doi(sf.doi.data):
-            flash(gettext('DOI exists.'))
-            return f.redirect('/treehub/submit')
+            return f.abort(404)
         session['tree_n'] = 1
         session['matrix_id_list'] = list()
         session['tree_id_list'] = list()
