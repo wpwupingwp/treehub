@@ -40,7 +40,7 @@ def submit(record: dict, trees: list, session: requests.Session):
     submit_form1['email'] = 'admin@example.org'
     submit_form1['root'] = submit_form1['lineage']
     if not submit_form1['root']:
-        submit_form1['lineage'] = 'root'
+        submit_form1['root'] = 'root'
     submit_form1['journal'] = submit_form1['journal_name']
     if submit_form1['pub_date'] and len(submit_form1['pub_date']) > 8:
         submit_form1['year'] = int(submit_form1['pub_date'][:4])
@@ -52,14 +52,12 @@ def submit(record: dict, trees: list, session: requests.Session):
     n = 0
     for n, tree in enumerate(trees[:-1], start=1):
         submit_form2 = tree
-        submit_form2['next'] = True
+        submit_form2['next_'] = True
         submit_form2, files = prepare_form(submit_form2, csrf_token,
                                            with_tree=True)
         r2 = session.post(f'{URL2}{n}', data=submit_form2, files=files)
         if not r2.ok:
             raise Exception(r2.status_code)
-        else:
-            print(submit_form2['tree_title'], 'ok')
         print_err(r2.text)
     submit_form3 = trees[-1]
     submit_form3['submit'] = True
@@ -67,7 +65,7 @@ def submit(record: dict, trees: list, session: requests.Session):
                                        with_tree=True)
     r3 = session.post(f'{URL2}{n+1}', data=submit_form3, files=files)
     if r3.ok:
-        print(submit_form3['tree_title'], 'ok')
+        print(record['doi'], 'ok', len(trees), 'trees')
     print_err(r3.text)
     return
 
@@ -82,8 +80,8 @@ def get_csrf_token(session):
 
 def remove_old_submit(session):
     # start = 115239
-    start = 116043
-    end = 116129
+    start = 116684
+    end = 116685
     for i in range(start, end+1):
         r = session.get(f'{URL1}/remove/{i}')
         print('Remove submit', i, r.ok)
@@ -103,17 +101,28 @@ def main():
     # data2 = {data2[0]: data2[1]}
     with requests.Session() as session:
         remove_old_submit(session)
-    with ThreadPoolExecutor(max_workers=16) as pool:
-        # raise SystemExit()
-        for key in data.keys():
-            record = data[key]
-            trees = list(record['tree_files'])
-            record.pop('tree_files')
-            for tree in trees:
-                tree['tree_file'] = TREE_FOLDER / Path(tree['tree_file'])
-                assert tree['tree_file'].exists(), tree['tree_file']
-            pool.submit(wrap, record, trees)
-        return
+    # with ThreadPoolExecutor(max_workers=16) as pool:
+    #     # raise SystemExit()
+    #     for key in data.keys():
+    #         record = data[key]
+    #         trees = list(record['tree_files'])
+    #         record.pop('tree_files')
+    #         for tree in trees:
+    #             tree['tree_file'] = TREE_FOLDER / Path(tree['tree_file'])
+    #             assert tree['tree_file'].exists(), tree['tree_file']
+    #         pool.submit(wrap, record, trees)
+    #     return
+    for key in data.keys():
+        record = data[key]
+        trees = list(record['tree_files'])
+        record.pop('tree_files')
+        for tree in trees:
+            tree['tree_file'] = TREE_FOLDER / Path(tree['tree_file'])
+            assert tree['tree_file'].exists(), tree['tree_file']
+        with requests.Session() as session:
+            submit(record, trees, session)
+        input('pause')
+    return
 
 
 if __name__ == '__main__':
