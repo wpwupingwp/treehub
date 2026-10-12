@@ -80,8 +80,8 @@ def get_csrf_token(session):
 
 def remove_old_submit(session):
     # start = 115239
-    start = 116684
-    end = 116685
+    start = 116687
+    end = 116688
     for i in range(start, end+1):
         r = session.get(f'{URL1}/remove/{i}')
         print('Remove submit', i, r.ok)
@@ -101,27 +101,26 @@ def main():
     # data2 = {data2[0]: data2[1]}
     with requests.Session() as session:
         remove_old_submit(session)
-    # with ThreadPoolExecutor(max_workers=16) as pool:
-    #     # raise SystemExit()
-    #     for key in data.keys():
-    #         record = data[key]
-    #         trees = list(record['tree_files'])
-    #         record.pop('tree_files')
-    #         for tree in trees:
-    #             tree['tree_file'] = TREE_FOLDER / Path(tree['tree_file'])
-    #             assert tree['tree_file'].exists(), tree['tree_file']
-    #         pool.submit(wrap, record, trees)
-    #     return
-    for key in data.keys():
-        record = data[key]
-        trees = list(record['tree_files'])
-        record.pop('tree_files')
-        for tree in trees:
-            tree['tree_file'] = TREE_FOLDER / Path(tree['tree_file'])
-            assert tree['tree_file'].exists(), tree['tree_file']
-        with requests.Session() as session:
-            submit(record, trees, session)
-        input('pause')
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        # raise SystemExit()
+        for key in data.keys():
+            record = data[key]
+            trees = list(record['tree_files'])
+            record.pop('tree_files')
+            for tree in trees:
+                tree['tree_file'] = TREE_FOLDER / Path(tree['tree_file'])
+                assert tree['tree_file'].exists(), tree['tree_file']
+            pool.submit(wrap, record, trees)
+        return
+    # for key in data.keys():
+    #     record = data[key]
+    #     trees = list(record['tree_files'])
+    #     record.pop('tree_files')
+    #     for tree in trees:
+    #         tree['tree_file'] = TREE_FOLDER / Path(tree['tree_file'])
+    #         assert tree['tree_file'].exists(), tree['tree_file']
+    #     with requests.Session() as session:
+    #         submit(record, trees, session)
     return
 
 

@@ -426,7 +426,6 @@ def handle_submit_info(info_form) -> bool:
         root = 'root'
         root_id = 1
         session['root_id'] = root_id
-        # return False
     else:
         root_id = taxon[0].tax_id
     session['root_id'] = root_id
@@ -575,7 +574,7 @@ def submit_info():
                           'Currently only support accepted name.'), 'error')
             # todo: modify for batch submit
             return f.redirect('/treehub/submit')
-            return f.abort(404)
+            # return f.abort(404)
         session['tree_n'] = 1
         session['matrix_id_list'] = list()
         session['tree_id_list'] = list()
