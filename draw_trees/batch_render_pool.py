@@ -26,15 +26,63 @@ from typing import Sequence
 
 from tqdm import tqdm
 
-__version__ = "1.3.0"
+__version__ = "1.4.1"
 
 # No taxa cap is applied. Deep ladder trees need a higher Python recursion limit
 # for Biopython's recursive DFS helpers (get_terminals, find_clades, ladderize).
 sys.setrecursionlimit(max(sys.getrecursionlimit(), 100_000))
 
+# Very large trees can allocate hundreds of MB for a single figure. Rendering
+# several such trees concurrently is what typically triggers an OS-level OOM
+# kill on Windows. Trees above this threshold are still rendered, but one at a
+# time via an OS file lock.
+LARGE_TREE_TAXA = 500
+
+# Full-size 200-DPI renders of very large trees can allocate many GB and trigger
+# the Linux OOM killer. Cap only the figure height, not the taxa count: all
+# leaves are still drawn, but vertical spacing is compressed on extreme trees.
+MAX_FIGURE_HEIGHT_IN = 120.0
+
 _WORKER_RENDER = None
 _WORKER_OPTIONS: dict[str, object] = {}
 _WORKER_MARKER = None
+_LARGE_LOCK_FD: int | None = None
+
+
+def _acquire_large_lock() -> None:
+    """Block until the cross-process large-tree lock is available."""
+    fd = _LARGE_LOCK_FD
+    if fd is None:
+        return
+    if os.name == "nt":
+        import msvcrt
+
+        while True:
+            os.lseek(fd, 0, os.SEEK_SET)
+            try:
+                msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+                return
+            except OSError:
+                time.sleep(0.25)
+    else:
+        import fcntl
+
+        fcntl.flock(fd, fcntl.LOCK_EX)
+
+
+def _release_large_lock() -> None:
+    fd = _LARGE_LOCK_FD
+    if fd is None:
+        return
+    if os.name == "nt":
+        import msvcrt
+
+        os.lseek(fd, 0, os.SEEK_SET)
+        msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+    else:
+        import fcntl
+
+        fcntl.flock(fd, fcntl.LOCK_UN)
 
 
 def _init_worker(options: dict[str, object]) -> None:
@@ -53,6 +101,34 @@ def _init_worker(options: dict[str, object]) -> None:
 
     # Real per-file errors are still returned by _render_task.
     renderer._warn = lambda _message: None
+
+    original_adaptive = renderer._adaptive_figure_size
+
+    def capped_adaptive(n_tips, n_nodes, max_label_length, topology_only=False):
+        width, height = original_adaptive(
+            n_tips, n_nodes, max_label_length, topology_only=topology_only
+        )
+        return width, min(height, MAX_FIGURE_HEIGHT_IN)
+
+    renderer._adaptive_figure_size = capped_adaptive
+
+    # Serialize only large figures. The OS releases this lock automatically if
+    # a worker dies, so a crash cannot leave a stale lock behind.
+    global _LARGE_LOCK_FD
+    _LARGE_LOCK_FD = os.open(str(options["large_lock"]), os.O_RDWR)
+
+    original_render = renderer._render
+
+    def serialized_render(tree, output_path, **kwargs):
+        if len(tree.get_terminals()) > LARGE_TREE_TAXA:
+            _acquire_large_lock()
+            try:
+                return original_render(tree, output_path, **kwargs)
+            finally:
+                _release_large_lock()
+        return original_render(tree, output_path, **kwargs)
+
+    renderer._render = serialized_render
 
     fig = renderer.plt.figure(figsize=(1.2, 0.8))
     fig.text(0.1, 0.5, "Warm-up", fontweight="bold")
@@ -240,11 +316,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     marker_dir = Path(
         tempfile.mkdtemp(prefix=".batch_markers_", dir=str(args.output_dir))
     )
+    large_lock = marker_dir / "large.lock"
+    large_lock.write_bytes(b"0")
     options = {
         "dpi": args.dpi,
         "support_scale": args.support_scale,
         "no_ladderize": args.no_ladderize,
         "marker_dir": str(marker_dir),
+        "large_lock": str(large_lock),
     }
 
     started = time.monotonic()
