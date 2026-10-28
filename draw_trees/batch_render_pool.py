@@ -41,7 +41,7 @@ from typing import Sequence
 from Bio import Phylo
 from tqdm import tqdm
 
-__version__ = "2.0.0"
+__version__ = "2.1.0"
 
 # Biopython's tree traversal helpers are recursive. Set this before any parse
 # or traversal; workers inherit the module-level setting.
@@ -57,6 +57,26 @@ LIST_META = "list_meta.json"
 _WORKER_RENDER = None
 _WORKER_OPTIONS: dict[str, object] = {}
 _WORKER_MARKER = None
+_CLASSIFY_THRESHOLD = DEFAULT_BIG_THRESHOLD
+
+
+def _init_classifier(big_threshold: int) -> None:
+    global _CLASSIFY_THRESHOLD
+    _CLASSIFY_THRESHOLD = big_threshold
+
+
+def _classify_one(input_name: str) -> tuple[str, str]:
+    """Parse one file and return ('small'|'big'|'invalid', line)."""
+    try:
+        tree = Phylo.read(input_name, "newick")
+        n_tips = len(tree.get_terminals())
+        if n_tips <= 0:
+            return "invalid", f"{input_name}\tValueError: no taxa found"
+        if n_tips <= _CLASSIFY_THRESHOLD:
+            return "small", input_name
+        return "big", input_name
+    except Exception as exc:
+        return "invalid", f"{input_name}\t{type(exc).__name__}: {exc}"
 
 
 def _init_worker(options: dict[str, object]) -> None:
@@ -175,14 +195,15 @@ def _load_cache(
     ):
         return None
 
-    def read_paths(path: Path) -> list[str]:
+    def read_lines(path: Path) -> list[str]:
         return [
-            line.split("\t", 1)[0]
+            line
             for line in path.read_text(encoding="utf-8").splitlines()
             if line.strip()
         ]
 
-    return read_paths(small_path), read_paths(big_path), read_paths(invalid_path)
+    # Invalid entries are "path<TAB>error"; keep the error text for display.
+    return read_lines(small_path), read_lines(big_path), read_lines(invalid_path)
 
 
 def _classify_inputs(
@@ -190,6 +211,7 @@ def _classify_inputs(
     output_dir: Path,
     patterns: Sequence[str],
     big_threshold: int,
+    jobs: int,
 ) -> tuple[list[str], list[str], list[str]]:
     files = _collect_inputs(input_path, patterns)
     if not files:
@@ -197,22 +219,27 @@ def _classify_inputs(
             f"no input files matched {list(patterns)!r} under {input_path}"
         )
 
+    input_names = [str(path.resolve()) for path in files]
     small: list[str] = []
     big: list[str] = []
     invalid: list[str] = []
-    for input_file in tqdm(files, desc="Classifying", unit="tree"):
-        absolute = str(input_file.resolve())
-        try:
-            tree = Phylo.read(str(input_file), "newick")
-            n_tips = len(tree.get_terminals())
-            if n_tips <= 0:
-                invalid.append(f"{absolute}\tValueError: no taxa found")
-            elif n_tips <= big_threshold:
-                small.append(absolute)
-            else:
-                big.append(absolute)
-        except Exception as exc:
-            invalid.append(f"{absolute}\t{type(exc).__name__}: {exc}")
+    try:
+        with ProcessPoolExecutor(
+            max_workers=jobs,
+            initializer=_init_classifier,
+            initargs=(big_threshold,),
+        ) as pool:
+            with tqdm(total=len(files), desc="Classifying", unit="tree") as bar:
+                for kind, line in pool.map(_classify_one, input_names, chunksize=16):
+                    if kind == "small":
+                        small.append(line)
+                    elif kind == "big":
+                        big.append(line)
+                    else:
+                        invalid.append(line)
+                    bar.update(1)
+    except Exception as exc:
+        raise RuntimeError(f"classification worker pool failed: {exc}") from exc
 
     small_path, big_path, invalid_path, meta_path = _list_paths(output_dir)
     _atomic_write_lines(small_path, small)
@@ -445,14 +472,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         scan_started = time.monotonic()
         try:
             small_files, big_files, invalid = _classify_inputs(
-                args.input, args.output_dir, patterns, args.big_threshold
+                args.input,
+                args.output_dir,
+                patterns,
+                args.big_threshold,
+                jobs,
             )
-        except (FileNotFoundError, OSError) as exc:
+        except (FileNotFoundError, OSError, RuntimeError) as exc:
             print(f"error: {exc}", file=sys.stderr)
             return 2
         print(
             f"classified {len(small_files) + len(big_files) + len(invalid)} trees "
-            f"in {time.monotonic() - scan_started:.2f}s: "
+            f"in {time.monotonic() - scan_started:.2f}s with {jobs} workers: "
             f"small={len(small_files)}, big={len(big_files)}, invalid={len(invalid)}"
         )
 
