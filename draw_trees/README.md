@@ -264,7 +264,9 @@ The script rewrites the ten `.nwk` files and renders each with its demonstration
 
 ## Batch rendering
 
-For large collections, use [`batch_render_pool.py`](batch_render_pool.py). It imports the baseline renderer in each worker, keeping Matplotlib initialization out of the parent process.
+For large collections, use [`batch_render_pool.py`](batch_render_pool.py). It
+imports the baseline renderer in each worker, keeping Matplotlib
+initialization out of the parent process.
 
 ```bash
 python batch_render_pool.py INPUT_DIR OUTPUT_DIR --jobs 8
@@ -276,16 +278,80 @@ Windows example:
 python batch_render_pool.py D:\trees D:\png --jobs 8
 ```
 
-The input directory is scanned non-recursively. Point the command at a small test directory first if you want to benchmark before a full run.
+The input directory is scanned non-recursively on the first run (or with
+`--rebuild-lists`). Point the command at a small test directory first if you
+want to benchmark before a full run.
 
-Batch behavior:
+### Cached input lists
 
-- existing PNGs are skipped by default, so interrupted jobs resume;
-- `--overwrite` forces a full re-render;
-- a malformed tree does not stop the batch;
+On the first run (or with `--rebuild-lists`), the batch parses every input and
+classifies it by taxa count:
+
+```text
+OUTPUT_DIR/list_small.txt    # <= --big-threshold taxa
+OUTPUT_DIR/list_big.txt      # >  --big-threshold taxa
+OUTPUT_DIR/list_invalid.txt  # parse errors / no trees
+OUTPUT_DIR/list_meta.json    # cache metadata
+```
+
+The default threshold is **500 taxa** (`--big-threshold N`). Invalid files are
+reported in full in `list_invalid.txt` and are not sent to workers.
+
+Later runs read these lists instead of scanning or parsing the input directory
+again. Use `--rebuild-lists` after adding/removing input files or changing a
+tree's content. Changing `--big-threshold`, the input path, or the pattern
+rebuilds the lists automatically.
+
+### Processing order
+
+1. **Small trees**: rendered in parallel with `--jobs` workers.
+2. **Large trees**: after the small phase finishes, rendered strictly serially
+   by a single-worker process pool.
+
+This means a few huge trees cannot occupy all workers and cannot race each
+other for memory. There is **no taxa cap**: every valid tree is processed.
+
+The batch height is capped at **120 inches** (24,000 px at 200 DPI) so one
+extreme figure cannot grow without bound. All leaves are still drawn, but
+vertical spacing is compressed on extreme trees. For a full-height render of
+an extreme tree, use the single-file renderer.
+
+Other behavior:
+
+- existing PNGs are skipped by default; output existence is checked with one
+  `os.listdir()` of the output directory, not one `Path.exists()` per input;
+- `--overwrite` bypasses that listing and re-renders everything;
+- a malformed tree is listed as invalid and does not stop the batch;
 - each worker initializes Matplotlib once and performs a warm-up;
 - PNG zlib level is fixed at **6**;
-- progress and ETA are shown with `tqdm`.
+- progress and ETA are shown with `tqdm`;
+- workers record their current input, so a crash reports the last in-flight
+  files.
+
+### Large trees and recursion
+
+Biopython's Newick parser itself is iterative, but its tree traversal helpers
+(`find_clades`, `get_terminals`, `ladderize`) use recursive DFS. A very deep
+ladder tree can therefore hit Python's default recursion limit around 1000
+levels.
+
+`batch_render_pool.py` raises the interpreter recursion limit to **100,000**
+at module import, before parsing or traversing any tree.
+
+On a 31 GiB Linux host at 200 DPI, a 1200-tip deep tree with the batch height
+cap rendered in about 9.5 s and produced a 3448 × 24,041 px, 2.4 MiB PNG
+(82.8 M pixels). Before the cap it produced 233,088,248 pixels. A single tree
+can still exceed available RAM; the OS may then kill the worker without a
+Python traceback. In that case, process that tree separately and be prepared
+for several GB of RAM. The recursion limit can still be exceeded by trees
+deeper than 100,000 levels.
+
+### Skip existing or overwrite?
+
+Skipping is still preferable for a rerun: one `os.listdir()` of the output
+directory is cheap, while overwriting tens of thousands of PNGs costs hours.
+Use `--overwrite` only when existing outputs are known to be stale or generated
+with different settings.
 
 Measured on an 8-core / 16-thread Ryzen 7 3700X at 200 DPI with 9-taxon trees and PNG zlib 6:
 
@@ -295,6 +361,9 @@ Measured on an 8-core / 16-thread Ryzen 7 3700X at 200 DPI with 9-taxon trees an
 | 16 workers | 10.58 s — **47.3 images/s** |
 
 Estimated 200k runtime: about **1.6 h** with 8 workers, **1.2 h** with 16 workers (Linux). Windows throughput will differ; benchmark on a small test directory first.
+
+> [!WARNING]
+> If a worker is killed by the OS (`BrokenProcessPool`), already-written PNGs are kept. The batch prints a partial summary, the first 20 per-file errors, empty/no-tree inputs, and the last in-flight input recorded by each worker. Rerun with fewer `--jobs` (for example `--jobs 4`) and inspect the reported in-flight files; big trees are already serial in their own phase. On Linux also check `dmesg` for OOM kills. Workers also enable `faulthandler`, so native crashes can produce a Python traceback.
 
 > [!NOTE]
 > `InterpreterPoolExecutor` is not used. On Python 3.14, importing Matplotlib inside a `ProcessPool` worker works, but inside an `InterpreterPool` worker it fails because NumPy's C extension currently refuses subinterpreter loading. `ProcessPoolExecutor` is the supported path.

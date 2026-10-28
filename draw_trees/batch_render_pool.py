@@ -1,9 +1,22 @@
 #!/usr/bin/env python3
-"""Render a directory of Newick files in parallel with ProcessPoolExecutor.
+"""Batch-render Newick trees: parallel small trees, then serial large trees.
 
-The preserved ``newick_phylogram.py`` renderer is imported once per worker and
-reused for all tasks assigned to that worker. PNG compression remains at level
-6. Existing outputs are skipped unless ``--overwrite`` is given.
+The first run classifies every input into:
+
+    list_small.txt    # <= --big-threshold taxa
+    list_big.txt      # >  --big-threshold taxa
+    list_invalid.txt  # parse errors / no trees
+
+and writes list_meta.json next to them. Later runs reuse those lists unless
+--rebuild-lists is given, so startup does not re-parse every Newick file.
+
+Rendering then runs in two phases:
+
+1. small trees with a ProcessPoolExecutor (parallel);
+2. big trees with a one-worker ProcessPoolExecutor (strictly serial).
+
+The preserved ``newick_phylogram.py`` renderer is imported once per worker.
+PNG compression remains at zlib level 6.
 
 Example
 -------
@@ -14,6 +27,7 @@ from __future__ import annotations
 
 import argparse
 import faulthandler
+import json
 import os
 import shutil
 import sys
@@ -24,84 +38,38 @@ from multiprocessing import freeze_support
 from pathlib import Path
 from typing import Sequence
 
+from Bio import Phylo
 from tqdm import tqdm
 
-__version__ = "1.4.1"
+__version__ = "2.0.0"
 
-# No taxa cap is applied. Deep ladder trees need a higher Python recursion limit
-# for Biopython's recursive DFS helpers (get_terminals, find_clades, ladderize).
+# Biopython's tree traversal helpers are recursive. Set this before any parse
+# or traversal; workers inherit the module-level setting.
 sys.setrecursionlimit(max(sys.getrecursionlimit(), 100_000))
 
-# Very large trees can allocate hundreds of MB for a single figure. Rendering
-# several such trees concurrently is what typically triggers an OS-level OOM
-# kill on Windows. Trees above this threshold are still rendered, but one at a
-# time via an OS file lock.
-LARGE_TREE_TAXA = 500
-
-# Full-size 200-DPI renders of very large trees can allocate many GB and trigger
-# the Linux OOM killer. Cap only the figure height, not the taxa count: all
-# leaves are still drawn, but vertical spacing is compressed on extreme trees.
+DEFAULT_BIG_THRESHOLD = 500
 MAX_FIGURE_HEIGHT_IN = 120.0
+LIST_SMALL = "list_small.txt"
+LIST_BIG = "list_big.txt"
+LIST_INVALID = "list_invalid.txt"
+LIST_META = "list_meta.json"
 
 _WORKER_RENDER = None
 _WORKER_OPTIONS: dict[str, object] = {}
 _WORKER_MARKER = None
-_LARGE_LOCK_FD: int | None = None
-
-
-def _acquire_large_lock() -> None:
-    """Block until the cross-process large-tree lock is available."""
-    fd = _LARGE_LOCK_FD
-    if fd is None:
-        return
-    if os.name == "nt":
-        import msvcrt
-
-        while True:
-            os.lseek(fd, 0, os.SEEK_SET)
-            try:
-                msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
-                return
-            except OSError:
-                time.sleep(0.25)
-    else:
-        import fcntl
-
-        fcntl.flock(fd, fcntl.LOCK_EX)
-
-
-def _release_large_lock() -> None:
-    fd = _LARGE_LOCK_FD
-    if fd is None:
-        return
-    if os.name == "nt":
-        import msvcrt
-
-        os.lseek(fd, 0, os.SEEK_SET)
-        msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
-    else:
-        import fcntl
-
-        fcntl.flock(fd, fcntl.LOCK_UN)
 
 
 def _init_worker(options: dict[str, object]) -> None:
-    """One-time setup in each worker process.
-
-    Imports Matplotlib and the renderer once, silences expected topology-only
-    warnings, performs a small warm-up, then keeps the render function in a
-    module global for subsequent tasks.
-    """
+    """One-time setup in each worker process."""
     import newick_phylogram as renderer
 
-    # Recursion limit is set at module import (100,000) for the whole worker.
-
-    # Print a Python traceback if a worker dies from a fatal signal.
     faulthandler.enable()
 
-    # Real per-file errors are still returned by _render_task.
+    # Expected topology-only warnings would be one line per tree.
     renderer._warn = lambda _message: None
 
+    # The batch can render six-figure-pixel images for large trees; cap the
+    # height so a single figure does not grow without bound.
     original_adaptive = renderer._adaptive_figure_size
 
     def capped_adaptive(n_tips, n_nodes, max_label_length, topology_only=False):
@@ -111,24 +79,6 @@ def _init_worker(options: dict[str, object]) -> None:
         return width, min(height, MAX_FIGURE_HEIGHT_IN)
 
     renderer._adaptive_figure_size = capped_adaptive
-
-    # Serialize only large figures. The OS releases this lock automatically if
-    # a worker dies, so a crash cannot leave a stale lock behind.
-    global _LARGE_LOCK_FD
-    _LARGE_LOCK_FD = os.open(str(options["large_lock"]), os.O_RDWR)
-
-    original_render = renderer._render
-
-    def serialized_render(tree, output_path, **kwargs):
-        if len(tree.get_terminals()) > LARGE_TREE_TAXA:
-            _acquire_large_lock()
-            try:
-                return original_render(tree, output_path, **kwargs)
-            finally:
-                _release_large_lock()
-        return original_render(tree, output_path, **kwargs)
-
-    renderer._render = serialized_render
 
     fig = renderer.plt.figure(figsize=(1.2, 0.8))
     fig.text(0.1, 0.5, "Warm-up", fontweight="bold")
@@ -187,9 +137,133 @@ def _collect_inputs(input_path: Path, patterns: Sequence[str]) -> list[Path]:
     return sorted(files)
 
 
-def _default_jobs() -> int:
-    cpu = os.cpu_count() or 1
-    return max(1, min(16, cpu - 1 if cpu > 1 else 1))
+def _atomic_write_lines(path: Path, lines: Sequence[str]) -> None:
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    with temporary.open("w", encoding="utf-8") as handle:
+        for line in lines:
+            handle.write(line)
+            handle.write("\n")
+    temporary.replace(path)
+
+
+def _list_paths(output_dir: Path) -> tuple[Path, Path, Path, Path]:
+    return (
+        output_dir / LIST_SMALL,
+        output_dir / LIST_BIG,
+        output_dir / LIST_INVALID,
+        output_dir / LIST_META,
+    )
+
+
+def _load_cache(
+    input_path: Path,
+    output_dir: Path,
+    patterns: Sequence[str],
+    big_threshold: int,
+) -> tuple[list[str], list[str], list[str]] | None:
+    small_path, big_path, invalid_path, meta_path = _list_paths(output_dir)
+    if not all(path.is_file() for path in (small_path, big_path, invalid_path, meta_path)):
+        return None
+    try:
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if (
+        meta.get("big_threshold") != big_threshold
+        or meta.get("input") != str(input_path.resolve())
+        or meta.get("patterns") != list(patterns)
+    ):
+        return None
+
+    def read_paths(path: Path) -> list[str]:
+        return [
+            line.split("\t", 1)[0]
+            for line in path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+
+    return read_paths(small_path), read_paths(big_path), read_paths(invalid_path)
+
+
+def _classify_inputs(
+    input_path: Path,
+    output_dir: Path,
+    patterns: Sequence[str],
+    big_threshold: int,
+) -> tuple[list[str], list[str], list[str]]:
+    files = _collect_inputs(input_path, patterns)
+    if not files:
+        raise FileNotFoundError(
+            f"no input files matched {list(patterns)!r} under {input_path}"
+        )
+
+    small: list[str] = []
+    big: list[str] = []
+    invalid: list[str] = []
+    for input_file in tqdm(files, desc="Classifying", unit="tree"):
+        absolute = str(input_file.resolve())
+        try:
+            tree = Phylo.read(str(input_file), "newick")
+            n_tips = len(tree.get_terminals())
+            if n_tips <= 0:
+                invalid.append(f"{absolute}\tValueError: no taxa found")
+            elif n_tips <= big_threshold:
+                small.append(absolute)
+            else:
+                big.append(absolute)
+        except Exception as exc:
+            invalid.append(f"{absolute}\t{type(exc).__name__}: {exc}")
+
+    small_path, big_path, invalid_path, meta_path = _list_paths(output_dir)
+    _atomic_write_lines(small_path, small)
+    _atomic_write_lines(big_path, big)
+    _atomic_write_lines(invalid_path, invalid)
+    meta = {
+        "version": __version__,
+        "input": str(input_path.resolve()),
+        "patterns": list(patterns),
+        "big_threshold": big_threshold,
+        "counts": {
+            "small": len(small),
+            "big": len(big),
+            "invalid": len(invalid),
+        },
+    }
+    temporary_meta = meta_path.with_suffix(meta_path.suffix + ".tmp")
+    temporary_meta.write_text(
+        json.dumps(meta, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    temporary_meta.replace(meta_path)
+    return small, big, invalid
+
+
+def _existing_output_names(output_dir: Path) -> set[str]:
+    try:
+        return {name.casefold() for name in os.listdir(output_dir)}
+    except OSError as exc:
+        raise OSError(f"cannot list output directory: {exc}") from exc
+
+
+def _build_tasks(
+    files: Sequence[str],
+    output_dir: Path,
+    existing_names: set[str],
+    overwrite: bool,
+    outputs_seen: set[Path],
+) -> tuple[list[tuple[str, str]], int]:
+    tasks: list[tuple[str, str]] = []
+    skipped = 0
+    for input_name in files:
+        input_file = Path(input_name)
+        output_file = output_dir / input_file.with_suffix(".png").name
+        if output_file in outputs_seen:
+            raise ValueError(f"two inputs map to the same output: {output_file}")
+        outputs_seen.add(output_file)
+        if not overwrite and output_file.name.casefold() in existing_names:
+            skipped += 1
+            continue
+        tasks.append((input_name, str(output_file)))
+    return tasks, skipped
 
 
 def _read_worker_markers(marker_dir: Path) -> list[str]:
@@ -204,12 +278,78 @@ def _read_worker_markers(marker_dir: Path) -> list[str]:
     return active
 
 
+def _default_jobs() -> int:
+    cpu = os.cpu_count() or 1
+    return max(1, min(16, cpu - 1 if cpu > 1 else 1))
+
+
+def _run_phase(
+    tasks: Sequence[tuple[str, str]],
+    jobs: int,
+    desc: str,
+    options: dict[str, object],
+    marker_dir: Path,
+) -> dict[str, object]:
+    if not tasks:
+        return {
+            "rendered": 0,
+            "failed": 0,
+            "empty": 0,
+            "failures": [],
+            "empty_examples": [],
+            "pool_error": None,
+        }
+
+    rendered = 0
+    failed = 0
+    empty = 0
+    failures: list[tuple[str, str, str]] = []
+    empty_examples: list[str] = []
+    pool_error: str | None = None
+
+    try:
+        with tqdm(total=len(tasks), desc=desc, unit="img") as bar:
+            with ProcessPoolExecutor(
+                max_workers=jobs,
+                initializer=_init_worker,
+                initargs=(options,),
+            ) as pool:
+                for ok, input_name, output_name, error in pool.map(
+                    _render_task, tasks, chunksize=8 if jobs > 1 else 1
+                ):
+                    bar.update(1)
+                    if ok:
+                        rendered += 1
+                    elif "no trees found" in error:
+                        empty += 1
+                        if len(empty_examples) < 20:
+                            empty_examples.append(input_name)
+                    else:
+                        failed += 1
+                        if len(failures) < 20:
+                            failures.append((input_name, output_name, error))
+                        bar.set_postfix(failed=failed, refresh=False)
+    except KeyboardInterrupt:
+        raise
+    except BaseException as exc:
+        pool_error = f"{type(exc).__name__}: {exc}"
+
+    return {
+        "rendered": rendered,
+        "failed": failed,
+        "empty": empty,
+        "failures": failures,
+        "empty_examples": empty_examples,
+        "pool_error": pool_error,
+    }
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="batch_render_pool.py",
         description=(
-            "Render Newick files to PNG with ProcessPoolExecutor. Existing "
-            "PNGs are skipped by default."
+            "Render Newick files to PNG. Small trees run in parallel, large "
+            "trees run serially. Input classification is cached in list files."
         ),
     )
     parser.add_argument("input", type=Path, help="input directory or single Newick file")
@@ -226,7 +366,7 @@ def _build_parser() -> argparse.ArgumentParser:
         dest="jobs",
         type=int,
         default=None,
-        help="worker processes (default: min(16, CPU count - 1))",
+        help="parallel workers for small trees (default: min(16, CPU count - 1))",
     )
     parser.add_argument(
         "--dpi", type=int, default=200, help="PNG resolution, at least 200 (default: 200)"
@@ -238,6 +378,15 @@ def _build_parser() -> argparse.ArgumentParser:
         help="interpret supports as 0-1 fractions or 0-100 percentages",
     )
     parser.add_argument(
+        "--big-threshold",
+        type=int,
+        default=DEFAULT_BIG_THRESHOLD,
+        help=(
+            "trees with more than N taxa go to the serial big-tree phase "
+            f"(default: {DEFAULT_BIG_THRESHOLD})"
+        ),
+    )
+    parser.add_argument(
         "--no-ladderize",
         action="store_true",
         help="keep the child order produced by rerooting",
@@ -245,7 +394,12 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--overwrite",
         action="store_true",
-        help="re-render files whose PNG already exists (default: skip existing)",
+        help="re-render existing PNGs (default: skip them)",
+    )
+    parser.add_argument(
+        "--rebuild-lists",
+        action="store_true",
+        help="rescan inputs and rebuild list_small/list_big/list_invalid",
     )
     parser.add_argument(
         "--version", action="version", version=f"%(prog)s {__version__}"
@@ -255,6 +409,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
 def main(argv: Sequence[str] | None = None) -> int:
     freeze_support()
+    total_started = time.monotonic()
     args = _build_parser().parse_args(argv)
 
     if args.dpi < 200 or args.dpi > 1200:
@@ -264,121 +419,160 @@ def main(argv: Sequence[str] | None = None) -> int:
     if jobs < 1:
         print("error: --jobs must be >= 1", file=sys.stderr)
         return 2
+    if args.big_threshold < 0:
+        print("error: --big-threshold must be >= 0", file=sys.stderr)
+        return 2
 
     patterns = [part.strip() for part in args.pattern.split(",") if part.strip()]
     if not patterns:
         print("error: --pattern must not be empty", file=sys.stderr)
         return 2
 
-    try:
-        files = _collect_inputs(args.input, patterns)
-    except (FileNotFoundError, OSError) as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        return 2
-    if not files:
-        print(f"error: no input files matched {patterns!r} under {args.input}", file=sys.stderr)
-        return 2
-
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
-    # One directory listing is much faster than 100k+ Path.exists() calls on
-    # Windows. With --overwrite we skip the listing entirely.
-    existing_names: set[str] = set()
+    cached = None
+    if not args.rebuild_lists:
+        cached = _load_cache(
+            args.input, args.output_dir, patterns, args.big_threshold
+        )
+    if cached is not None:
+        small_files, big_files, invalid = cached
+        print(
+            f"using cached lists: small={len(small_files)}, "
+            f"big={len(big_files)}, invalid={len(invalid)}"
+        )
+    else:
+        scan_started = time.monotonic()
+        try:
+            small_files, big_files, invalid = _classify_inputs(
+                args.input, args.output_dir, patterns, args.big_threshold
+            )
+        except (FileNotFoundError, OSError) as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+        print(
+            f"classified {len(small_files) + len(big_files) + len(invalid)} trees "
+            f"in {time.monotonic() - scan_started:.2f}s: "
+            f"small={len(small_files)}, big={len(big_files)}, invalid={len(invalid)}"
+        )
+
     if not args.overwrite:
         try:
-            existing_names = {name.casefold() for name in os.listdir(args.output_dir)}
+            existing_names = _existing_output_names(args.output_dir)
         except OSError as exc:
-            print(f"error: cannot list output directory: {exc}", file=sys.stderr)
+            print(f"error: {exc}", file=sys.stderr)
             return 2
+    else:
+        existing_names = set()
 
-    tasks: list[tuple[str, str]] = []
-    skipped = 0
-    empty = 0
-    empty_examples: list[str] = []
     outputs_seen: set[Path] = set()
-    for input_file in files:
-        output_file = args.output_dir / input_file.with_suffix(".png").name
-        if output_file in outputs_seen:
-            print(f"error: two inputs map to the same output: {output_file}", file=sys.stderr)
-            return 2
-        outputs_seen.add(output_file)
-        if not args.overwrite and output_file.name.casefold() in existing_names:
-            skipped += 1
-            continue
-        tasks.append((str(input_file), str(output_file)))
-
-    if not tasks:
-        print(
-            f"nothing to do: {len(files)} inputs, {skipped} already exist"
+    try:
+        small_tasks, small_skipped = _build_tasks(
+            small_files, args.output_dir, existing_names, args.overwrite, outputs_seen
         )
+        big_tasks, big_skipped = _build_tasks(
+            big_files, args.output_dir, existing_names, args.overwrite, outputs_seen
+        )
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+
+    if not small_tasks and not big_tasks:
+        print(
+            f"nothing to do: small={len(small_files)}, big={len(big_files)}, "
+            f"invalid={len(invalid)}, skipped={small_skipped + big_skipped}"
+        )
+        if invalid:
+            print("\ninvalid inputs (first 20 from list_invalid.txt):", file=sys.stderr)
+            for entry in invalid[:20]:
+                print(f"  {entry}", file=sys.stderr)
         return 0
 
     marker_dir = Path(
         tempfile.mkdtemp(prefix=".batch_markers_", dir=str(args.output_dir))
     )
-    large_lock = marker_dir / "large.lock"
-    large_lock.write_bytes(b"0")
     options = {
         "dpi": args.dpi,
         "support_scale": args.support_scale,
         "no_ladderize": args.no_ladderize,
         "marker_dir": str(marker_dir),
-        "large_lock": str(large_lock),
     }
 
-    started = time.monotonic()
-    done = 0
-    rendered = 0
-    failed = 0
-    failures: list[tuple[str, str, str]] = []
+    aggregate = {
+        "rendered": 0,
+        "failed": 0,
+        "empty": 0,
+        "failures": [],
+        "empty_examples": [],
+    }
     pool_error: str | None = None
 
+    print(
+        f"small trees: {len(small_tasks)} queued "
+        f"({small_skipped} existing skipped), jobs={jobs}"
+    )
     try:
-        with tqdm(total=len(tasks), desc="Rendering", unit="img") as bar:
-            with ProcessPoolExecutor(
-                max_workers=jobs,
-                initializer=_init_worker,
-                initargs=(options,),
-            ) as pool:
-                for ok, input_name, output_name, error in pool.map(
-                    _render_task, tasks, chunksize=8
-                ):
-                    done += 1
-                    bar.update(1)
-                    if ok:
-                        rendered += 1
-                    else:
-                        if "no trees found" in error:
-                            empty += 1
-                            if len(empty_examples) < 20:
-                                empty_examples.append(input_name)
-                        else:
-                            failed += 1
-                            if len(failures) < 20:
-                                failures.append((input_name, output_name, error))
-                            bar.set_postfix(failed=failed, refresh=False)
+        stats = _run_phase(small_tasks, jobs, "Small trees", options, marker_dir)
     except KeyboardInterrupt:
         print("\ninterrupted; existing PNGs can be skipped on the next run", file=sys.stderr)
+        active_inputs = _read_worker_markers(marker_dir)
+        if active_inputs:
+            print("\nlast in-flight inputs:", file=sys.stderr)
+            for input_name in active_inputs:
+                print(f"  {input_name}", file=sys.stderr)
+        shutil.rmtree(marker_dir, ignore_errors=True)
         return 130
-    except BaseException as exc:
-        # Keep the useful partial summary even when a worker dies abruptly.
-        pool_error = f"{type(exc).__name__}: {exc}"
+    for key in ("rendered", "failed", "empty"):
+        aggregate[key] += stats[key]
+    aggregate["failures"].extend(stats["failures"])
+    aggregate["empty_examples"].extend(stats["empty_examples"])
+    aggregate["failures"] = aggregate["failures"][:20]
+    aggregate["empty_examples"] = aggregate["empty_examples"][:20]
+    pool_error = stats["pool_error"]
 
-    elapsed = time.monotonic() - started
-    rate = done / elapsed if elapsed > 0 else 0.0
+    if pool_error is None and big_tasks:
+        print(f"big trees: {len(big_tasks)} queued ({big_skipped} existing skipped), serial")
+        try:
+            stats = _run_phase(big_tasks, 1, "Big trees (serial)", options, marker_dir)
+        except KeyboardInterrupt:
+            print("\ninterrupted; existing PNGs can be skipped on the next run", file=sys.stderr)
+            active_inputs = _read_worker_markers(marker_dir)
+            if active_inputs:
+                print("\nlast in-flight inputs:", file=sys.stderr)
+                for input_name in active_inputs:
+                    print(f"  {input_name}", file=sys.stderr)
+            shutil.rmtree(marker_dir, ignore_errors=True)
+            return 130
+        for key in ("rendered", "failed", "empty"):
+            aggregate[key] += stats[key]
+        aggregate["failures"].extend(stats["failures"])
+        aggregate["empty_examples"].extend(stats["empty_examples"])
+        aggregate["failures"] = aggregate["failures"][:20]
+        aggregate["empty_examples"] = aggregate["empty_examples"][:20]
+        pool_error = stats["pool_error"]
+
+    elapsed = time.monotonic() - total_started
+    total_rendered = aggregate["rendered"]
     print(
-        f"done: rendered={rendered}, failed={failed}, empty={empty}, "
-        f"skipped={skipped}, elapsed={elapsed:.2f}s, {rate:.2f} img/s, "
+        f"done: rendered={total_rendered}, failed={aggregate['failed']}, "
+        f"empty={aggregate['empty']}, invalid={len(invalid)}, "
+        f"skipped={small_skipped + big_skipped}, elapsed={elapsed:.2f}s, "
+        f"{total_rendered / elapsed if elapsed > 0 else 0:.2f} img/s, "
         f"workers={jobs}"
     )
-    if failures:
+    if aggregate["failures"]:
         print("\nfailures (first 20):", file=sys.stderr)
-        for input_name, output_name, error in failures:
+        for input_name, output_name, error in aggregate["failures"]:
             print(f"  {input_name} -> {output_name}: {error}", file=sys.stderr)
-    if empty_examples:
+    if aggregate["empty_examples"]:
         print("\nempty/no-tree inputs (first 20):", file=sys.stderr)
-        for input_name in empty_examples:
+        for input_name in aggregate["empty_examples"]:
             print(f"  {input_name}", file=sys.stderr)
+    if invalid:
+        print("\ninvalid inputs (first 20 from list_invalid.txt):", file=sys.stderr)
+        for entry in invalid[:20]:
+            print(f"  {entry}", file=sys.stderr)
+
     if pool_error:
         print(f"\nerror: worker pool failed: {pool_error}", file=sys.stderr)
         active_inputs = _read_worker_markers(marker_dir)
@@ -389,15 +583,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         shutil.rmtree(marker_dir, ignore_errors=True)
         if isinstance(pool_error, str) and "BrokenProcessPool" in pool_error:
             print(
-                "A worker process was killed by the OS, ran out of memory, or "
-                "crashed in native code. Completed PNGs are kept. Retry with "
-                "fewer --jobs (e.g. 4) or on a smaller input directory.",
+                "A worker process was killed by the OS. Completed PNGs are kept; "
+                "rerun with fewer --jobs or inspect the in-flight files.",
                 file=sys.stderr,
             )
         return 1
 
     shutil.rmtree(marker_dir, ignore_errors=True)
-    if failures:
+    if aggregate["failed"]:
         return 1
     return 0
 
