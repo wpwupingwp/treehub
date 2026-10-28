@@ -74,6 +74,7 @@ Dependencies:
 
 - `biopython` — Newick parsing
 - `matplotlib` — rendering
+- `tqdm` — progress bar for batch rendering
 
 ### Font handling
 
@@ -266,20 +267,16 @@ The script rewrites the ten `.nwk` files and renders each with its demonstration
 For large collections, use [`batch_render_pool.py`](batch_render_pool.py). It imports the baseline renderer in each worker, keeping Matplotlib initialization out of the parent process.
 
 ```bash
-python batch_render_pool.py INPUT_DIR OUTPUT_DIR --jobs 8 --recursive
+python batch_render_pool.py INPUT_DIR OUTPUT_DIR --jobs 8
 ```
 
 Windows example:
 
 ```bat
-python batch_render_pool.py D:\trees D:\png --jobs 8 --recursive --no-progress > batch.log 2>&1
+python batch_render_pool.py D:\trees D:\png --jobs 8
 ```
 
-Smoke-test 1,000 images first:
-
-```bat
-python batch_render_pool.py D:\trees D:\png_test --jobs 8 --limit 1000
-```
+The input directory is scanned non-recursively. Point the command at a small test directory first if you want to benchmark before a full run.
 
 Batch behavior:
 
@@ -287,9 +284,8 @@ Batch behavior:
 - `--overwrite` forces a full re-render;
 - a malformed tree does not stop the batch;
 - each worker initializes Matplotlib once and performs a warm-up;
-- BLAS/OpenMP thread counts are limited to one per worker;
 - PNG zlib level is fixed at **6**;
-- progress, rate, and ETA are printed periodically.
+- progress and ETA are shown with `tqdm`.
 
 Measured on an 8-core / 16-thread Ryzen 7 3700X at 200 DPI with 9-taxon trees and PNG zlib 6:
 
@@ -298,7 +294,7 @@ Measured on an 8-core / 16-thread Ryzen 7 3700X at 200 DPI with 9-taxon trees an
 | 8 workers | 14.14 s — **35.4 images/s** |
 | 16 workers | 10.58 s — **47.3 images/s** |
 
-Estimated 200k runtime: about **1.6 h** with 8 workers, **1.2 h** with 16 workers (Linux). Windows throughput will differ; benchmark with `--limit 1000`.
+Estimated 200k runtime: about **1.6 h** with 8 workers, **1.2 h** with 16 workers (Linux). Windows throughput will differ; benchmark on a small test directory first.
 
 > [!NOTE]
 > `InterpreterPoolExecutor` is not used. On Python 3.14, importing Matplotlib inside a `ProcessPool` worker works, but inside an `InterpreterPool` worker it fails because NumPy's C extension currently refuses subinterpreter loading. `ProcessPoolExecutor` is the supported path.

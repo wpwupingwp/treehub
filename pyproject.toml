@@ -43,3 +43,8 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/plant_tree_db"]
+
+[tool.uv.workspace]
+members = [
+    "draw_trees",
+]
