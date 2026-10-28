@@ -13,8 +13,11 @@ Example
 from __future__ import annotations
 
 import argparse
+import faulthandler
 import os
+import shutil
 import sys
+import tempfile
 import time
 from concurrent.futures import ProcessPoolExecutor
 from multiprocessing import freeze_support
@@ -23,10 +26,15 @@ from typing import Sequence
 
 from tqdm import tqdm
 
-__version__ = "1.1.0"
+__version__ = "1.3.0"
+
+# No taxa cap is applied. Deep ladder trees need a higher Python recursion limit
+# for Biopython's recursive DFS helpers (get_terminals, find_clades, ladderize).
+sys.setrecursionlimit(max(sys.getrecursionlimit(), 100_000))
 
 _WORKER_RENDER = None
 _WORKER_OPTIONS: dict[str, object] = {}
+_WORKER_MARKER = None
 
 
 def _init_worker(options: dict[str, object]) -> None:
@@ -38,6 +46,11 @@ def _init_worker(options: dict[str, object]) -> None:
     """
     import newick_phylogram as renderer
 
+    # Recursion limit is set at module import (100,000) for the whole worker.
+
+    # Print a Python traceback if a worker dies from a fatal signal.
+    faulthandler.enable()
+
     # Real per-file errors are still returned by _render_task.
     renderer._warn = lambda _message: None
 
@@ -46,14 +59,26 @@ def _init_worker(options: dict[str, object]) -> None:
     fig.canvas.draw()
     renderer.plt.close(fig)
 
-    global _WORKER_RENDER, _WORKER_OPTIONS
+    global _WORKER_RENDER, _WORKER_OPTIONS, _WORKER_MARKER
     _WORKER_RENDER = renderer.render_newick_file
     _WORKER_OPTIONS = options
+    _WORKER_MARKER = open(
+        Path(str(options["marker_dir"])) / f"worker_{os.getpid()}.txt",
+        "w+",
+        encoding="utf-8",
+        buffering=1,
+    )
 
 
 def _render_task(task: tuple[str, str]) -> tuple[bool, str, str, str]:
     """Render one tree; return failures instead of terminating the pool."""
     input_name, output_name = task
+    marker = _WORKER_MARKER
+    if marker is not None:
+        marker.seek(0)
+        marker.write(input_name)
+        marker.truncate()
+        marker.flush()
     try:
         assert _WORKER_RENDER is not None
         _WORKER_RENDER(
@@ -67,6 +92,11 @@ def _render_task(task: tuple[str, str]) -> tuple[bool, str, str, str]:
         return True, input_name, output_name, ""
     except Exception as exc:
         return False, input_name, output_name, f"{type(exc).__name__}: {exc}"
+    finally:
+        if marker is not None:
+            marker.seek(0)
+            marker.truncate()
+            marker.flush()
 
 
 def _collect_inputs(input_path: Path, patterns: Sequence[str]) -> list[Path]:
@@ -84,6 +114,18 @@ def _collect_inputs(input_path: Path, patterns: Sequence[str]) -> list[Path]:
 def _default_jobs() -> int:
     cpu = os.cpu_count() or 1
     return max(1, min(16, cpu - 1 if cpu > 1 else 1))
+
+
+def _read_worker_markers(marker_dir: Path) -> list[str]:
+    active: list[str] = []
+    for marker_file in marker_dir.glob("worker_*.txt"):
+        try:
+            text = marker_file.read_text(encoding="utf-8").strip()
+        except OSError:
+            continue
+        if text:
+            active.append(text)
+    return active
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -163,8 +205,20 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
+    # One directory listing is much faster than 100k+ Path.exists() calls on
+    # Windows. With --overwrite we skip the listing entirely.
+    existing_names: set[str] = set()
+    if not args.overwrite:
+        try:
+            existing_names = {name.casefold() for name in os.listdir(args.output_dir)}
+        except OSError as exc:
+            print(f"error: cannot list output directory: {exc}", file=sys.stderr)
+            return 2
+
     tasks: list[tuple[str, str]] = []
     skipped = 0
+    empty = 0
+    empty_examples: list[str] = []
     outputs_seen: set[Path] = set()
     for input_file in files:
         output_file = args.output_dir / input_file.with_suffix(".png").name
@@ -172,25 +226,33 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"error: two inputs map to the same output: {output_file}", file=sys.stderr)
             return 2
         outputs_seen.add(output_file)
-        if output_file.exists() and not args.overwrite:
+        if not args.overwrite and output_file.name.casefold() in existing_names:
             skipped += 1
             continue
         tasks.append((str(input_file), str(output_file)))
 
     if not tasks:
-        print(f"nothing to do: {len(files)} inputs, {skipped} already exist")
+        print(
+            f"nothing to do: {len(files)} inputs, {skipped} already exist"
+        )
         return 0
 
+    marker_dir = Path(
+        tempfile.mkdtemp(prefix=".batch_markers_", dir=str(args.output_dir))
+    )
     options = {
         "dpi": args.dpi,
         "support_scale": args.support_scale,
         "no_ladderize": args.no_ladderize,
+        "marker_dir": str(marker_dir),
     }
 
     started = time.monotonic()
     done = 0
+    rendered = 0
     failed = 0
     failures: list[tuple[str, str, str]] = []
+    pool_error: str | None = None
 
     try:
         with tqdm(total=len(tasks), desc="Rendering", unit="img") as bar:
@@ -204,28 +266,59 @@ def main(argv: Sequence[str] | None = None) -> int:
                 ):
                     done += 1
                     bar.update(1)
-                    if not ok:
-                        failed += 1
-                        if len(failures) < 20:
-                            failures.append((input_name, output_name, error))
-                        bar.set_postfix(failed=failed, refresh=False)
+                    if ok:
+                        rendered += 1
+                    else:
+                        if "no trees found" in error:
+                            empty += 1
+                            if len(empty_examples) < 20:
+                                empty_examples.append(input_name)
+                        else:
+                            failed += 1
+                            if len(failures) < 20:
+                                failures.append((input_name, output_name, error))
+                            bar.set_postfix(failed=failed, refresh=False)
     except KeyboardInterrupt:
         print("\ninterrupted; existing PNGs can be skipped on the next run", file=sys.stderr)
         return 130
-    except Exception as exc:
-        print(f"error: worker pool failed: {type(exc).__name__}: {exc}", file=sys.stderr)
-        return 1
+    except BaseException as exc:
+        # Keep the useful partial summary even when a worker dies abruptly.
+        pool_error = f"{type(exc).__name__}: {exc}"
 
     elapsed = time.monotonic() - started
     rate = done / elapsed if elapsed > 0 else 0.0
     print(
-        f"done: rendered={done - failed}, failed={failed}, skipped={skipped}, "
-        f"elapsed={elapsed:.2f}s, {rate:.2f} img/s, workers={jobs}"
+        f"done: rendered={rendered}, failed={failed}, empty={empty}, "
+        f"skipped={skipped}, elapsed={elapsed:.2f}s, {rate:.2f} img/s, "
+        f"workers={jobs}"
     )
     if failures:
         print("\nfailures (first 20):", file=sys.stderr)
         for input_name, output_name, error in failures:
             print(f"  {input_name} -> {output_name}: {error}", file=sys.stderr)
+    if empty_examples:
+        print("\nempty/no-tree inputs (first 20):", file=sys.stderr)
+        for input_name in empty_examples:
+            print(f"  {input_name}", file=sys.stderr)
+    if pool_error:
+        print(f"\nerror: worker pool failed: {pool_error}", file=sys.stderr)
+        active_inputs = _read_worker_markers(marker_dir)
+        if active_inputs:
+            print("\nlast in-flight inputs:", file=sys.stderr)
+            for input_name in active_inputs:
+                print(f"  {input_name}", file=sys.stderr)
+        shutil.rmtree(marker_dir, ignore_errors=True)
+        if isinstance(pool_error, str) and "BrokenProcessPool" in pool_error:
+            print(
+                "A worker process was killed by the OS, ran out of memory, or "
+                "crashed in native code. Completed PNGs are kept. Retry with "
+                "fewer --jobs (e.g. 4) or on a smaller input directory.",
+                file=sys.stderr,
+            )
+        return 1
+
+    shutil.rmtree(marker_dir, ignore_errors=True)
+    if failures:
         return 1
     return 0
 
